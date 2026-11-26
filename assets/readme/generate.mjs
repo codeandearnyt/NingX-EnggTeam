@@ -397,29 +397,40 @@ function divider() {
 // ── footer.svg（フッター） ───────────────────────────────────────────
 
 function footer() {
-  const wave = (y, amp, dur, dir, opacity) => `
-  <path d="M-400 ${y} q 100 -${amp} 200 0 t 200 0 t 200 0 t 200 0 t 200 0 t 200 0 t 200 0 t 200 0 L 1600 200 L -400 200 Z"
+  const wave = (y, amp, dur, opacity) => `
+  <path d="M-400 ${y} q 100 -${amp} 200 0 t 200 0 t 200 0 t 200 0 t 200 0 t 200 0 t 200 0 t 200 0 L 1600 240 L -400 240 Z"
         fill="${C.accent}" fill-opacity="${opacity}">
     <animateTransform attributeName="transform" type="translate"
                       values="0 0; 200 0; 0 0" dur="${dur}s" repeatCount="indefinite"
                       calcMode="spline" keySplines="0.45 0 0.55 1;0.45 0 0.55 1"/>
   </path>`;
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="150" viewBox="0 0 1200 150" role="img" aria-label="Made by Nitin Sharma">
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="120" viewBox="0 0 1200 120" role="img" aria-label="Made by Nitin Sharma">
+  <title>Made by Nitin Sharma</title>
   <defs>
-    <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="${C.accent}" stop-opacity="0"/>
-      <stop offset="1" stop-color="${C.core}" stop-opacity="0.22"/>
+    <linearGradient id="band" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="${C.deep}"/>
+      <stop offset="0.5" stop-color="${C.mid}"/>
+      <stop offset="1" stop-color="${C.deep}"/>
     </linearGradient>
-    <clipPath id="frame"><rect width="1200" height="150"/></clipPath>
+    <clipPath id="frame">
+      <rect x="0.75" y="0.75" width="1198.5" height="118.5" rx="18"/>
+    </clipPath>
   </defs>
+
   <g clip-path="url(#frame)">
-    ${wave(78, 26, 9, 1, 0.055)}
-    ${wave(100, 18, 13, -1, 0.085)}
-    <rect x="0" y="104" width="1200" height="46" fill="url(#fade)"/>
+    <rect x="0" y="0" width="1200" height="120" fill="url(#band)"/>
+    ${wave(88, 22, 9, 0.16)}
+    ${wave(104, 16, 13, 0.22)}
   </g>
-  <text x="600" y="112" text-anchor="middle" font-family="${FONT}" font-size="13.5"
-        fill="${C.muted}">Made by <tspan fill="${C.light}" font-weight="700">Nitin Sharma</tspan></text>
+
+  <rect x="0.75" y="0.75" width="1198.5" height="118.5" rx="18"
+        fill="none" stroke="#1b3f66" stroke-width="1.5"/>
+
+  <text x="600" y="52" text-anchor="middle" font-family="${FONT}" font-size="16"
+        font-weight="700" fill="${C.light}">Made by Nitin Sharma</text>
+  <text x="600" y="74" text-anchor="middle" font-family="${FONT}" font-size="12"
+        fill="${C.muted}">Twelve roles · twenty-four UI types · one guard</text>
 </svg>
 `;
 }

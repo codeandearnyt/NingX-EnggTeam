@@ -93,11 +93,13 @@ Output lands in `desktop/release/`.
 `.github/workflows/desktop.yml` runs `windows-latest`, `macos-latest`, and `ubuntu-latest` in parallel. Push a tag to publish a release:
 
 ```bash
-git tag desktop-v1.0.0
-git push origin desktop-v1.0.0
+git tag v1.0.2        # must match desktop/package.json "version"
+git push origin v1.0.2
 ```
 
-That release is what the in-app updater reads.
+electron-builder creates the release as `v<version>`, so the tag and the version have to agree or the two refs diverge. That release is what the in-app updater reads — the `latest.yml`, `latest-mac.yml`, and `latest-linux.yml` on it are the feed.
+
+A `workflow_dispatch` run builds all three without publishing, which is the cheap way to check the matrix.
 
 ---
 

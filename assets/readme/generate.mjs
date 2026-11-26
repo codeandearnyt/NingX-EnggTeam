@@ -442,7 +442,7 @@ const files = {
   "typing.svg": typing(),
   "author.svg": author(),
   "divider.svg": divider(),
-  "footer.svg": footer(),
+  "signoff.svg": footer(),
 };
 
 for (const [name, content] of Object.entries(files)) {

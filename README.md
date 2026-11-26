@@ -1,26 +1,61 @@
-# NingX-EnggTeam
+<div align="center">
 
-**Senior Web Engineering Team** — web dev · backend · frontend · UI/UX
+<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/banner.svg" alt="NingX-EnggTeam — senior web engineering team for AI coding harnesses" width="100%" />
 
-**Made by Nitin Sharma**
+<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/typing.svg" alt="24 named UI types, 12 senior roles, one guard" width="100%" />
 
----
+<br /><br />
 
-A senior web engineering team for AI coding harnesses.
+[![Version](https://img.shields.io/badge/version-1.0.2-2b7fd4?style=for-the-badge&labelColor=06111c)](CHANGELOG.md)
+[![Agents](https://img.shields.io/badge/agents-12-5aa7e9?style=for-the-badge&labelColor=06111c)](agents)
+[![UI types](https://img.shields.io/badge/ui%20types-24-a9d8f8?style=for-the-badge&labelColor=06111c)](skills)
+[![Harnesses](https://img.shields.io/badge/harnesses-7-2b7fd4?style=for-the-badge&labelColor=06111c)](docs/harnesses.md)
+[![Platforms](https://img.shields.io/badge/win%20·%20macos%20·%20linux-1c66b8?style=for-the-badge&labelColor=06111c)](desktop)
+[![License](https://img.shields.io/badge/license-no--rebranding-c02b2b?style=for-the-badge&labelColor=06111c)](LICENSE)
+
+<br />
+
+<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/divider.svg" alt="" width="100%" />
+
+</div>
+
+<br />
+
+<table>
+<tr>
+<td width="260" align="center" valign="middle">
+
+<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/author.svg" alt="Nitin Sharma" width="230" />
+
+**Nitin Sharma**
+<sub>Developer & maintainer</sub>
+
+[![GitHub](https://img.shields.io/badge/@codeandearnyt-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/codeandearnyt)
+
+</td>
+<td valign="middle">
+
+### A senior web engineering team for AI coding harnesses
 
 Twelve roles. Twenty-four named UI types, each with a reference site and a loadable skill. Seven craft skills. Eight always-loaded rule files. One write-time guard that blocks the mechanical violations before they land on disk.
 
-The point is not to describe good web work. The point is to make a model produce it, and to fail the build when it doesn't.
+The point is not to describe good web work. **The point is to make a model produce it, and to fail the build when it doesn't.**
 
-**New here? Read [`USE.md`](USE.md) — the full usage manual.**
+**[Read the manual →](USE.md)**
 
----
+</td>
+</tr>
+</table>
+
+<div align="center">
+<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/divider.svg" alt="" width="100%" />
+</div>
 
 ## The problem this solves
 
-Given no direction, generated interfaces converge. The same dark gradient hero, the same three feature cards, the same Inter at 16px, the same `border-radius: 12px`, the same "Elevate your workflow."
+Given no direction, generated interfaces converge. The same dark gradient hero, the same three feature cards, the same Inter at 16px, the same `border-radius: 12px`, the same *"Elevate your workflow."*
 
-That convergence is not a model failure. It is a direction failure. Nothing in the prompt said *what kind of page this is*, so the model produced the average of every page it has seen.
+That convergence is not a model failure. It is a **direction failure**. Nothing in the prompt said *what kind of page this is*, so the model produced the average of every page it has seen.
 
 This repo fixes it at three layers:
 
@@ -32,14 +67,16 @@ This repo fixes it at three layers:
 
 Plus twelve agent roles that own specific decisions, and seven commands that run the workflows.
 
----
+<div align="center">
+<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/divider.svg" alt="" width="100%" />
+</div>
 
 ## What is inside
 
 ```
 AGENTS.md                 the constitution — every skill and agent inherits it
 DESIGN-LAW.md             the 24-type catalog with reference sites and mixing rules
-VERSION                   1.0.0
+VERSION                   1.0.2
 
 agents/                   12 senior roles
   web-architect             routes, rendering strategy, UI type per page
@@ -123,7 +160,9 @@ docs/
   faq.md                   the questions this design invites
 ```
 
----
+<div align="center">
+<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/divider.svg" alt="" width="100%" />
+</div>
 
 ## The ten non-negotiables
 
@@ -140,7 +179,9 @@ Enforced by the guard where mechanically possible, by review where not.
 9. **No banned marketing copy** — elevate, unlock, seamless, empower, and the rest.
 10. **No "done" without a check.** Numbers, not adjectives.
 
----
+<div align="center">
+<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/divider.svg" alt="" width="100%" />
+</div>
 
 ## Install
 
@@ -159,13 +200,17 @@ Codex, OpenCode, Cursor, Copilot, Windsurf, Antigravity, Qoder, or any harness t
 
 The short version: paste `AGENTS.md` into the system prompt, and paste `skills/ui-NN-*/SKILL.md` when a page needs a specific type.
 
-### Desktop app
+<div align="center">
+<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/divider.svg" alt="" width="100%" />
+</div>
 
-If you would rather click than type:
+## Desktop app
 
-```
-desktop/    one Aqua window, identical on Windows, macOS, and Linux
-```
+If you would rather click than type. One Aqua window, the same on Windows, macOS, and Linux.
+
+<div align="center">
+<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/desktop.png" alt="NingX Installer — Aqua interface" width="720" />
+</div>
 
 Four buttons — **Install**, **Update**, **Reinstall**, **Uninstall**. It clones this repo into `~/.ningx-desktop`, registers the marketplace, and installs the plugin. Update pulls from GitHub on every press.
 
@@ -176,9 +221,13 @@ npm run build
 npm start
 ```
 
-Build the installers with `npm run dist:win`, `dist:mac`, or `dist:linux`. CI builds all three on a tag push. See [`desktop/README.md`](desktop/README.md).
+Build the installers with `npm run dist:win`, `dist:mac`, or `dist:linux`. CI builds all three on a tag push.
 
----
+**[Download the installer →](https://github.com/codeandearnyt/NingX-EnggTeam/releases/latest)** — `.exe`, `.dmg` (Intel + Apple Silicon), `.AppImage`, `.deb`.
+
+<div align="center">
+<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/divider.svg" alt="" width="100%" />
+</div>
 
 ## Use
 
@@ -224,7 +273,9 @@ Build the installers with `npm run dist:win`, `dist:mac`, or `dist:linux`. CI bu
   VERDICT: SHIP
 ```
 
----
+<div align="center">
+<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/divider.svg" alt="" width="100%" />
+</div>
 
 ## The mixing rule
 
@@ -244,13 +295,15 @@ Two types maximum. One structural, one surface.
 | `03-brutalist-html` + anything | Brutalism is the absence of style |
 | `05-swiss-grid` + `10-bento-grid` | Two structural systems fighting |
 
----
+<div align="center">
+<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/divider.svg" alt="" width="100%" />
+</div>
 
 ## The anti-slop gate
 
 Twenty-four checks. All must pass. A single FAIL blocks the ship.
 
-Structure (4) · Color (4) · Type (5) · Space (3) · Shape (3) · Content (4) · Motion (3) · Craft (4)
+**Structure (4) · Color (4) · Type (5) · Space (3) · Shape (3) · Content (4) · Motion (3) · Craft (4)**
 
 The most reliable single detector:
 
@@ -258,11 +311,13 @@ The most reliable single detector:
 
 If yes: do those three things genuinely have equal importance and equal shape? If the answer is not an immediate yes, the row is a default, not a decision.
 
----
+<div align="center">
+<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/divider.svg" alt="" width="100%" />
+</div>
 
 ## The guard
 
-`hooks/ui-guard.py` runs on every write and exits `2` on a violation. Verified against six cases:
+`hooks/ui-guard.py` runs on every write and exits `2` on a violation. Verified against nine cases:
 
 | Input | Result |
 |---|---|
@@ -280,7 +335,9 @@ An internal error in the guard always returns `0`. A guard bug must never break 
 
 Two options control it: `hooks_enabled` and `hook_profile` (`minimal` / `standard` / `strict`). See [`USE.md` §9](USE.md#9-the-guard--what-it-blocks).
 
----
+<div align="center">
+<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/divider.svg" alt="" width="100%" />
+</div>
 
 ## The precedence order
 
@@ -294,7 +351,9 @@ agents/            the role definitions
 
 A rule never overrides the constitution. A skill never overrides a rule. An agent never overrides a skill.
 
----
+<div align="center">
+<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/divider.svg" alt="" width="100%" />
+</div>
 
 ## What this is not
 
@@ -302,7 +361,9 @@ A rule never overrides the constitution. A skill never overrides a rule. An agen
 - Not a template. Every scaffold is a starting point that names its type and its tokens.
 - Not a replacement for taste. It removes the defaults so the choice is visible; the choice is still yours.
 
----
+<div align="center">
+<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/divider.svg" alt="" width="100%" />
+</div>
 
 ## License
 
@@ -310,8 +371,18 @@ A rule never overrides the constitution. A skill never overrides a rule. An agen
 
 You can use it, modify it, build client work with it, and ship sites with it — those sites are entirely yours, no attribution needed on them.
 
-You cannot rename it, remove "Made by Nitin Sharma", or publish it under a different brand without written permission.
+You cannot rename it, remove **"Made by Nitin Sharma"**, or publish it under a different brand without written permission.
 
 Full terms in [`LICENSE`](LICENSE). Permission requests: [open an issue](https://github.com/codeandearnyt/NingX-EnggTeam/issues).
 
 This is a custom source-available license, not OSI-approved open source.
+
+<br />
+
+<div align="center">
+
+<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/footer.svg" alt="Made by Nitin Sharma" width="100%" />
+
+<sub>Built by <a href="https://github.com/codeandearnyt">Nitin Sharma</a> · the animated banners are generated by <a href="assets/readme/generate.mjs"><code>assets/readme/generate.mjs</code></a></sub>
+
+</div>

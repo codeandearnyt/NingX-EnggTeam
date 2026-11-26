@@ -2,7 +2,7 @@
 
 <img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/banner.svg" alt="NingX-EnggTeam — senior web engineering team for AI coding harnesses" width="100%" />
 
-<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/typing.svg" alt="24 named UI types, 12 senior roles, one guard" width="100%" />
+<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/typing.svg?v=2" alt="24 named UI types, 12 senior roles, one guard" width="100%" />
 
 <br />
 

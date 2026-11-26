@@ -3,14 +3,15 @@ name: Desktop app
 # Builds the installer on all three platforms. macOS artifacts can only be
 # produced on a macOS runner, so a local Windows build is not enough.
 #
-# Push a tag like `desktop-v1.0.0` to publish a release. electron-updater reads
-# latest.yml / latest-mac.yml from that release, which is what makes the
-# in-app "Install update" button work.
+# Push a tag like `v1.0.2` to publish a release. electron-builder creates the
+# release as `v<package.json version>`, so the tag must match the version or
+# the two diverge. That release is what electron-updater reads — the
+# latest*.yml files on it are the feed behind the in-app update button.
 
 on:
   push:
     tags:
-      - "desktop-v*"
+      - "v*"
   workflow_dispatch:
   pull_request:
     paths:

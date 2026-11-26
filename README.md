@@ -50,6 +50,42 @@ The point is not to describe good web work. **The point is to make a model produ
 <img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/divider.svg" alt="" width="100%" />
 </div>
 
+## Contents
+
+| Understand | Use | Build |
+|---|---|---|
+| [The 30-second version](#the-30-second-version) | [Install](#install) | [The anti-slop gate](#the-anti-slop-gate) |
+| [The problem this solves](#the-problem-this-solves) | [Desktop app](#desktop-app) | [The guard](#the-guard) |
+| [What is inside](#what-is-inside) | [Use](#use) | [The precedence order](#the-precedence-order) |
+| [The ten non-negotiables](#the-ten-non-negotiables) | [The mixing rule](#the-mixing-rule) | [Works with](#works-with) |
+
+<div align="center">
+<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/divider.svg" alt="" width="100%" />
+</div>
+
+## The 30-second version
+
+Three questions, answered before any code exists.
+
+1. **What kind of page is this?** One of 24 named UI types. Each has a real reference site, a signature layout, and a failure mode. `05-swiss-grid` is aesop.com. `10-bento-grid` is linear.app.
+2. **Which role owns the decision?** One of 12. Routes and rendering strategy belong to `web-architect`. Palette and type pairing belong to `ui-ux-director`. No role answers outside its remit.
+3. **Did it pass?** 24 anti-slop checks, a WCAG 2.2 AA pass, four widths, reduced motion, and a write-time guard that exits `2` on the mechanical violations.
+
+A page that cannot answer question one does not get built. That single rule removes most of the convergence.
+
+```bash
+git clone https://github.com/codeandearnyt/NingX-EnggTeam
+cd NingX-EnggTeam
+claude plugin marketplace add "$PWD"
+claude plugin install ningx-enggteam@ningx
+```
+
+Not on Claude Code? [Paste `AGENTS.md` instead.](#works-with)
+
+<div align="center">
+<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/divider.svg" alt="" width="100%" />
+</div>
+
 ## The problem this solves
 
 Given no direction, generated interfaces converge. The same dark gradient hero, the same three feature cards, the same Inter at 16px, the same `border-radius: 12px`, the same *"Elevate your workflow."*
@@ -65,6 +101,17 @@ This repo fixes it at three layers:
 | **Guard** | `hooks/ui-guard.py` on `PreToolUse` | At the moment of the write |
 
 Plus twelve agent roles that own specific decisions, and seven commands that run the workflows.
+
+Here is the same request run twice.
+
+| | Without direction | With this repo |
+|---|---|---|
+| **Hero** | Dark gradient, *"Elevate your workflow"* | `13-aurora` above a `09-masonry` feed, copy naming the product |
+| **Feature row** | Three identical cards: icon, heading, two lines | Composition chosen by content weight — or no row at all |
+| **Type** | Inter 16px, five ad-hoc sizes | One pairing, a five-step scale, a 62ch measure |
+| **Color** | One accent, hex literals inside components | Tokens only, contrast measured on every pair |
+| **Motion** | `transition: all .3s`, a fade on every scroll | One moment at load, `prefers-reduced-motion` path |
+| **"Done"** | *"Looks good to me"* | `LCP 1.2s · CLS 0.00 · INP 60ms · JS 74KB gz` |
 
 <div align="center">
 <img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/divider.svg" alt="" width="100%" />
@@ -354,11 +401,46 @@ A rule never overrides the constitution. A skill never overrides a rule. An agen
 <img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/divider.svg" alt="" width="100%" />
 </div>
 
+## Works with
+
+| Harness | Constitution | Skills | Rules | Commands | Hooks |
+|---|---|---|---|---|---|
+| **Claude Code** | auto | auto | auto | auto | auto |
+| **Codex** | auto | reference the path | reference the path | — | — |
+| **OpenCode** | auto | reference the path | via `instructions` | yes | — |
+| **Cursor** | `.cursor/rules` | reference the path | convert to `.mdc` | — | — |
+| **Copilot** | `.github/copilot-instructions.md` | reference the path | reference the path | — | — |
+| **Windsurf · Antigravity · Qoder** | auto | reference the path | reference the path | — | — |
+| **Anything else** | paste | paste | paste | — | run by hand |
+
+"Auto" means the harness reads the file from the repo root with no configuration. Per-harness setup, including the Cursor conversion script, is in [`docs/harnesses.md`](docs/harnesses.md).
+
+Three things do not transfer: automatic skill discovery, automatic hooks, and subagent spawning. Those are harness features, not repo features. Everything else — the constitution, the 24 types, the craft skills, the rules, the checklists — is portable text.
+
+<div align="center">
+<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/divider.svg" alt="" width="100%" />
+</div>
+
 ## What this is not
 
 - Not a component library. It ships no npm package.
 - Not a template. Every scaffold is a starting point that names its type and its tokens.
 - Not a replacement for taste. It removes the defaults so the choice is visible; the choice is still yours.
+
+<div align="center">
+<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/divider.svg" alt="" width="100%" />
+</div>
+
+## Contributing
+
+The repo is opinionated on purpose, so the useful contributions are narrow:
+
+- **A new UI type.** Add `skills/ui-25-*/SKILL.md` with a real reference site, a signature layout, a failure mode, and a self-check block. Register it in `DESIGN-LAW.md` and `references/ui-types.md`. A type with no reference site is not a type.
+- **A guard rule.** Add the check to `hooks/ui-guard.py`, a row to the verification table in [`USE.md` §9](USE.md#9-the-guard--what-it-blocks), and the failing input to the test set.
+- **A harness adapter.** Add a row to `docs/harnesses.md` with the exact file path the harness reads.
+- **A correction.** Open an issue with the input, the expected result, and the actual result.
+
+Read [`AGENTS.md`](AGENTS.md) before opening a pull request — it is the standard the review applies.
 
 <div align="center">
 <img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/divider.svg" alt="" width="100%" />
@@ -375,6 +457,19 @@ You cannot rename it, remove **"Made by Nitin Sharma"**, or publish it under a d
 Full terms in [`LICENSE`](LICENSE). Permission requests: [open an issue](https://github.com/codeandearnyt/NingX-EnggTeam/issues).
 
 This is a custom source-available license, not OSI-approved open source.
+
+<br />
+
+<div align="center">
+
+### If this saved you a redesign
+
+A star is the only signal that tells the next person this was worth the read.
+
+<a href="https://github.com/codeandearnyt/NingX-EnggTeam/stargazers"><img src="https://img.shields.io/github/stars/codeandearnyt/NingX-EnggTeam?style=for-the-badge&labelColor=06111c&color=2b7fd4" alt="Star NingX-EnggTeam on GitHub" /></a>
+<a href="https://github.com/codeandearnyt/NingX-EnggTeam/releases/latest"><img src="https://img.shields.io/badge/download-installer-5aa7e9?style=for-the-badge&labelColor=06111c" alt="Download the desktop installer" /></a>
+
+</div>
 
 <br />
 

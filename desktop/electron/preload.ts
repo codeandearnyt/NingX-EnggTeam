@@ -21,6 +21,10 @@ function assertOperation(value: unknown): Operation {
 }
 
 contextBridge.exposeInMainWorld("ningx", {
+  // The renderer needs to know which chrome it is drawing under. macOS keeps
+  // the native traffic lights, so the custom dots must not be rendered there.
+  platform: process.platform,
+
   status: () => ipcRenderer.invoke("app:status"),
 
   run: (operation: string) => ipcRenderer.invoke("app:run", assertOperation(operation)),

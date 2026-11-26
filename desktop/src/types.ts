@@ -58,6 +58,7 @@ export interface AppUpdateInfo {
 }
 
 export interface NingxBridge {
+  platform: string;
   status: () => Promise<Status>;
   run: (operation: Operation) => Promise<RunResult>;
   onLog: (handler: (line: LogLine) => void) => () => void;

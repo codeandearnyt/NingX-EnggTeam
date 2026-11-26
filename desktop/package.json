@@ -1,7 +1,7 @@
 {
   "name": "ningx-installer",
   "productName": "NingX Installer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Desktop installer and updater for NingX-EnggTeam. One Aqua interface, identical on Windows, macOS, and Linux.",
   "author": {
     "name": "Nitin Sharma"

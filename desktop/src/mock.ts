@@ -100,6 +100,10 @@ export function ensureBridge(): void {
   if (window.ningx) return;
 
   const bridge: NingxBridge = {
+    // `?platform=darwin` lets the browser preview show the Mac chrome.
+    platform:
+      new URLSearchParams(window.location.search).get("platform") ??
+      (/Mac/i.test(navigator.userAgent) ? "darwin" : "win32"),
     status: async () => STATUS,
     run: async () => {
       await new Promise((resolve) => setTimeout(resolve, 900));

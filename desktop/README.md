@@ -141,7 +141,27 @@ Expected tail: `SMOKE PASSED`.
 - indeterminate progress bar with animated candy stripes
 - `prefers-reduced-motion` collapses every animation and freezes the bar
 
-The window is frameless on all three platforms and the traffic lights are ours, so the chrome matches even though Windows and Linux have no native equivalent.
+The window is frameless on Windows and Linux and the traffic lights are ours, so the chrome matches even though neither OS has a native equivalent.
+
+### Window chrome, per platform
+
+The controls are **not** forced to be identical — that would look wrong on a Mac. What is identical is the surface: the same titlebar gradient, the same body, the same buttons.
+
+| Platform | Window | Controls |
+|---|---|---|
+| **macOS** | `titleBarStyle: "hiddenInset"` | **Native traffic lights.** macOS draws them, they behave the way the OS says they should — hover reveals the glyphs, ⌥-click zooms, the window menu works. The renderer draws no dots and reserves 84 px on the left for them. |
+| **Windows** | `frame: false` | Three gel dots at the left, wired to the IPC window controls. Windows has no native dot affordance, so drawing one is the honest option. |
+| **Linux** | `frame: false` | Same three gel dots. Window-manager bindings (Alt-drag, Alt-F4) still work. |
+
+`preload.ts` exposes `platform`, and `TitleBar.tsx` branches on it:
+
+```tsx
+const mac = window.ningx?.platform === "darwin";
+// ...
+{mac ? null : <div className="titlebar__lights">…</div>}
+```
+
+On macOS the title is absolutely centred, so the native lights do not push it off-centre. The drag strip is the full bar either way.
 
 ### Preview the UI in a browser
 
@@ -150,7 +170,13 @@ npm run build:renderer
 npm run preview:ui     # http://localhost:5273
 ```
 
-`src/mock.ts` installs a stand-in bridge when `window.ningx` is absent, so the layout can be reviewed without launching Electron. In the real app the preload script wins and the mock is a no-op.
+`src/mock.ts` installs a stand-in bridge when `window.ningx` is absent, so the layout can be reviewed without launching Electron. Append `?platform=darwin` or `?platform=win32` to see either chrome:
+
+```
+http://localhost:5273/?platform=darwin
+```
+
+In the real app the preload script wins and the mock is a no-op.
 
 ---
 

@@ -21,18 +21,31 @@ import {
 import { checkForAppUpdate, installAppUpdate } from "./core/updater";
 
 const isDev = !app.isPackaged;
+const isMac = process.platform === "darwin";
 
 let mainWindow: BrowserWindow | null = null;
 
 function createWindow(): void {
+  // macOS keeps its own traffic lights: the OS draws them, the user gets the
+  // window controls they already know, and we only inset the content beneath.
+  // Windows and Linux have no equivalent, so there we draw the gel dots.
+  const chrome: Electron.BrowserWindowConstructorOptions = isMac
+    ? {
+        titleBarStyle: "hiddenInset",
+        trafficLightPosition: { x: 16, y: 15 },
+      }
+    : {
+        frame: false,
+      };
+
   mainWindow = new BrowserWindow({
     width: 860,
     height: 780,
     minWidth: 720,
     minHeight: 600,
     show: false,
-    frame: false,
     backgroundColor: "#dfe7ef",
+    ...chrome,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
@@ -55,6 +68,9 @@ function createWindow(): void {
         const status = await window.ningx.status();
         return JSON.stringify({
           bridge: typeof window.ningx,
+          platform: window.ningx.platform,
+          dots: document.querySelectorAll(".dot").length,
+          macClass: Boolean(document.querySelector(".titlebar--mac")),
           title: document.querySelector(".titlebar__title")?.textContent ?? null,
           buttons: [...document.querySelectorAll(".aqua-btn")].map(b => b.textContent.trim()),
           harnesses: document.querySelectorAll(".harness").length,

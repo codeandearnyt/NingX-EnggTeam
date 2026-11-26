@@ -253,8 +253,13 @@ If yes: do those three things genuinely have equal importance and equal shape? I
 | `tokens.css` with `--ink:#111` | allowed |
 | `<h1>Elevate your workflow</h1>` | blocked — SLOP-01 |
 | three `ui-type:` comments | blocked — UI-01 |
+| five distinct `border-radius` values, `strict` profile | blocked — STYLE-01 |
+| `hook_profile=minimal`, `href="#"` | allowed — not a non-negotiable |
+| `hooks_enabled=false`, `<img src="a.png">` | allowed — guard disabled |
 
 An internal error in the guard always returns `0`. A guard bug must never break a session.
+
+Two options control it: `hooks_enabled` and `hook_profile` (`minimal` / `standard` / `strict`). See [`USE.md` §9](USE.md#9-the-guard--what-it-blocks).
 
 ---
 

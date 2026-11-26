@@ -23,6 +23,46 @@ import re
 import sys
 from typing import Any
 
+# --------------------------------------------------------------------- config
+#
+# Claude Code exports every userConfig option declared in plugin.json as
+# CLAUDE_PLUGIN_OPTION_<KEY>, uppercased. Outside Claude Code those variables
+# are absent and the defaults below apply, so the script behaves the same when
+# it is wired up as a plain pre-commit hook.
+
+PROFILES = ("minimal", "standard", "strict")
+
+# The non-negotiables that have a mechanical check. Everything else in this
+# file is a craft opinion and only runs under the "standard" or "strict" profile.
+MINIMAL_CODES = frozenset({
+    "UI-01",   # more than two ui-type declarations
+    "UI-04",   # hex literal outside the token layer
+    "PERF-01",  # transition: all
+    "A11Y-02",  # outline: none with no replacement
+    "A11Y-05",  # form control with no label
+    "A11Y-07",  # image with no alt
+    "A11Y-08",  # animation with no reduced-motion path
+    "SLOP-01",  # banned marketing copy
+})
+
+
+def option(key: str) -> str:
+    """Read a userConfig option, or "" when the harness did not export it."""
+    return os.environ.get(f"CLAUDE_PLUGIN_OPTION_{key.upper()}", "").strip()
+
+
+def config_flag(key: str, default: bool) -> bool:
+    raw = option(key).lower()
+    if not raw:
+        return default
+    return raw not in {"0", "false", "no", "off"}
+
+
+def active_profile() -> str:
+    raw = option("hook_profile").lower()
+    return raw if raw in PROFILES else "standard"
+
+
 # ---------------------------------------------------------------- file classes
 
 CODE_EXT = {
@@ -77,6 +117,7 @@ DIV_ONCLICK = re.compile(r"<div\b[^>]*\bonclick\s*=", re.IGNORECASE)
 ANIMATION = re.compile(r"(@keyframes|animation\s*:|\.animate\(|requestAnimationFrame)", re.IGNORECASE)
 REDUCED_MOTION = re.compile(r"prefers-reduced-motion", re.IGNORECASE)
 UI_TYPE_COMMENT = re.compile(r"ui-type\s*:\s*(\d{2})", re.IGNORECASE)
+RADIUS_VALUE = re.compile(r"border-radius\s*:\s*([^;}\n]+)", re.IGNORECASE)
 
 DANGEROUS_HTML = re.compile(r"dangerouslySetInnerHTML|\bv-html\s*=|\.innerHTML\s*=")
 SANITIZER = re.compile(r"DOMPurify|sanitize|escapeHtml|xss\(", re.IGNORECASE)
@@ -396,6 +437,27 @@ def check_secrets(content: str) -> list[Violation]:
     ]
 
 
+def check_radius_scale(content: str) -> list[Violation]:
+    """Strict profile only — a radius scale, not a pile of one-off values."""
+    values = {
+        v.strip()
+        for v in RADIUS_VALUE.findall(content)
+        if v.strip() and v.strip() not in {"0", "0px", "inherit"}
+    }
+    if len(values) <= 4:
+        return []
+    sample = ", ".join(sorted(values)[:6])
+    return [
+        Violation(
+            "STYLE-01",
+            f"{len(values)} distinct border-radius values in one file: {sample}",
+            "Collapse them into a scale of four or fewer: --radius-sm, "
+            "--radius-md, --radius-lg, --radius-full. One-off radii are how a "
+            "page starts looking assembled instead of designed.",
+        )
+    ]
+
+
 # --------------------------------------------------------------------- driver
 
 
@@ -434,10 +496,19 @@ def run_checks(path: str, content: str) -> list[Violation]:
         out += check_eval(content)
         out += check_reduced_motion(content)
 
+    profile = active_profile()
+    if profile == "minimal":
+        out = [v for v in out if v.code in MINIMAL_CODES]
+    elif profile == "strict" and ext in STYLE_EXT:
+        out += check_radius_scale(content)
+
     return out
 
 
 def main() -> int:
+    if not config_flag("hooks_enabled", True):
+        return 0
+
     payload = read_payload()
     if not payload:
         return 0

@@ -452,6 +452,24 @@ A rule never overrides the constitution. A skill never overrides a rule. An agen
 | `SEC-02` | `dangerouslySetInnerHTML` / `v-html` / `innerHTML =` with no sanitizer |
 | `SEC-03` | `eval()`, `new Function()`, `document.write()` |
 | `SEC-06` | Hardcoded credential pattern |
+| `STYLE-01` | More than four distinct `border-radius` values in one file — **strict profile only** |
+
+### Profiles
+
+The guard reads two plugin options. Claude Code exports them as environment variables to the hook process; outside Claude Code the defaults apply.
+
+| Option | Values | Default | Effect |
+|---|---|---|---|
+| `hooks_enabled` | `true` / `false` | `true` | `false` makes the guard allow every write without unwiring the hook |
+| `hook_profile` | `minimal` / `standard` / `strict` | `standard` | `minimal` = only the eight non-negotiables with a mechanical check; `strict` adds `STYLE-01` |
+
+```bash
+claude plugin configure ningx-enggteam@ningx --values-stdin <<'EOF'
+{"hooks_enabled":"true","hook_profile":"standard"}
+EOF
+```
+
+Installing without them is fine — Claude Code prints a note, and the defaults are what you want.
 
 ### What it deliberately allows
 
@@ -496,7 +514,7 @@ done
 
 ### Disabling it
 
-Remove the `PreToolUse` block from `hooks/hooks.json`. There is no per-rule toggle — the rules are the rules.
+Set `hooks_enabled` to `false` — `claude plugin configure ningx-enggteam@ningx` — or remove the `PreToolUse` block from `hooks/hooks.json`. There is no per-rule toggle; the profile decides how many rules run.
 
 ---
 

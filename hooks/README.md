@@ -27,6 +27,33 @@ Two Python hooks. No Node, no build step, no dependencies.
 | `SEC-02` | `dangerouslySetInnerHTML` / `v-html` / `innerHTML =` with no sanitizer | security R2 |
 | `SEC-03` | `eval()`, `new Function()`, `document.write()` | security R2 |
 | `SEC-06` | Hardcoded credential pattern (`sk_live_`, `AKIA`, `ghp_`, PEM) | security R6 |
+| `STYLE-01` | More than four distinct `border-radius` values in one file | design-quality R6 · **strict profile only** |
+
+## Profiles
+
+The guard reads two `userConfig` options, exported by Claude Code as
+`CLAUDE_PLUGIN_OPTION_HOOKS_ENABLED` and `CLAUDE_PLUGIN_OPTION_HOOK_PROFILE`.
+Outside Claude Code the variables are absent and the defaults apply, so the
+script behaves identically as a plain pre-commit hook.
+
+| Profile | Blocks |
+|---|---|
+| `minimal` | Only the eight non-negotiables with a mechanical check: `UI-01`, `UI-04`, `PERF-01`, `A11Y-02`, `A11Y-05`, `A11Y-07`, `A11Y-08`, `SLOP-01` |
+| `standard` *(default)* | Everything in the table above except `STYLE-01` |
+| `strict` | Everything, plus `STYLE-01` |
+
+Set them once:
+
+```bash
+claude plugin configure ningx-enggteam@ningx --values-stdin <<'EOF'
+{"hooks_enabled":"true","hook_profile":"standard"}
+EOF
+```
+
+`hooks_enabled: false` makes the guard exit `0` on every write without removing
+the hook wiring — useful when you are editing a design system and the guard is
+fighting a deliberate choice.
+
 
 ## What it deliberately does not block
 
@@ -71,4 +98,9 @@ echo "exit: $?"
 
 ## Disabling it
 
-Remove the `PreToolUse` block from `hooks/hooks.json`, or unset the plugin. There is no per-rule toggle — the rules are the rules.
+Two ways:
+
+- **Turn it off, keep the wiring.** Set the `hooks_enabled` option to `false` — `claude plugin configure ningx-enggteam@ningx`, or pass `--config hooks_enabled=false` at install time.
+- **Remove it.** Delete the `PreToolUse` block from `hooks/hooks.json`, or unset the plugin.
+
+There is no per-rule toggle. Individual codes are not negotiable; the profile decides how many of them run.

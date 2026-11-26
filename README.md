@@ -4,12 +4,11 @@
 
 <img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/typing.svg" alt="24 named UI types, 12 senior roles, one guard" width="100%" />
 
-<br /><br />
+<br />
 
 [![Version](https://img.shields.io/badge/version-1.0.2-2b7fd4?style=for-the-badge&labelColor=06111c)](CHANGELOG.md)
 [![Agents](https://img.shields.io/badge/agents-12-5aa7e9?style=for-the-badge&labelColor=06111c)](agents)
 [![UI types](https://img.shields.io/badge/ui%20types-24-a9d8f8?style=for-the-badge&labelColor=06111c)](skills)
-[![Harnesses](https://img.shields.io/badge/harnesses-7-2b7fd4?style=for-the-badge&labelColor=06111c)](docs/harnesses.md)
 [![Platforms](https://img.shields.io/badge/win%20·%20macos%20·%20linux-1c66b8?style=for-the-badge&labelColor=06111c)](desktop)
 [![License](https://img.shields.io/badge/license-no--rebranding-c02b2b?style=for-the-badge&labelColor=06111c)](LICENSE)
 

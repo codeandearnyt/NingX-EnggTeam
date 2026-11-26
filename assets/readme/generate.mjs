@@ -252,10 +252,10 @@ function typing() {
     <animate attributeName="opacity" dur="${CYCLE}s" repeatCount="indefinite" calcMode="discrete"
              keyTimes="${oTimes.map((t) => t.toFixed(5)).join(";")}"
              values="${oVals.join(";")}"/>
-    <text x="${X}" y="38" font-family="${MONO}" font-size="26" fill="${C.ink}"
+    <text x="${X + promptW}" y="38" font-family="${MONO}" font-size="26" fill="${C.ink}"
           clip-path="url(#clip${i})">${esc(phrase)}</text>
     <clipPath id="clip${i}">
-      <rect x="${X}" y="8" width="0" height="42">
+      <rect x="${X + promptW}" y="8" width="0" height="42">
         <animate attributeName="width" dur="${CYCLE}s" repeatCount="indefinite" calcMode="discrete"
                  keyTimes="${wTimes.map((t) => t.toFixed(5)).join(";")}"
                  values="${wVals.join(";")}"/>

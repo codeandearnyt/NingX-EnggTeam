@@ -23,6 +23,8 @@ All notable changes to NingX-EnggTeam. Format follows [Keep a Changelog](https:/
 ### Changed
 
 - Root `README.md` gained a Desktop app section under Install.
+- **Window controls are now platform-correct.** macOS uses `titleBarStyle: "hiddenInset"` and the OS draws the real traffic lights — the renderer draws none and reserves 84 px for them. Windows and Linux stay `frame: false` with the three gel dots, since neither has a native dot affordance. The surface (titlebar gradient, body, buttons) stays identical on all three; only the controls differ.
+- `preload.ts` exposes `platform`. The browser mock accepts `?platform=darwin` so both chromes can be reviewed without a Mac.
 
 ### Verified
 

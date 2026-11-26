@@ -5,14 +5,14 @@
   },
   "metadata": {
     "description": "NingX-EnggTeam — a senior web engineering team for AI coding harnesses. 12 roles, 24 named UI types with reference sites, 7 craft skills, 8 rule files, and a write-time guard. Made by Nitin Sharma.",
-    "version": "1.0.0"
+    "version": "1.0.1"
   },
   "plugins": [
     {
       "name": "ningx-enggteam",
       "source": "./",
       "description": "NingX-EnggTeam — web dev, backend, frontend, and UI/UX roles that build to the standard of 24 named reference sites. Every page names its UI type; every build passes the anti-slop gate before it ships. Made by Nitin Sharma.",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "author": {
         "name": "Nitin Sharma"
       },

@@ -1,21 +1,154 @@
-MIT License
+# NingX-EnggTeam License v1.0
 
-Copyright (c) 2026 Nitin Sharma
+**Attribution & No-Rebranding License**
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Copyright (c) 2026 **Nitin Sharma**. All rights reserved.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+https://github.com/codeandearnyt/NingX-EnggTeam
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+---
+
+## 1. Definitions
+
+**"The Work"** means the NingX-EnggTeam repository: its source files, documentation, skills, agents, rules, commands, hooks, and any part of them.
+
+**"The Author"** means Nitin Sharma, the original creator of the Work.
+
+**"Rebrand"** means any of the following, in whole or in part:
+
+- renaming the Work, or any distributed derivative of it, to a name other than **NingX-EnggTeam**
+- removing, replacing, obscuring, or altering the name **NingX-EnggTeam**
+- removing, replacing, or obscuring the credit **"Made by Nitin Sharma"** or any other attribution to the Author
+- replacing the Author's name with another person's or organisation's name
+- presenting the Work, or a derivative of it, as the original creation of anyone other than the Author
+- applying a new logo, brand identity, or product identity to a distributed derivative
+- publishing a derivative under a different project name, package name, marketplace slug, or repository name
+
+**"Derivative"** means any modification, adaptation, translation, extension, subset, or recombination of the Work.
+
+**"Distribute"** means to publish, share, upload, sell, sublicense, or otherwise make the Work or a Derivative available to any third party.
+
+---
+
+## 2. Grant of use
+
+Subject to the conditions in Sections 3, 4, and 5, you are granted a worldwide, royalty-free, non-exclusive right to:
+
+1. **Use** the Work, privately or commercially, for any purpose.
+2. **Copy** the Work.
+3. **Modify** the Work for your own use, including internal use within an organisation.
+4. **Distribute** the Work and Derivatives of it, provided the conditions below are met.
+
+---
+
+## 3. Attribution — required, always
+
+Any copy or Derivative that you Distribute must retain, visibly and unaltered:
+
+1. This `LICENSE` file, in full.
+2. The copyright notice: **Copyright (c) 2026 Nitin Sharma**.
+3. The credit: **Made by Nitin Sharma**.
+4. The project name: **NingX-EnggTeam**.
+
+These must appear in the repository root, in the README, and in any user-facing description of the distributed work.
+
+---
+
+## 4. No rebranding
+
+You may **not** Rebrand the Work or any Derivative.
+
+Specifically, you may not:
+
+1. Rename a distributed copy or Derivative to anything other than **NingX-EnggTeam**.
+2. Remove or alter the author credit in any file, README, manifest, plugin definition, marketplace entry, or user-facing surface.
+3. Publish a Derivative under your own name, your organisation's name, or any third party's name.
+4. Claim authorship of the Work or any substantial part of it.
+5. Distribute the Work as part of a paid product, template pack, course, or bundle under a different brand.
+6. Strip the attribution fields from `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, or any equivalent manifest in a Derivative.
+
+**Exception:** you may fork the repository on a code-hosting platform for the purpose of contributing back, provided the fork retains the original name, the author credit, and this license.
+
+---
+
+## 5. Permission for rebranding
+
+Rebranding is available **only with prior written permission from the Author**.
+
+To request permission, open an issue at https://github.com/codeandearnyt/NingX-EnggTeam/issues stating:
+
+1. What you intend to rebrand.
+2. The name and identity you intend to use.
+3. Whether the result will be distributed commercially.
+
+The Author may grant, refuse, or grant with conditions, at their sole discretion. No permission is granted by silence, by failure to respond, or by any prior practice.
+
+---
+
+## 6. What you may always do without permission
+
+These do not require permission and do not count as Rebranding:
+
+- Use the Work inside your own company, on your own projects, for client work.
+- Modify it for internal use and never Distribute the modification.
+- Teach with it, write about it, or demonstrate it, with attribution.
+- Reference it, link to it, or recommend it.
+- Fork it to submit a pull request.
+- Build websites and applications using it — the sites you build are yours, entirely, with no attribution required on them.
+
+---
+
+## 7. Termination
+
+Your rights under this license terminate automatically if you breach Section 3 or Section 4.
+
+On termination you must stop Distributing the Work and any Derivative, and remove any public copy you control.
+
+Rights are reinstated if the Author gives written permission, or if you cure the breach within 30 days of becoming aware of it and confirm the cure in writing.
+
+---
+
+## 8. No warranty
+
+THE WORK IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT.
+
+IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE WORK OR THE USE OR OTHER DEALINGS IN THE WORK.
+
+---
+
+## 9. No trademark rights
+
+This license grants no rights to any trademark, service mark, trade name, or logo of the Author, beyond the attribution required by Section 3.
+
+---
+
+## 10. Severability
+
+If any provision of this license is held unenforceable, the remaining provisions remain in full force. The unenforceable provision is limited to the minimum extent necessary.
+
+---
+
+## 11. Entire agreement
+
+This license is the entire agreement between you and the Author regarding the Work. It supersedes any prior license, understanding, or representation.
+
+---
+
+**Summary, for convenience only — the clauses above govern:**
+
+| You want to… | Allowed? |
+|---|---|
+| Use it on your own or client projects | Yes |
+| Modify it for internal use | Yes |
+| Build and ship websites with it | Yes — those sites are yours |
+| Share it with attribution intact | Yes |
+| Fork it to contribute back | Yes |
+| Rename it and publish it as your own | **No — permission required** |
+| Remove "Made by Nitin Sharma" | **No** |
+| Sell it as a template pack under your brand | **No — permission required** |
+
+Permission requests: https://github.com/codeandearnyt/NingX-EnggTeam/issues
+
+---
+
+*This is a custom source-available license, not an OSI-approved open-source license. It is not legal advice.*

@@ -282,4 +282,12 @@ A rule never overrides the constitution. A skill never overrides a rule. An agen
 
 ## License
 
-MIT. Use it, fork it, strip it down to the parts that fit your team.
+**NingX-EnggTeam License v1.0 — Attribution & No-Rebranding.**
+
+You can use it, modify it, build client work with it, and ship sites with it — those sites are entirely yours, no attribution needed on them.
+
+You cannot rename it, remove "Made by Nitin Sharma", or publish it under a different brand without written permission.
+
+Full terms in [`LICENSE`](LICENSE). Permission requests: [open an issue](https://github.com/codeandearnyt/NingX-EnggTeam/issues).
+
+This is a custom source-available license, not OSI-approved open source.

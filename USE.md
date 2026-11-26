@@ -668,3 +668,5 @@ The files
 ---
 
 **NingX-EnggTeam** · Made by **Nitin Sharma**
+
+Licensed under the **NingX-EnggTeam License v1.0 (Attribution & No-Rebranding)**. Use it, modify it, build client work with it — but keep the name and the credit, and get written permission before rebranding. See [`LICENSE`](LICENSE).

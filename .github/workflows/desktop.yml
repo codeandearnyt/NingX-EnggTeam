@@ -1,0 +1,76 @@
+name: Desktop app
+
+# Builds the installer on all three platforms. macOS artifacts can only be
+# produced on a macOS runner, so a local Windows build is not enough.
+#
+# Push a tag like `desktop-v1.0.0` to publish a release. electron-updater reads
+# latest.yml / latest-mac.yml from that release, which is what makes the
+# in-app "Install update" button work.
+
+on:
+  push:
+    tags:
+      - "desktop-v*"
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "desktop/**"
+      - ".github/workflows/desktop.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            script: dist:win
+          - os: macos-latest
+            script: dist:mac
+          - os: ubuntu-latest
+            script: dist:linux
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: desktop/package-lock.json
+
+      - name: Install
+        working-directory: desktop
+        run: npm ci
+
+      - name: Typecheck
+        working-directory: desktop
+        run: npm run typecheck
+
+      - name: Build
+        working-directory: desktop
+        run: npm run build
+
+      - name: Package
+        working-directory: desktop
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run ${{ matrix.script }} -- --publish ${{ startsWith(github.ref, 'refs/tags/') && 'always' || 'never' }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ningx-installer-${{ matrix.os }}
+          path: |
+            desktop/release/*.exe
+            desktop/release/*.dmg
+            desktop/release/*.AppImage
+            desktop/release/*.deb
+            desktop/release/latest*.yml
+          if-no-files-found: warn

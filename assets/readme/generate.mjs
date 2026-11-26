@@ -200,6 +200,10 @@ function banner() {
 }
 
 // ── typing.svg（タイピング） ─────────────────────────────────────────
+//
+// Drawn on its own dark panel. GitHub renders the README on white, so a
+// transparent SVG with near-white text is invisible — the panel is the
+// reason this file has a background at all.
 
 function typing() {
   const phrases = [
@@ -208,8 +212,12 @@ function typing() {
     "one guard that blocks the defaults before they land",
   ];
 
-  const CHAR = 15.62; // 26px monospace advance
-  const X = 26;
+  const W = 900;
+  const H = 96;
+  const X = 24;
+  const BASE = 70;
+  const SIZE = 22;
+  const CHAR = SIZE * 0.6; // monospace advance
   const PROMPT = "$ ";
   const promptW = PROMPT.length * CHAR;
   const CYCLE = 18;
@@ -252,16 +260,16 @@ function typing() {
     <animate attributeName="opacity" dur="${CYCLE}s" repeatCount="indefinite" calcMode="discrete"
              keyTimes="${oTimes.map((t) => t.toFixed(5)).join(";")}"
              values="${oVals.join(";")}"/>
-    <text x="${X + promptW}" y="38" font-family="${MONO}" font-size="26" fill="${C.ink}"
+    <text x="${X + promptW}" y="${BASE}" font-family="${MONO}" font-size="${SIZE}" fill="${C.ink}"
           clip-path="url(#clip${i})">${esc(phrase)}</text>
     <clipPath id="clip${i}">
-      <rect x="${X + promptW}" y="8" width="0" height="42">
+      <rect x="${X + promptW}" y="${BASE - 26}" width="0" height="36">
         <animate attributeName="width" dur="${CYCLE}s" repeatCount="indefinite" calcMode="discrete"
                  keyTimes="${wTimes.map((t) => t.toFixed(5)).join(";")}"
                  values="${wVals.join(";")}"/>
       </rect>
     </clipPath>
-    <rect x="${X + promptW}" y="14" width="2.5" height="26" fill="${C.accent}">
+    <rect x="${X + promptW}" y="${BASE - 19}" width="2.5" height="24" fill="${C.accent}">
       <animate attributeName="x" dur="${CYCLE}s" repeatCount="indefinite" calcMode="discrete"
                keyTimes="${cTimes.map((t) => t.toFixed(5)).join(";")}"
                values="${cVals.join(";")}"/>
@@ -272,9 +280,25 @@ function typing() {
     })
     .join("\n");
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="900" height="56" viewBox="0 0 900 56" role="img" aria-label="24 named UI types, 12 senior roles, one guard">
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="24 named UI types, 12 senior roles, one guard">
   <title>What it ships</title>
-  <text x="${X}" y="38" font-family="${MONO}" font-size="26" font-weight="700" fill="${C.accent}">${PROMPT}</text>
+  <defs>
+    <linearGradient id="term" x1="0" y1="0" x2="0.6" y2="1">
+      <stop offset="0" stop-color="#0a1a2b"/>
+      <stop offset="1" stop-color="${C.deep}"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0.75" y="0.75" width="${W - 1.5}" height="${H - 1.5}" rx="16"
+        fill="url(#term)" stroke="#1b3f66" stroke-width="1.5"/>
+
+  <circle cx="28" cy="27" r="5" fill="#ff5f57"/>
+  <circle cx="48" cy="27" r="5" fill="#febc2e"/>
+  <circle cx="68" cy="27" r="5" fill="#28c840"/>
+
+  <line x1="0" y1="46" x2="${W}" y2="46" stroke="#ffffff" stroke-opacity="0.06" stroke-width="1"/>
+
+  <text x="${X}" y="${BASE}" font-family="${MONO}" font-size="${SIZE}" font-weight="700" fill="${C.accent}">${PROMPT}</text>
 ${groups}
 </svg>
 `;

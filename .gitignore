@@ -22,11 +22,17 @@ yarn-error.log*
 
 # Build output
 dist/
+dist-electron/
 build/
 .next/
 .nuxt/
 .output/
 coverage/
+release/
+
+# The desktop packager needs its icon in the tree
+!desktop/build/
+!desktop/build/icon.png
 
 # Local env
 .env

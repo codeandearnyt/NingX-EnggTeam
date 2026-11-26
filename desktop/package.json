@@ -1,0 +1,39 @@
+{
+  "name": "ningx-installer",
+  "productName": "NingX Installer",
+  "version": "1.0.0",
+  "description": "Desktop installer and updater for NingX-EnggTeam. One Aqua interface, identical on Windows, macOS, and Linux.",
+  "author": {
+    "name": "Nitin Sharma"
+  },
+  "license": "SEE LICENSE IN ../LICENSE",
+  "private": true,
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "build:main": "tsc -p tsconfig.electron.json",
+    "build:renderer": "vite build",
+    "build": "npm run build:main && npm run build:renderer",
+    "typecheck": "tsc -p tsconfig.electron.json --noEmit && tsc -p tsconfig.json --noEmit",
+    "start": "npm run build && electron .",
+    "dist": "npm run build && electron-builder",
+    "dist:win": "npm run build && electron-builder --win",
+    "dist:mac": "npm run build && electron-builder --mac",
+    "dist:linux": "npm run build && electron-builder --linux",
+    "preview:ui": "vite preview --port 5273 --strictPort"
+  },
+  "dependencies": {
+    "electron-updater": "^6.3.9"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.3"
+  }
+}

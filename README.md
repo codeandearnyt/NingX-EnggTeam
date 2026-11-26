@@ -159,6 +159,25 @@ Codex, OpenCode, Cursor, Copilot, Windsurf, Antigravity, Qoder, or any harness t
 
 The short version: paste `AGENTS.md` into the system prompt, and paste `skills/ui-NN-*/SKILL.md` when a page needs a specific type.
 
+### Desktop app
+
+If you would rather click than type:
+
+```
+desktop/    one Aqua window, identical on Windows, macOS, and Linux
+```
+
+Four buttons — **Install**, **Update**, **Reinstall**, **Uninstall**. It clones this repo into `~/.ningx-desktop`, registers the marketplace, and installs the plugin. Update pulls from GitHub on every press.
+
+```bash
+cd desktop
+npm install
+npm run build
+npm start
+```
+
+Build the installers with `npm run dist:win`, `dist:mac`, or `dist:linux`. CI builds all three on a tag push. See [`desktop/README.md`](desktop/README.md).
+
 ---
 
 ## Use

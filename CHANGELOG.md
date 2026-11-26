@@ -6,6 +6,34 @@ All notable changes to NingX-EnggTeam. Format follows [Keep a Changelog](https:/
 
 ---
 
+## [1.0.2] — 2026-11-27
+
+### Added
+
+- **`desktop/` — a cross-platform installer app.** Electron + React 19 + TypeScript + Vite. One Aqua window, frameless with custom gel traffic lights, so the chrome is identical on Windows, macOS, and Linux rather than delegated to each OS widget layer.
+  - Four operations: **Install**, **Update**, **Reinstall**, **Uninstall**.
+  - Install clones `codeandearnyt/NingX-EnggTeam` into `~/.ningx-desktop/source` at depth 1, registers the marketplace, and runs `claude plugin install ningx-enggteam@ningx`.
+  - Update runs `git fetch` + `git reset --hard origin/main`, then `claude plugin marketplace update ningx` and `claude plugin update ningx-enggteam@ningx`.
+  - Uninstall reverses all of it and deletes the source tree and state file.
+  - Harness detection for Claude Code, Codex, OpenCode, Cursor, Copilot, Antigravity, and Windsurf. A missing harness is a warning, not a failure.
+  - `electron-builder.yml` targets NSIS, DMG, AppImage, and deb, publishing to this repo's releases.
+  - `scripts/smoke.js` runs all four operations against a throwaway `HOME` and asserts the filesystem at each step.
+- **`.github/workflows/desktop.yml`** — matrix build on `windows-latest`, `macos-latest`, and `ubuntu-latest`. Push a `desktop-v*` tag to publish a release.
+
+### Changed
+
+- Root `README.md` gained a Desktop app section under Install.
+
+### Verified
+
+- `npm run typecheck` — clean on both tsconfigs.
+- `npm run build` — main 4.0 KB, renderer 232.9 KB JS / 9.4 KB CSS.
+- `node scripts/smoke.js` — `SMOKE PASSED`: clone, state file, version, 40-char commit, 24 UI skills, update, reinstall, uninstall, clean removal.
+- `NingX Installer.exe --selftest` — bridge is an object, 8 buttons render, `border-radius: 999px` proves the stylesheet applied, 7 harnesses detected.
+- `npm run dist:win` — `NingX Installer-1.0.0-setup.exe`, 78.3 MB.
+
+---
+
 ## [1.0.1] — 2026-11-27
 
 ### Fixed

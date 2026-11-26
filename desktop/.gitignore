@@ -1,0 +1,15 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dist-electron/
+release/
+
+# Keep the packaging icon — electron-builder needs it in CI
+!build/icon.png
+
+# Local
+*.log
+.DS_Store
+Thumbs.db

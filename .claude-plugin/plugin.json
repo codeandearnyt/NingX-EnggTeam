@@ -34,14 +34,7 @@
       "default": "standard"
     }
   },
-  "mcpServers": {},
-  "agents": [
-    "./agents/"
-  ],
-  "skills": [
-    "./skills/"
-  ],
-  "commands": [
-    "./commands/"
-  ]
+  "repository": "https://github.com/codeandearnyt/NingX-EnggTeam",
+  "homepage": "https://github.com/codeandearnyt/NingX-EnggTeam/blob/main/USE.md",
+  "icon": "./assets/icon.png"
 }

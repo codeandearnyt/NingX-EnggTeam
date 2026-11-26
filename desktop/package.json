@@ -4,7 +4,8 @@
   "version": "1.0.1",
   "description": "Desktop installer and updater for NingX-EnggTeam. One Aqua interface, identical on Windows, macOS, and Linux.",
   "author": {
-    "name": "Nitin Sharma"
+    "name": "Nitin Sharma",
+    "email": "codeandearnyt@users.noreply.github.com"
   },
   "license": "SEE LICENSE IN ../LICENSE",
   "private": true,

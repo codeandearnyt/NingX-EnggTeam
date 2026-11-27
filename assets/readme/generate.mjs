@@ -14,6 +14,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { LOGOS } from "./logos.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const OUT = (name) => join(HERE, name);
@@ -64,12 +65,28 @@ function rng(seed) {
 
 // ── banner.svg（バナー） ─────────────────────────────────────────────
 
+/** One brand mark, nested so it scales into a square box. */
+function logoGlyph(name, x, y, size, fill) {
+  const logo = LOGOS[name];
+  if (!logo) return "";
+  const paths = logo.paths
+    .map(
+      (p) =>
+        `<path d="${p.d}"${p.fillRule ? ` fill-rule="${p.fillRule}"` : ""}${
+          p.clipRule ? ` clip-rule="${p.clipRule}"` : ""
+        }/>`,
+    )
+    .join("");
+  return `<svg x="${x.toFixed(2)}" y="${y.toFixed(2)}" width="${size}" height="${size}" viewBox="${logo.viewBox}" fill="${fill}" overflow="visible">${paths}</svg>`;
+}
+
 function banner() {
   const rand = rng(7);
-  const particles = Array.from({ length: 22 }, (_, i) => {
+
+  const particles = Array.from({ length: 26 }, (_, i) => {
     const x = 40 + rand() * 1120;
-    const y = 40 + rand() * 220;
-    const r = 0.8 + rand() * 1.9;
+    const y = 20 + rand() * 200;
+    const r = 0.7 + rand() * 1.8;
     const dur = 5 + rand() * 7;
     const delay = rand() * dur;
     const drift = -30 - rand() * 50;
@@ -82,30 +99,55 @@ function banner() {
     </circle>`;
   }).join("\n");
 
-  const chips = [
-    "Claude Code",
-    "Codex",
-    "OpenCode",
-    "Cursor",
-    "Copilot",
-    "Windows · macOS · Linux",
+  // ── logo row（ロゴ列） ──
+  const ROW = [
+    ["Claude Code", "claude"],
+    ["Codex", "codex"],
+    ["OpenCode", "opencode"],
+    ["Cursor", "cursor"],
+    ["Copilot", "copilot"],
+    ["Windows", "windows"],
+    ["macOS", "apple"],
+    ["Linux", "linux"],
   ];
-  let cx = 72;
-  const chipSvg = chips
-    .map((label) => {
-      const w = Math.round(label.length * 6.9 + 30);
-      const svg = `<g>
-        <rect x="${cx}" y="228" width="${w}" height="30" rx="15"
-              fill="rgba(169,216,248,0.07)" stroke="rgba(169,216,248,0.32)" stroke-width="1"/>
-        <text x="${cx + w / 2}" y="248" text-anchor="middle" font-family="${FONT}"
-              font-size="12.5" font-weight="600" fill="${C.muted}">${esc(label)}</text>
-      </g>`;
-      cx += w + 10;
-      return svg;
-    })
-    .join("\n");
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300" role="img" aria-label="NingX-EnggTeam — senior web engineering team for AI coding harnesses">
+  const FS = 12.5;
+  const PADX = 11;
+  const ICON = 15;
+  const GAPIN = 8;
+  const PILL_H = 32;
+  const PILL_GAP = 8;
+  const PILL_Y = 200;
+
+  const widthOf = (label) =>
+    PADX * 2 + ICON + GAPIN + Math.ceil(label.length * FS * 0.55);
+
+  const widths = ROW.map(([label]) => widthOf(label));
+  const rowW = widths.reduce((a, b) => a + b, 0) + PILL_GAP * (ROW.length - 1);
+  // Left-aligned on the same 72px margin as the wordmark, so the whole
+  // composition shares one edge instead of floating in the middle.
+  const rowLeft = 72;
+  let px = rowLeft;
+
+  const pills = ROW.map(([label, icon], i) => {
+    const w = widths[i];
+    const x = px;
+    px += w + PILL_GAP;
+    return `
+    <g>
+      <rect x="${x.toFixed(1)}" y="${PILL_Y}" width="${w}" height="${PILL_H}" rx="${PILL_H / 2}"
+            fill="rgba(169,216,248,0.055)" stroke="rgba(169,216,248,0.30)" stroke-width="1">
+        <animate attributeName="stroke-opacity" values="0.30;0.58;0.30" dur="4.4s"
+                 begin="${(-i * 0.55).toFixed(2)}s" repeatCount="indefinite"/>
+      </rect>
+      ${logoGlyph(icon, x + PADX, PILL_Y + (PILL_H - ICON) / 2, ICON, C.accent)}
+      <text x="${(x + PADX + ICON + GAPIN).toFixed(1)}" y="${PILL_Y + PILL_H / 2 + 4.4}"
+            font-family="${FONT}" font-size="${FS}" font-weight="600"
+            fill="#c7dcf0">${esc(label)}</text>
+    </g>`;
+  }).join("\n");
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="268" viewBox="0 0 1200 268" role="img" aria-label="NingX-EnggTeam — senior web engineering team for Claude Code, Codex, OpenCode, Cursor and Copilot on Windows, macOS and Linux">
   <title>NingX-EnggTeam</title>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
@@ -116,6 +158,7 @@ function banner() {
     <radialGradient id="g1"><stop offset="0" stop-color="${C.accent}" stop-opacity="0.55"/><stop offset="1" stop-color="${C.accent}" stop-opacity="0"/></radialGradient>
     <radialGradient id="g2"><stop offset="0" stop-color="${C.core}" stop-opacity="0.5"/><stop offset="1" stop-color="${C.core}" stop-opacity="0"/></radialGradient>
     <radialGradient id="g3"><stop offset="0" stop-color="${C.light}" stop-opacity="0.28"/><stop offset="1" stop-color="${C.light}" stop-opacity="0"/></radialGradient>
+    <radialGradient id="glow"><stop offset="0" stop-color="${C.accent}" stop-opacity="0.22"/><stop offset="1" stop-color="${C.accent}" stop-opacity="0"/></radialGradient>
     <linearGradient id="titleFill" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#ffffff"/>
       <stop offset="0.62" stop-color="#dcecfb"/>
@@ -124,6 +167,11 @@ function banner() {
     <linearGradient id="shine" x1="0" y1="0" x2="1" y2="0">
       <stop offset="0" stop-color="#ffffff" stop-opacity="0"/>
       <stop offset="0.5" stop-color="#ffffff" stop-opacity="0.85"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="rowSweep" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#ffffff" stop-opacity="0.30"/>
       <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
     </linearGradient>
     <linearGradient id="rule" x1="0" y1="0" x2="1" y2="0">
@@ -141,60 +189,81 @@ function banner() {
       <feGaussianBlur stdDeviation="46"/>
     </filter>
     <clipPath id="titleClip">
-      <text x="72" y="150" font-family="${FONT}" font-size="66" font-weight="800"
-            letter-spacing="-1.4">NingX-EnggTeam</text>
+      <text x="72" y="110" font-family="${FONT}" font-size="58" font-weight="800"
+            letter-spacing="-1.2">NingX-EnggTeam</text>
+    </clipPath>
+    <clipPath id="rowClip">
+      <rect x="${(rowLeft - 6).toFixed(1)}" y="${PILL_Y - 2}" width="${(rowW + 12).toFixed(1)}" height="${PILL_H + 4}" rx="18"/>
     </clipPath>
   </defs>
 
-  <rect width="1200" height="300" fill="url(#bg)"/>
-  <rect width="1200" height="300" fill="url(#grid)"/>
+  <rect width="1200" height="268" fill="url(#bg)"/>
+  <rect width="1200" height="268" fill="url(#grid)"/>
 
-  ${orb("g1", 240, 120, 190, C.accent, 0.9, [240, 330, 180], 14)}
-  ${orb("g2", 900, 200, 220, C.core, 0.85, [900, 810, 990], 17)}
-  ${orb("g3", 640, 60, 160, C.light, 0.7, [640, 700, 590], 12)}
+  ${orb("g1", 240, 105, 185, C.accent, 0.9, [240, 330, 180], 14)}
+  ${orb("g2", 900, 175, 210, C.core, 0.85, [900, 810, 990], 17)}
+  ${orb("g3", 640, 45, 155, C.light, 0.7, [640, 700, 590], 12)}
+
+  <!-- a slow glow behind the wordmark so the type sits in light -->
+  <ellipse cx="380" cy="104" rx="360" ry="104" fill="url(#glow)">
+    <animate attributeName="opacity" values="0.65;1;0.65" dur="8s" repeatCount="indefinite"
+             calcMode="spline" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+  </ellipse>
 
   <!-- concentric rings, slowly counter-rotating -->
-  <g transform="translate(1002,148)" opacity="0.5">
-    <circle r="118" fill="none" stroke="${C.accent}" stroke-opacity="0.22" stroke-width="1"/>
-    <circle r="86" fill="none" stroke="${C.accent}" stroke-opacity="0.28" stroke-width="1"
+  <g transform="translate(1012,104)" opacity="0.55">
+    <circle r="92" fill="none" stroke="${C.accent}" stroke-opacity="0.22" stroke-width="1"/>
+    <circle r="67" fill="none" stroke="${C.accent}" stroke-opacity="0.28" stroke-width="1"
             stroke-dasharray="6 10">
       <animateTransform attributeName="transform" type="rotate" from="0" to="360"
                         dur="34s" repeatCount="indefinite"/>
     </circle>
-    <circle r="56" fill="none" stroke="${C.light}" stroke-opacity="0.34" stroke-width="1.5"
+    <circle r="44" fill="none" stroke="${C.light}" stroke-opacity="0.34" stroke-width="1.5"
             stroke-dasharray="2 7" stroke-linecap="round">
       <animateTransform attributeName="transform" type="rotate" from="360" to="0"
                         dur="22s" repeatCount="indefinite"/>
     </circle>
-    <circle r="5" fill="${C.light}">
-      <animate attributeName="r" values="3;7;3" dur="3.6s" repeatCount="indefinite"/>
+    <circle r="4.5" fill="${C.light}">
+      <animate attributeName="r" values="2.5;6;2.5" dur="3.6s" repeatCount="indefinite"/>
       <animate attributeName="opacity" values="0.5;1;0.5" dur="3.6s" repeatCount="indefinite"/>
     </circle>
   </g>
 
   ${particles}
 
-  <text x="72" y="96" font-family="${FONT}" font-size="12.5" font-weight="700"
+  <text x="72" y="50" font-family="${FONT}" font-size="12.5" font-weight="700"
         letter-spacing="3.4" fill="${C.accent}">SENIOR WEB ENGINEERING TEAM</text>
 
-  <text x="72" y="150" font-family="${FONT}" font-size="66" font-weight="800"
-        letter-spacing="-1.4" fill="url(#titleFill)">NingX-EnggTeam</text>
+  <text x="72" y="108" font-family="${FONT}" font-size="58" font-weight="800"
+        letter-spacing="-1.2" fill="url(#titleFill)">NingX-EnggTeam</text>
 
   <!-- light sweep across the wordmark -->
   <g clip-path="url(#titleClip)">
-    <rect x="-460" y="80" width="300" height="110" fill="url(#shine)" transform="skewX(-18)">
+    <rect x="-460" y="38" width="300" height="110" fill="url(#shine)" transform="skewX(-18)">
       <animate attributeName="x" values="-460;820" dur="5.2s" begin="1.2s"
                repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1"/>
     </rect>
   </g>
 
-  <text x="72" y="190" font-family="${FONT}" font-size="19" fill="${C.muted}">
+  <text x="72" y="150" font-family="${FONT}" font-size="18" fill="${C.muted}">
     Twelve roles · twenty-four named UI types · one guard that fails the build
   </text>
 
-  ${chipSvg}
+  <text x="72" y="186" font-family="${FONT}" font-size="10.5" font-weight="700"
+        letter-spacing="2.6" fill="#6d8fae">WORKS WITH</text>
 
-  <rect x="0" y="297" width="1200" height="3" fill="url(#rule)"/>
+  ${pills}
+
+  <!-- a slow highlight travelling across the logo row -->
+  <g clip-path="url(#rowClip)">
+    <rect x="-260" y="${PILL_Y - 4}" width="240" height="${PILL_H + 8}"
+          fill="url(#rowSweep)" transform="skewX(-16)">
+      <animate attributeName="x" values="-260;1240" dur="7s" begin="0.8s"
+               repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1"/>
+    </rect>
+  </g>
+
+  <rect x="0" y="265" width="1200" height="3" fill="url(#rule)"/>
 </svg>
 `;
 }
@@ -438,7 +507,7 @@ function footer() {
 // ── write（書き出し） ────────────────────────────────────────────────
 
 const files = {
-  "banner.svg": banner(),
+  "hero.svg": banner(),
   "typing.svg": typing(),
   "author.svg": author(),
   "divider.svg": divider(),

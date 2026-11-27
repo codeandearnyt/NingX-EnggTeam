@@ -41,3 +41,6 @@ release/
 
 # Logs
 *.log
+
+# README asset build artefacts
+assets/readme/_ad.built.html

@@ -1,0 +1,776 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>NingX-EnggTeam — 21s spot</title>
+    <!--
+      ad.html — the 1920x1080 showcase spot.
+      1920x1080 のショーケース動画。
+
+      Rendered frame-by-frame by render-ad.mjs. Every element is positioned by
+      render(t) instead of CSS animation, so a frame can be asked for at any
+      timestamp and always looks the same. That is what makes the capture
+      deterministic and the encode clean.
+
+      Open directly in a browser to watch it loop. Append ?t=12.5 to freeze.
+
+      Made by Nitin Sharma.
+    -->
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+
+      html, body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #04090f;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      #stage {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #04090f;
+        transform-origin: 0 0;
+      }
+
+      #bg { position: absolute; inset: 0; }
+
+      .grid {
+        position: absolute;
+        inset: -80px;
+        background-image: linear-gradient(#ffffff0a 1px, transparent 1px),
+          linear-gradient(90deg, #ffffff0a 1px, transparent 1px);
+        background-size: 60px 60px;
+        opacity: 0;
+      }
+
+      .vignette {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          ellipse 78% 62% at 50% 46%,
+          transparent 30%,
+          #04090f 100%
+        );
+      }
+
+      /* ── shared type ── */
+      .eyebrow {
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: 9px;
+        text-transform: uppercase;
+        color: #5aa7e9;
+      }
+
+      .display {
+        font-size: 148px;
+        font-weight: 800;
+        letter-spacing: -6px;
+        line-height: 1;
+        background: linear-gradient(180deg, #ffffff 0%, #dcecfb 58%, #a9d8f8 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        white-space: nowrap;
+      }
+
+      .lede {
+        font-size: 32px;
+        font-weight: 400;
+        color: #8fb0cd;
+        letter-spacing: -0.2px;
+      }
+
+      /* ── scene wrappers ── */
+      .scene { position: absolute; inset: 0; opacity: 0; }
+
+      /* ── 1. hero ── */
+      #hero { display: flex; flex-direction: column; justify-content: center; padding: 0 150px; }
+
+      #shineWrap {
+        position: relative;
+        display: inline-block;
+        transform-origin: 0 0;
+      }
+
+      /* The sweep is a second copy of the wordmark painted with a moving band
+         and clipped to its own glyphs — so the light only ever lands on the
+         letters. A plain rectangle would spill into the empty space. */
+      #shine {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-image: linear-gradient(
+          100deg,
+          #ffffff00 0%,
+          #ffffff00 38%,
+          #ffffff 48%,
+          #ffffff 52%,
+          #ffffff00 62%,
+          #ffffff00 100%
+        );
+        background-size: 300% 100%;
+        background-repeat: no-repeat;
+        background-position: -20% 0;
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      /* ── 2. logos ── */
+      #worksLabel {
+        position: absolute;
+        left: 150px;
+        top: 430px;
+        font-size: 17px;
+        font-weight: 700;
+        letter-spacing: 7px;
+        text-transform: uppercase;
+        color: #6d8fae;
+        opacity: 0;
+      }
+
+      #logoRow {
+        position: absolute;
+        left: 150px;
+        right: 150px;
+        top: 500px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+
+      #worksNote {
+        position: absolute;
+        left: 150px;
+        top: 660px;
+        font-size: 26px;
+        color: #5d7d99;
+        opacity: 0;
+      }
+
+      .pill {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        height: 68px;
+        padding: 0 28px;
+        border-radius: 34px;
+        background: #a9d8f80e;
+        border: 1px solid #a9d8f84d;
+        opacity: 0;
+      }
+
+      .pill svg { display: block; flex: none; }
+      .pill span { font-size: 23px; font-weight: 600; color: #c7dcf0; letter-spacing: -0.2px; }
+
+      #heroCopy {
+        position: absolute;
+        left: 150px;
+        top: 409px;
+        opacity: 0;
+      }
+
+      /* ── 3. types ── */
+      #typesHead {
+        position: absolute;
+        left: 150px;
+        top: 150px;
+        opacity: 0;
+      }
+      #typesHead h2 {
+        font-size: 66px;
+        font-weight: 800;
+        letter-spacing: -2.4px;
+        color: #eaf3fb;
+        margin-top: 14px;
+      }
+      #typesHead p { font-size: 26px; color: #8fb0cd; margin-top: 12px; }
+
+      #marquees {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 540px;
+        -webkit-mask-image: linear-gradient(
+          90deg,
+          transparent 0,
+          #000 7%,
+          #000 93%,
+          transparent 100%
+        );
+        mask-image: linear-gradient(
+          90deg,
+          transparent 0,
+          #000 7%,
+          #000 93%,
+          transparent 100%
+        );
+      }
+      .mrow { display: flex; gap: 18px; height: 92px; align-items: center; will-change: transform; }
+      .mrow + .mrow { margin-top: 20px; }
+
+      .chip {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        height: 92px;
+        padding: 0 34px;
+        border-radius: 20px;
+        background: linear-gradient(180deg, #0d2740, #071523);
+        border: 1px solid #1d4b7a;
+        white-space: nowrap;
+        flex: none;
+      }
+      .chip b {
+        font-family: "SF Mono", Consolas, monospace;
+        font-size: 19px;
+        font-weight: 600;
+        color: #5aa7e9;
+      }
+      .chip span { font-size: 26px; font-weight: 600; color: #eaf3fb; letter-spacing: -0.3px; }
+
+      /* ── 4. terminal ── */
+      #termWrap {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 1240px;
+        margin-left: -620px;
+        margin-top: -158px;
+        opacity: 0;
+      }
+
+      #term {
+        border-radius: 22px;
+        background: linear-gradient(180deg, #0b1e31, #06111c);
+        border: 1px solid #1d4b7a;
+        box-shadow: 0 40px 120px #00000099, inset 0 1px 0 #ffffff14;
+        overflow: hidden;
+      }
+
+      #termBar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        height: 54px;
+        padding: 0 22px;
+        border-bottom: 1px solid #ffffff12;
+      }
+      .dot { width: 14px; height: 14px; border-radius: 50%; }
+      #termBar em {
+        font-style: normal;
+        font-family: "SF Mono", Consolas, monospace;
+        font-size: 15px;
+        color: #5d7d99;
+        margin-left: 14px;
+      }
+
+      #termBody {
+        padding: 34px 44px 38px;
+        font-family: "SF Mono", Consolas, "Cascadia Mono", monospace;
+        font-size: 27px;
+        line-height: 1.7;
+        color: #eaf3fb;
+      }
+      .cmd { color: #eaf3fb; }
+      .prompt { color: #5aa7e9; font-weight: 700; }
+      .caret {
+        display: inline-block;
+        width: 13px;
+        height: 30px;
+        background: #5aa7e9;
+        vertical-align: -5px;
+      }
+      .ok { color: #5fd394; }
+      .dim { color: #8fb0cd; }
+      .out { opacity: 0; }
+
+      /* ── 5. sign-off ── */
+      #end {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 26px;
+      }
+      #endMark {
+        display: flex;
+        align-items: center;
+        gap: 26px;
+      }
+      #endMark h2 {
+        font-size: 96px;
+        font-weight: 800;
+        letter-spacing: -4px;
+        background: linear-gradient(180deg, #ffffff, #a9d8f8);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      #endBy { font-size: 30px; color: #8fb0cd; letter-spacing: 0.4px; }
+      #endUrl {
+        font-family: "SF Mono", Consolas, monospace;
+        font-size: 26px;
+        color: #5aa7e9;
+        letter-spacing: -0.4px;
+      }
+      #endOs {
+        display: flex;
+        gap: 34px;
+        margin-top: 22px;
+        align-items: center;
+        opacity: 0.85;
+      }
+      #endOs .osItem { display: flex; align-items: center; gap: 12px; }
+      #endOs span { font-size: 21px; color: #8fb0cd; font-weight: 500; }
+
+      #rule {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        height: 4px;
+        width: 100%;
+        background: linear-gradient(90deg, #2b7fd400, #5aa7e9, #a9d8f8, #2b7fd400);
+        opacity: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage">
+      <canvas id="bg" width="1920" height="1080"></canvas>
+      <div class="grid" id="grid"></div>
+      <div class="vignette"></div>
+
+      <!-- 1. hero -->
+      <section class="scene" id="hero">
+        <div id="heroCopy">
+          <div class="eyebrow" id="eyebrow">Senior web engineering team</div>
+          <div id="shineWrap" style="margin-top: 26px">
+            <div class="display" id="wordmark">NingX-EnggTeam</div>
+            <div class="display" id="shine">NingX-EnggTeam</div>
+          </div>
+          <div class="lede" id="lede" style="margin-top: 34px">
+            Twelve roles. Twenty-four named UI types. One guard that fails the build.
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. logos -->
+      <section class="scene" id="works">
+        <div id="worksLabel">Works with</div>
+        <div id="logoRow"></div>
+        <div id="worksNote">One install · Windows, macOS and Linux</div>
+      </section>
+
+      <!-- 3. types -->
+      <section class="scene" id="types">
+        <div id="typesHead">
+          <div class="eyebrow">The catalogue</div>
+          <h2>Twenty-four named UI types</h2>
+          <p>Each with a real reference site, a signature layout, and a failure mode.</p>
+        </div>
+        <div id="marquees"></div>
+      </section>
+
+      <!-- 4. terminal -->
+      <section class="scene" id="termScene">
+        <div id="termWrap">
+          <div id="term">
+            <div id="termBar">
+              <i class="dot" style="background: #ff5f57"></i>
+              <i class="dot" style="background: #febc2e"></i>
+              <i class="dot" style="background: #28c840"></i>
+              <em>~ — zsh</em>
+            </div>
+            <div id="termBody">
+              <div><span class="prompt">$</span> <span class="cmd" id="cmd"></span><span class="caret" id="caret"></span></div>
+              <div class="out" id="l1"><span class="ok">✓</span> marketplace added</div>
+              <div class="out" id="l2"><span class="ok">✓</span> 31 skills · 12 agents · 9 commands · 6 hooks</div>
+              <div class="out dim" id="l3">NingX-EnggTeam is ready.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. sign-off -->
+      <section class="scene" id="end">
+        <div id="endMark">
+          <h2 id="endWord">NingX-EnggTeam</h2>
+        </div>
+        <div id="endBy">Made by Nitin Sharma</div>
+        <div id="endUrl">github.com/codeandearnyt/NingX-EnggTeam</div>
+        <div id="endOs"></div>
+      </section>
+
+      <div id="rule"></div>
+    </div>
+
+    <script id="logos">window.LOGOS = /*__LOGOS__*/;</script>
+    <script>
+      // ── timeline（タイムライン） ──
+      const DUR = 21;
+
+      const clamp01 = (x) => (x < 0 ? 0 : x > 1 ? 1 : x);
+      const seg = (t, a, b) => clamp01((t - a) / (b - a));
+      const mix = (a, b, p) => a + (b - a) * p;
+
+      const eOutCubic = (x) => 1 - Math.pow(1 - x, 3);
+      const eOutQuart = (x) => 1 - Math.pow(1 - x, 4);
+      const eOutExpo = (x) => (x >= 1 ? 1 : 1 - Math.pow(2, -11 * x));
+      const eInOutCubic = (x) =>
+        x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+      const eOutBack = (x) => {
+        const c1 = 1.70158;
+        const c3 = c1 + 1;
+        return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2);
+      };
+
+      // ── data ──
+      const HARNESS = [
+        ["Claude Code", "claude"],
+        ["Codex", "codex"],
+        ["OpenCode", "opencode"],
+        ["Cursor", "cursor"],
+        ["Copilot", "copilot"],
+        ["Windows", "windows"],
+        ["macOS", "apple"],
+        ["Linux", "linux"],
+      ];
+
+      const TYPES = [
+        "terminal-cli",
+        "wireframe",
+        "brutalist-html",
+        "pure-flat",
+        "swiss-grid",
+        "editorial-typographic",
+        "line-art-handdrawn",
+        "neobrutalism",
+        "card-masonry",
+        "bento-grid",
+        "material-elevated",
+        "layered-dark",
+        "aurora-mesh-gradient",
+        "glassmorphism",
+        "neumorphism",
+        "retro-y2k",
+        "claymorphism",
+        "skeuomorphism",
+        "isometric",
+        "parallax",
+        "scrollytelling-kinetic",
+        "embedded-3d",
+        "webgl-shader",
+        "spatial-webxr",
+      ];
+
+      const CMD = "claude plugin marketplace add codeandearnyt/NingX-EnggTeam";
+
+      // ── build the DOM that depends on data（データから DOM を組む） ──
+      function logoGlyph(name, size, fill) {
+        const logo = window.LOGOS[name];
+        if (!logo) return "";
+        const paths = logo.paths
+          .map(
+            (p) =>
+              `<path d="${p.d}"${p.fillRule ? ` fill-rule="${p.fillRule}"` : ""}${
+                p.clipRule ? ` clip-rule="${p.clipRule}"` : ""
+              }/>`,
+          )
+          .join("");
+        return `<svg width="${size}" height="${size}" viewBox="${logo.viewBox}" fill="${fill}" overflow="visible">${paths}</svg>`;
+      }
+
+      const logoRow = document.getElementById("logoRow");
+      logoRow.innerHTML = HARNESS.map(
+        ([label, icon]) =>
+          `<div class="pill">${logoGlyph(icon, 32, "#5aa7e9")}<span>${label}</span></div>`,
+      ).join("");
+
+      const endOs = document.getElementById("endOs");
+      endOs.innerHTML = [
+        ["windows", "Windows"],
+        ["apple", "macOS"],
+        ["linux", "Linux"],
+      ]
+        .map(
+          ([icon, label]) =>
+            `<div class="osItem">${logoGlyph(icon, 30, "#8fb0cd")}<span>${label}</span></div>`,
+        )
+        .join("");
+
+      const CHIP_W = (name) => 34 * 2 + 19 * 1.6 * 2 + 14 + name.length * 15.4 + 40;
+
+      function marqueeRow(list, dir) {
+        const el = document.createElement("div");
+        el.className = "mrow";
+        const items = dir > 0 ? list : [...list].reverse();
+        // Two copies so the strip wraps without a visible seam.
+        const html = [...items, ...items]
+          .map(
+            (name) =>
+              `<div class="chip"><b>ui-${String(
+                TYPES.indexOf(name) + 1,
+              ).padStart(2, "0")}</b><span>${name}</span></div>`,
+          )
+          .join("");
+        el.innerHTML = html;
+        return el;
+      }
+
+      const marquees = document.getElementById("marquees");
+      const rows = [
+        marqueeRow(TYPES.slice(0, 8), 1),
+        marqueeRow(TYPES.slice(8, 16), -1),
+        marqueeRow(TYPES.slice(16, 24), 1),
+      ];
+      rows.forEach((r) => marquees.appendChild(r));
+
+      // Measure after layout so the wrap distance is exact.
+      const rowWidths = rows.map((r) => r.scrollWidth / 2);
+
+      // ── background（背景） ──
+      const canvas = document.getElementById("bg");
+      const ctx = canvas.getContext("2d");
+
+      const rand = (() => {
+        let s = 20261127;
+        return () => {
+          s = (s * 1664525 + 1013904223) % 4294967296;
+          return s / 4294967296;
+        };
+      })();
+
+      const particles = Array.from({ length: 60 }, () => ({
+        x: rand() * 1920,
+        y: rand() * 1080,
+        r: 0.7 + rand() * 2.1,
+        speed: 12 + rand() * 34,
+        phase: rand() * Math.PI * 2,
+        drift: 8 + rand() * 22,
+      }));
+
+      function drawBg(t, alpha) {
+        ctx.clearRect(0, 0, 1920, 1080);
+        ctx.globalAlpha = alpha;
+
+        // three drifting glows
+        const orbs = [
+          [520 + Math.sin(t * 0.31) * 180, 330 + Math.cos(t * 0.24) * 120, 640, "90,167,233", 0.20],
+          [1480 + Math.cos(t * 0.27) * 200, 760 + Math.sin(t * 0.21) * 130, 720, "43,127,212", 0.18],
+          [960 + Math.sin(t * 0.19 + 2) * 260, 120 + Math.cos(t * 0.3 + 1) * 90, 520, "169,216,248", 0.10],
+        ];
+        for (const [x, y, r, rgb, a] of orbs) {
+          const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+          g.addColorStop(0, `rgba(${rgb},${a})`);
+          g.addColorStop(1, `rgba(${rgb},0)`);
+          ctx.fillStyle = g;
+          // Paint the whole canvas: a rect clipped to the gradient's bounds
+          // leaves a visible seam where the falloff meets the edge.
+          ctx.fillRect(0, 0, 1920, 1080);
+        }
+
+        // rising motes
+        for (const p of particles) {
+          const y = ((p.y - t * p.speed) % 1080 + 1080) % 1080;
+          const x = p.x + Math.sin(t * 0.6 + p.phase) * p.drift;
+          const twinkle = 0.22 + 0.5 * (0.5 + 0.5 * Math.sin(t * 1.4 + p.phase));
+          ctx.beginPath();
+          ctx.arc(x, y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(169,216,248,${twinkle})`;
+          ctx.fill();
+        }
+
+        ctx.globalAlpha = 1;
+      }
+
+      // ── element handles（要素の参照） ──
+      const $ = (id) => document.getElementById(id);
+      const hero = $("hero");
+      const heroCopy = $("heroCopy");
+      const eyebrow = $("eyebrow");
+      const wordmark = $("wordmark");
+      const shine = $("shine");
+      const lede = $("lede");
+      const works = $("works");
+      const worksLabel = $("worksLabel");
+      const worksNote = $("worksNote");
+      const shineWrap = $("shineWrap");
+      const pills = [...logoRow.children];
+      const types = $("types");
+      const typesHead = $("typesHead");
+      const termScene = $("termScene");
+      const termWrap = $("termWrap");
+      const cmdEl = $("cmd");
+      const caret = $("caret");
+      const l1 = $("l1");
+      const l2 = $("l2");
+      const l3 = $("l3");
+      const end = $("end");
+      const endMark = $("endMark");
+      const endBy = $("endBy");
+      const endUrl = $("endUrl");
+      const endOsEl = $("endOs");
+      const rule = $("rule");
+      const grid = $("grid");
+
+      // ── the renderer（描画） ──
+      function render(t) {
+        drawBg(t, eOutCubic(seg(t, 0, 1.1)));
+        grid.style.opacity = (0.9 * eOutCubic(seg(t, 0.5, 1.8))).toFixed(3);
+
+        // ── 1. hero: 1.1 → 8.5
+        // The block enters, the wordmark takes one pass of light, then the
+        // supporting copy dissolves and the wordmark shrinks into a docked
+        // title so the logo row has room underneath.
+        const heroOut = eInOutCubic(seg(t, 7.6, 8.5));
+        hero.style.opacity = "1";
+
+        const copyRise = eOutQuart(seg(t, 1.3, 2.5));
+        heroCopy.style.opacity = (eOutCubic(seg(t, 1.25, 2.1)) * (1 - heroOut)).toFixed(3);
+        heroCopy.style.transform = `translate3d(0, ${mix(70, 0, copyRise) - heroOut * 46}px, 0)`;
+        heroCopy.style.transformOrigin = "0 0";
+
+        const dock = eInOutCubic(seg(t, 4.2, 5.3));
+        shineWrap.style.transform =
+          `translate3d(0, ${mix(0, -160, dock).toFixed(2)}px, 0) ` +
+          `scale(${mix(1, 0.55, dock).toFixed(4)})`;
+
+        const eyebrowP = eOutExpo(seg(t, 1.15, 2.2));
+        eyebrow.style.opacity = (eyebrowP * (1 - seg(t, 3.95, 4.55))).toFixed(3);
+        eyebrow.style.letterSpacing = `${mix(24, 9, eyebrowP).toFixed(2)}px`;
+
+        wordmark.style.opacity = eOutCubic(seg(t, 1.55, 2.5)).toFixed(3);
+        wordmark.style.transform = `translate3d(0, ${mix(44, 0, eOutQuart(seg(t, 1.55, 2.8)))}px, 0)`;
+
+        // one pass of light, clipped to the glyphs
+        const sh = seg(t, 2.85, 4.15);
+        shine.style.opacity = sh > 0 && sh < 1 ? "1" : "0";
+        shine.style.backgroundPosition = `${mix(-30, 130, eInOutCubic(sh)).toFixed(2)}% 0`;
+
+        lede.style.opacity = (eOutCubic(seg(t, 2.5, 3.4)) * (1 - seg(t, 3.85, 4.45))).toFixed(3);
+        lede.style.transform = `translate3d(0, ${mix(26, 0, eOutQuart(seg(t, 2.5, 3.5)))}px, 0)`;
+
+        // ── 2. logos: 4.6 → 8.5
+        const worksOut = eInOutCubic(seg(t, 7.6, 8.5));
+        works.style.opacity = (seg(t, 4.6, 5.1) * (1 - worksOut)).toFixed(3);
+        works.style.transform = `translate3d(0, ${-worksOut * 60}px, 0)`;
+        worksLabel.style.opacity = eOutCubic(seg(t, 4.85, 5.5)).toFixed(3);
+        worksNote.style.opacity = eOutCubic(seg(t, 6.35, 7.15)).toFixed(3);
+
+        pills.forEach((p, i) => {
+          const a = 5.0 + i * 0.17;
+          const pr = eOutBack(seg(t, a, a + 0.55));
+          p.style.opacity = eOutCubic(seg(t, a, a + 0.4)).toFixed(3);
+          p.style.transform = `translate3d(0, ${mix(44, 0, pr)}px, 0) scale(${mix(
+            0.9,
+            1,
+            pr,
+          ).toFixed(3)})`;
+          p.style.borderColor = `rgba(169,216,248,${(
+            0.30 +
+            0.26 * (0.5 + 0.5 * Math.sin(t * 2.1 - i * 0.55))
+          ).toFixed(3)})`;
+        });
+
+        // ── 3. types: 8.5 → 12.9
+        const typesIn = eOutCubic(seg(t, 8.5, 9.2));
+        const typesOut = eInOutCubic(seg(t, 12.1, 12.9));
+        types.style.opacity = (typesIn * (1 - typesOut)).toFixed(3);
+        types.style.transform = `translate3d(0, ${mix(40, 0, typesIn) - typesOut * 60}px, 0)`;
+        typesHead.style.opacity = eOutCubic(seg(t, 8.55, 9.3)).toFixed(3);
+
+        const mt = Math.max(0, t - 8.7);
+        const speeds = [78, 58, 92];
+        rows.forEach((r, i) => {
+          const w = rowWidths[i] || 2000;
+          const dir = i === 1 ? 1 : -1;
+          const off = ((mt * speeds[i]) % w) * dir;
+          r.style.transform = `translate3d(${(off - w).toFixed(2)}px, 0, 0)`;
+        });
+
+        // ── 4. terminal: 12.9 → 17.6
+        const termIn = eOutQuart(seg(t, 12.95, 13.75));
+        const termOut = eInOutCubic(seg(t, 16.9, 17.6));
+        termScene.style.opacity = (seg(t, 12.9, 13.3) * (1 - termOut)).toFixed(3);
+        termWrap.style.transform =
+          `translate3d(0, ${mix(70, 0, termIn) - termOut * 50}px, 0) ` +
+          `scale(${mix(0.94, 1, termIn).toFixed(4)})`;
+        termWrap.style.opacity = termIn.toFixed(3);
+
+        const typed = Math.floor(seg(t, 13.6, 15.4) * CMD.length);
+        cmdEl.textContent = CMD.slice(0, typed);
+        const typing = t > 13.6 && t < 15.42;
+        caret.style.opacity = typing
+          ? "1"
+          : 0.5 + 0.5 * Math.sin((t - 15.4) * 9) > 0.5
+            ? "1"
+            : "0";
+
+        const lines = [
+          [l1, 15.45],
+          [l2, 15.62],
+          [l3, 15.79],
+        ];
+        for (const [el, at] of lines) {
+          const p = eOutCubic(seg(t, at, at + 0.22));
+          el.style.opacity = p.toFixed(3);
+          el.style.transform = `translate3d(${mix(-14, 0, p)}px, 0, 0)`;
+        }
+
+        // ── 5. sign-off: 17.7 → 21
+        const endIn = eOutCubic(seg(t, 17.7, 18.6));
+        end.style.opacity = endIn.toFixed(3);
+        endMark.style.transform = `translate3d(0, ${mix(40, 0, eOutQuart(seg(t, 17.7, 18.8)))}px, 0) scale(${mix(0.94, 1, eOutQuart(seg(t, 17.7, 19.0))).toFixed(4)})`;
+        endBy.style.opacity = eOutCubic(seg(t, 18.3, 19.1)).toFixed(3);
+        endUrl.style.opacity = eOutCubic(seg(t, 18.6, 19.4)).toFixed(3);
+        endOsEl.style.opacity = (0.85 * eOutCubic(seg(t, 18.9, 19.8))).toFixed(3);
+
+        rule.style.opacity = (0.9 * eOutCubic(seg(t, 0.8, 2.0))).toFixed(3);
+        const sweep = seg(t, 0, 1);
+        rule.style.backgroundPosition = `${(sweep * 100).toFixed(1)}% 0`;
+      }
+
+      // ── drive it（駆動） ──
+      window.seek = (t) => {
+        render(Math.max(0, Math.min(DUR, t)));
+        return true;
+      };
+
+      window.__DUR = DUR;
+
+      const params = new URLSearchParams(location.search);
+      const frozen = params.get("t");
+
+      // render-ad.mjs drives the clock itself, so the live loop must stay off
+      // while capturing — otherwise it overwrites each seek with wall-clock time
+      // before the screenshot lands. （キャプチャ中は自走ループを止める）
+      const offline = params.has("render");
+
+      if (frozen !== null) {
+        window.seek(parseFloat(frozen));
+      } else if (!offline) {
+        const start = performance.now();
+        const loop = (now) => {
+          window.seek(((now - start) / 1000) % DUR);
+          requestAnimationFrame(loop);
+        };
+        requestAnimationFrame(loop);
+      }
+    </script>
+  </body>
+</html>

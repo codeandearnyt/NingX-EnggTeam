@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/banner.svg" alt="NingX-EnggTeam — senior web engineering team for AI coding harnesses" width="100%" />
+<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/hero.svg" alt="NingX-EnggTeam — senior web engineering team for Claude Code, Codex, OpenCode, Cursor and Copilot on Windows, macOS and Linux" width="100%" />
 
 <img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/typing.svg" alt="24 named UI types, 12 senior roles, one guard" width="100%" />
 
@@ -55,6 +55,23 @@ The point is not to describe good web work. **The point is to make a model produ
 | Understand | Use | Build |
 |:---|:---|:---|
 | [The 30-second version](#the-30-second-version)<br>[The problem this solves](#the-problem-this-solves)<br>[What is inside](#what-is-inside)<br>[The ten non-negotiables](#the-ten-non-negotiables) | [Install](#install)<br>[Desktop app](#desktop-app)<br>[Use](#use)<br>[The mixing rule](#the-mixing-rule) | [The anti-slop gate](#the-anti-slop-gate)<br>[The guard](#the-guard)<br>[The precedence order](#the-precedence-order)<br>[Works with](#works-with) |
+
+<div align="center">
+<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/divider.svg" alt="" width="100%" />
+</div>
+
+## Watch the spot
+
+<div align="center">
+
+<a href="https://github.com/codeandearnyt/NingX-EnggTeam/releases/download/v1.0.1/ningx-spot.mp4">
+<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/ningx-spot-poster.png" alt="NingX-EnggTeam — a 21-second spot" width="100%" />
+</a>
+
+**Twenty-one seconds.** The team, the catalogue, and the install.<br>
+<sub>[1080p](https://github.com/codeandearnyt/NingX-EnggTeam/releases/download/v1.0.1/ningx-spot.mp4) · [720p](https://github.com/codeandearnyt/NingX-EnggTeam/releases/download/v1.0.1/ningx-spot-720.mp4) · no audio, no narration</sub>
+
+</div>
 
 <div align="center">
 <img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/divider.svg" alt="" width="100%" />

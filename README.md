@@ -60,16 +60,16 @@ The point is not to describe good web work. **The point is to make a model produ
 <img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/divider.svg" alt="" width="100%" />
 </div>
 
-## Watch the spot
+## Watch the reel
 
 <div align="center">
 
-<a href="https://github.com/codeandearnyt/NingX-EnggTeam/releases/download/v1.0.1/ningx-spot.mp4">
-<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/ningx-spot-poster.png" alt="NingX-EnggTeam — a 21-second spot" width="100%" />
+<a href="https://github.com/codeandearnyt/NingX-EnggTeam/releases/download/v1.0.1/reel-30s.mp4">
+<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/reel-loop.gif" alt="NingX-EnggTeam — the 30-second reel" width="100%" />
 </a>
 
-**Twenty-one seconds.** The team, the catalogue, and the install.<br>
-<sub>[1080p](https://github.com/codeandearnyt/NingX-EnggTeam/releases/download/v1.0.1/ningx-spot.mp4) · [720p](https://github.com/codeandearnyt/NingX-EnggTeam/releases/download/v1.0.1/ningx-spot-720.mp4) · no audio, no narration</sub>
+**Thirty seconds, 1080p, no narration.** Install, the 24-type catalogue, the twelve roles, the gate, and one command.<br>
+<sub>[Full reel · 1080p](https://github.com/codeandearnyt/NingX-EnggTeam/releases/download/v1.0.1/reel-30s.mp4) · [720p](https://github.com/codeandearnyt/NingX-EnggTeam/releases/download/v1.0.1/reel-30s-720.mp4) · [poster](https://github.com/codeandearnyt/NingX-EnggTeam/releases/download/v1.0.1/reel-poster.png)</sub>
 
 </div>
 

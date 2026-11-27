@@ -44,3 +44,8 @@ release/
 
 # README asset build artefacts
 assets/readme/_ad.built.html
+assets/readme/_reel.built.html
+
+# Rendered video masters live on the GitHub release, not in git
+assets/readme/reel-30s.mp4
+assets/readme/reel-30s-720.mp4

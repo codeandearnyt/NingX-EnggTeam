@@ -1,0 +1,1188 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>NingX-EnggTeam — 30s reel</title>
+    <!--
+      reel.html — the 30-second 1920x1080 showcase.
+
+      30 秒のショーケース映像。Every element is placed by render(t), so a frame
+      can be asked for at any timestamp and always comes out the same. That is
+      what makes the capture deterministic and the encode clean.
+
+      Nine shots, hard cuts, each with its own slow camera push. One cursor
+      does the pointing so the product explains itself.
+
+      Open in a browser to watch it loop. Append ?t=12.5 to freeze.
+
+      Made by Nitin Sharma.
+    -->
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+
+      html, body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #04090f;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      #stage {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #04090f;
+        transform-origin: 0 0;
+      }
+
+      #bg { position: absolute; inset: 0; }
+
+      #grid {
+        position: absolute;
+        inset: -80px;
+        background-image: linear-gradient(#ffffff0a 1px, transparent 1px),
+          linear-gradient(90deg, #ffffff0a 1px, transparent 1px);
+        background-size: 60px 60px;
+        opacity: 0;
+      }
+
+      #vignette {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          ellipse 78% 62% at 50% 46%,
+          transparent 28%,
+          #04090f 100%
+        );
+        pointer-events: none;
+      }
+
+      /* ── shared type ── */
+      .eyebrow {
+        font-size: 21px;
+        font-weight: 700;
+        letter-spacing: 9px;
+        text-transform: uppercase;
+        background: linear-gradient(90deg, #7fc0f5, #a78bfa, #f472b6);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      .display {
+        font-size: 156px;
+        font-weight: 800;
+        letter-spacing: -6.5px;
+        line-height: 1;
+        background: linear-gradient(180deg, #ffffff 0%, #dcecfb 58%, #b7c6ff 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        white-space: nowrap;
+      }
+
+      .lede {
+        font-size: 33px;
+        font-weight: 400;
+        color: #93b3d0;
+        letter-spacing: -0.2px;
+      }
+
+      .mono {
+        font-family: "SF Mono", "Cascadia Mono", Consolas, Menlo, monospace;
+      }
+
+      /* ── shots ── */
+      .shot {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        transform-origin: 50% 50%;
+        will-change: transform, opacity;
+      }
+
+      /* ── 1. cold open ── */
+      #s1 { display: flex; flex-direction: column; justify-content: center; padding: 0 150px; }
+      #s1 #shineWrap { position: relative; display: inline-block; }
+      #s1 #shine {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-image: linear-gradient(
+          100deg,
+          #ffffff00 0%,
+          #ffffff00 38%,
+          #ffffff 48%,
+          #ffffff 52%,
+          #ffffff00 62%,
+          #ffffff00 100%
+        );
+        background-size: 300% 100%;
+        background-repeat: no-repeat;
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        opacity: 0;
+      }
+      #ribbon {
+        position: absolute;
+        left: 150px;
+        top: 300px;
+        height: 4px;
+        width: 0;
+        border-radius: 2px;
+        background: linear-gradient(90deg, #5aa7e9, #8b6cff, #f472b6, #fbbf24, #34d399, #22d3ee);
+      }
+
+      /* ── 2. the claim ── */
+      #s2 { display: flex; flex-direction: column; justify-content: center; padding: 0 150px; gap: 6px; }
+      .claim {
+        font-size: 96px;
+        font-weight: 800;
+        letter-spacing: -3.6px;
+        line-height: 1.12;
+        color: #eaf3fb;
+        opacity: 0;
+      }
+      .claim em {
+        font-style: normal;
+        background: linear-gradient(90deg, #5aa7e9, #a78bfa, #f472b6);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      #s2 .lede { margin-top: 34px; opacity: 0; }
+
+      /* ── 3. installer ── */
+      #s3 { display: flex; align-items: center; justify-content: center; }
+
+      .glass {
+        position: relative;
+        border-radius: 26px;
+        background: linear-gradient(180deg, #10263c, #071523);
+        border: 1px solid #235a8d;
+        box-shadow: 0 50px 140px #000000b3, inset 0 1px 0 #ffffff1f,
+          inset 0 -1px 0 #00000066;
+      }
+
+      #win { width: 1250px; height: 700px; overflow: hidden; }
+
+      #winBar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        height: 58px;
+        padding: 0 24px;
+        border-bottom: 1px solid #ffffff14;
+        background: linear-gradient(180deg, #ffffff0f, #ffffff00);
+      }
+      .dot { width: 14px; height: 14px; border-radius: 50%; flex: none; }
+      #winBar em {
+        font-style: normal;
+        font-size: 16px;
+        font-weight: 600;
+        color: #7fa6c8;
+        margin-left: 16px;
+        letter-spacing: 0.2px;
+      }
+
+      #winBody { padding: 40px 46px 44px; }
+
+      #winHead { display: flex; align-items: baseline; gap: 16px; }
+      #winHead h1 {
+        font-size: 42px;
+        font-weight: 800;
+        letter-spacing: -1.4px;
+        color: #eaf3fb;
+      }
+      #winHead .ver {
+        font-size: 14px;
+        font-weight: 700;
+        color: #5aa7e9;
+        border: 1px solid #2b7fd466;
+        background: #2b7fd41f;
+        padding: 4px 11px;
+        border-radius: 999px;
+      }
+      #winHead p { font-size: 17px; color: #7fa6c8; margin-left: auto; }
+
+      #ops {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-top: 30px;
+      }
+
+      .op {
+        position: relative;
+        height: 104px;
+        border-radius: 18px;
+        border: 1px solid #ffffff1a;
+        background: linear-gradient(180deg, #ffffff0d, #ffffff03);
+        padding: 20px 24px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+      }
+      .op .glyph {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        font-size: 21px;
+        font-weight: 700;
+        color: #cfe6fa;
+        background: #5aa7e91f;
+        border: 1px solid #5aa7e94d;
+        flex: none;
+      }
+      .op b { display: block; font-size: 21px; font-weight: 700; color: #eaf3fb; letter-spacing: -0.3px; }
+      .op span { display: block; font-size: 15px; color: #7fa6c8; margin-top: 3px; }
+
+      #opInstall {
+        border-color: #5aa7e999;
+        background: linear-gradient(180deg, #5aa7e92e, #5aa7e90f);
+        box-shadow: 0 0 0 4px #5aa7e91a, 0 18px 40px #2b7fd440;
+      }
+
+      #progWrap { margin-top: 28px; display: flex; align-items: center; gap: 26px; }
+      #ring { width: 108px; height: 108px; flex: none; }
+      #log {
+        flex: 1;
+        font-family: "SF Mono", "Cascadia Mono", Consolas, monospace;
+        font-size: 19px;
+        line-height: 1.95;
+        color: #8fb0cd;
+      }
+      #log .row { opacity: 0; }
+      #log .ok { color: #5fd394; }
+      #log b { color: #eaf3fb; font-weight: 600; }
+
+      /* ── 4. catalogue ── */
+      #s4 #wall {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 1680px;
+        margin-left: -840px;
+        margin-top: -268px;
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 18px;
+      }
+      #s4 .tile {
+        height: 126px;
+        border-radius: 18px;
+        background: linear-gradient(180deg, #0e2539, #071523);
+        border: 1px solid #1d4b7a;
+        padding: 20px 22px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      #s4 .tile i {
+        font-style: normal;
+        font-family: "SF Mono", "Cascadia Mono", Consolas, monospace;
+        font-size: 15px;
+        font-weight: 700;
+        color: #5aa7e9;
+      }
+      #s4 .tile span {
+        font-size: 19px;
+        font-weight: 600;
+        color: #dbe9f6;
+        letter-spacing: -0.3px;
+      }
+      #s4 #wallHead { position: absolute; left: 150px; top: 96px; }
+      #s4 #wallHead h2 {
+        font-size: 60px;
+        font-weight: 800;
+        letter-spacing: -2.4px;
+        color: #eaf3fb;
+        margin-top: 12px;
+      }
+      #s4 .pick {
+        border-color: #a78bfa !important;
+        background: linear-gradient(180deg, #a78bfa2e, #a78bfa12) !important;
+        box-shadow: 0 0 0 4px #a78bfa22, 0 24px 60px #a78bfa40;
+      }
+
+      /* ── 5. roles ── */
+      #s5 { display: flex; align-items: center; padding: 0 150px; gap: 90px; }
+      #s5 #rolesHead { width: 620px; flex: none; }
+      #s5 #rolesHead h2 {
+        font-size: 62px;
+        font-weight: 800;
+        letter-spacing: -2.4px;
+        color: #eaf3fb;
+        margin-top: 14px;
+        line-height: 1.08;
+      }
+      #s5 #rolesHead p { font-size: 24px; color: #8fb0cd; margin-top: 20px; line-height: 1.5; }
+      #roleCol { display: flex; flex-direction: column; gap: 11px; flex: 1; }
+      #s5 .role {
+        height: 62px;
+        border-radius: 14px;
+        border: 1px solid #ffffff14;
+        background: linear-gradient(90deg, #ffffff0b, #ffffff02);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 0 20px;
+      }
+      #s5 .role i {
+        font-style: normal;
+        font-family: "SF Mono", "Cascadia Mono", Consolas, monospace;
+        font-size: 14px;
+        color: #5d7d99;
+        width: 26px;
+      }
+      #s5 .role span { font-size: 21px; font-weight: 600; color: #c7dcf0; }
+      #s5 .role.hot {
+        border-color: #f472b6aa;
+        background: linear-gradient(90deg, #f472b62e, #f472b60a);
+        box-shadow: 0 0 0 4px #f472b61f;
+      }
+      #s5 .role.hot span { color: #ffffff; }
+
+      /* ── 6. gate ── */
+      #s6 { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+      #s6 #gateHead { text-align: center; }
+      #s6 #gateHead h2 {
+        font-size: 64px;
+        font-weight: 800;
+        letter-spacing: -2.6px;
+        color: #eaf3fb;
+        margin-top: 14px;
+      }
+      #checks {
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+        gap: 12px;
+        width: 1560px;
+        margin-top: 42px;
+      }
+      .check {
+        height: 58px;
+        border-radius: 12px;
+        border: 1px solid #ffffff12;
+        background: #ffffff06;
+        display: grid;
+        place-items: center;
+        font-size: 15px;
+        font-weight: 600;
+        color: #5d7d99;
+      }
+      .check.on {
+        border-color: #34d39966;
+        background: #34d3991a;
+        color: #6ee7b7;
+      }
+      #stamp {
+        margin-top: 48px;
+        font-size: 34px;
+        font-weight: 800;
+        letter-spacing: 5px;
+        text-transform: uppercase;
+        color: #6ee7b7;
+        border: 2px solid #34d39988;
+        border-radius: 16px;
+        padding: 14px 34px;
+        opacity: 0;
+        background: #34d39914;
+      }
+
+      /* ── 7. terminal ── */
+      #s7 { display: flex; align-items: center; justify-content: center; }
+      #term { width: 1360px; }
+      #termBar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        height: 54px;
+        padding: 0 22px;
+        border-bottom: 1px solid #ffffff12;
+      }
+      #termBar em {
+        font-style: normal;
+        font-family: "SF Mono", "Cascadia Mono", Consolas, monospace;
+        font-size: 15px;
+        color: #5d7d99;
+        margin-left: 14px;
+      }
+      #termBody {
+        padding: 40px 46px 44px;
+        font-family: "SF Mono", "Cascadia Mono", Consolas, monospace;
+        font-size: 27px;
+        line-height: 1.75;
+        color: #eaf3fb;
+      }
+      .prompt { color: #5aa7e9; font-weight: 700; }
+      .caret {
+        display: inline-block;
+        width: 13px;
+        height: 30px;
+        background: #5aa7e9;
+        vertical-align: -5px;
+      }
+      .ok { color: #5fd394; }
+      .dim { color: #8fb0cd; }
+      .out { opacity: 0; }
+
+      /* ── 8. works with ── */
+      #s8 { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 44px; }
+      #s8 h2 {
+        font-size: 58px;
+        font-weight: 800;
+        letter-spacing: -2.2px;
+        color: #eaf3fb;
+      }
+      #markRow { display: flex; gap: 20px; }
+      #s8 .mk {
+        width: 176px;
+        height: 176px;
+        border-radius: 32px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        border: 1px solid #ffffff17;
+        background: linear-gradient(180deg, #ffffff0c, #ffffff03);
+      }
+      #s8 .mk span { font-size: 17px; font-weight: 600; color: #c7dcf0; }
+      #s8 .note { font-size: 22px; color: #7fa6c8; }
+
+      /* ── 9. sign-off ── */
+      #s9 { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px; }
+      #s9 h2 {
+        font-size: 112px;
+        font-weight: 800;
+        letter-spacing: -4.5px;
+        background: linear-gradient(180deg, #ffffff, #b7c6ff);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      #s9 .by { font-size: 30px; color: #8fb0cd; letter-spacing: 0.4px; }
+      #s9 .url {
+        font-family: "SF Mono", "Cascadia Mono", Consolas, monospace;
+        font-size: 27px;
+        color: #5aa7e9;
+        letter-spacing: -0.4px;
+      }
+      #s9 #osRow { display: flex; gap: 40px; margin-top: 20px; align-items: center; opacity: 0; }
+      #s9 .os { display: flex; align-items: center; gap: 13px; }
+      #s9 .os span { font-size: 21px; color: #8fb0cd; font-weight: 500; }
+      #s9 #rule {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        height: 4px;
+        width: 100%;
+        background: linear-gradient(90deg, #5aa7e9, #8b6cff, #f472b6, #fbbf24, #34d399, #22d3ee);
+      }
+
+      /* ── cursor ── */
+      #cursor {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 46px;
+        height: 46px;
+        opacity: 0;
+        pointer-events: none;
+        filter: drop-shadow(0 10px 18px #00000099);
+        z-index: 50;
+      }
+      #ripple {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 20px;
+        height: 20px;
+        margin: -10px 0 0 -10px;
+        border-radius: 50%;
+        border: 3px solid #ffffff;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 49;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage">
+      <canvas id="bg" width="1920" height="1080"></canvas>
+      <div id="grid"></div>
+      <div id="vignette"></div>
+
+      <!-- 1 -->
+      <section class="shot" id="s1">
+        <div id="ribbon"></div>
+        <div class="eyebrow" id="s1Eyebrow">Senior web engineering team</div>
+        <div id="shineWrap" style="margin-top: 26px">
+          <div class="display" id="wordmark">NingX-EnggTeam</div>
+          <div class="display" id="shine">NingX-EnggTeam</div>
+        </div>
+        <div class="lede" id="s1Lede" style="margin-top: 34px">
+          Twelve roles. Twenty-four named UI types. One guard that fails the build.
+        </div>
+      </section>
+
+      <!-- 2 -->
+      <section class="shot" id="s2">
+        <div class="claim" id="c1">Twelve roles that</div>
+        <div class="claim" id="c2">own the decision.</div>
+        <div class="claim" id="c3"><em>Twenty-four</em> named UI types.</div>
+        <div class="lede" id="s2Lede">No role answers outside its remit. No page ships unnamed.</div>
+      </section>
+
+      <!-- 3 -->
+      <section class="shot" id="s3">
+        <div class="glass" id="win">
+          <div id="winBar">
+            <i class="dot" style="background: #ff5f57"></i>
+            <i class="dot" style="background: #febc2e"></i>
+            <i class="dot" style="background: #28c840"></i>
+            <em>NingX Installer</em>
+          </div>
+          <div id="winBody">
+            <div id="winHead">
+              <h1>NingX-EnggTeam</h1>
+              <span class="ver">v1.0.2</span>
+              <p>github.com/codeandearnyt/NingX-EnggTeam</p>
+            </div>
+
+            <div id="ops">
+              <div class="op" id="opInstall">
+                <div class="glyph">↓</div>
+                <div><b>Install</b><span>Clone the plugin and register the marketplace</span></div>
+              </div>
+              <div class="op">
+                <div class="glyph">↺</div>
+                <div><b>Update</b><span>Fetch main and refresh the plugin</span></div>
+              </div>
+              <div class="op">
+                <div class="glyph">⟳</div>
+                <div><b>Reinstall</b><span>Drop the local copy and rebuild it</span></div>
+              </div>
+              <div class="op">
+                <div class="glyph">✕</div>
+                <div><b>Uninstall</b><span>Remove the plugin, keep your files</span></div>
+              </div>
+            </div>
+
+            <div id="progWrap">
+              <svg id="ring" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="50" fill="none" stroke="#1d4b7a" stroke-width="7" />
+                <circle id="ringFill" cx="60" cy="60" r="50" fill="none" stroke="url(#ringGrad)"
+                        stroke-width="7" stroke-linecap="round" stroke-dasharray="314.16"
+                        stroke-dashoffset="314.16" transform="rotate(-90 60 60)" />
+                <defs>
+                  <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0" stop-color="#5aa7e9" />
+                    <stop offset="0.5" stop-color="#a78bfa" />
+                    <stop offset="1" stop-color="#34d399" />
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div id="log">
+                <div class="row" id="l1"><span class="ok">✓</span> marketplace added — <b>ningx</b></div>
+                <div class="row" id="l2"><span class="ok">✓</span> plugin installed — <b>ningx-enggteam@ningx</b></div>
+                <div class="row" id="l3"><b>31</b> skills · <b>12</b> agents · <b>9</b> commands · <b>6</b> hooks</div>
+                <div class="row dim" id="l4">Ready. Open your harness and ask for a page.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4 -->
+      <section class="shot" id="s4">
+        <div id="wallHead">
+          <div class="eyebrow">The catalogue</div>
+          <h2>Twenty-four named UI types</h2>
+        </div>
+        <div id="wall"></div>
+      </section>
+
+      <!-- 5 -->
+      <section class="shot" id="s5">
+        <div id="rolesHead">
+          <div class="eyebrow">The bench</div>
+          <h2>One role owns<br />each decision.</h2>
+          <p>Palette and type pairing belong to <b>ui-ux-director</b>. Routes and rendering belong to <b>web-architect</b>.</p>
+        </div>
+        <div id="roleCol"></div>
+      </section>
+
+      <!-- 6 -->
+      <section class="shot" id="s6">
+        <div id="gateHead">
+          <div class="eyebrow">The gate</div>
+          <h2>Twenty-four checks. None optional.</h2>
+        </div>
+        <div id="checks"></div>
+        <div id="stamp">build passes</div>
+      </section>
+
+      <!-- 7 -->
+      <section class="shot" id="s7">
+        <div class="glass" id="term">
+          <div id="termBar">
+            <i class="dot" style="background: #ff5f57"></i>
+            <i class="dot" style="background: #febc2e"></i>
+            <i class="dot" style="background: #28c840"></i>
+            <em>~ — zsh</em>
+          </div>
+          <div id="termBody">
+            <div><span class="prompt">$</span> <span id="cmd"></span><span class="caret" id="caret"></span></div>
+            <div class="out" id="t1"><span class="ok">✓</span> marketplace added</div>
+            <div class="out" id="t2"><span class="ok">✓</span> 31 skills · 12 agents · 9 commands · 6 hooks</div>
+            <div class="out dim" id="t3">NingX-EnggTeam is ready.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 8 -->
+      <section class="shot" id="s8">
+        <h2>Works with</h2>
+        <div id="markRow"></div>
+        <div class="note">One install · Windows, macOS and Linux</div>
+      </section>
+
+      <!-- 9 -->
+      <section class="shot" id="s9">
+        <h2 id="endWord">NingX-EnggTeam</h2>
+        <div class="by" id="endBy">Made by Nitin Sharma</div>
+        <div class="url" id="endUrl">github.com/codeandearnyt/NingX-EnggTeam</div>
+        <div id="osRow"></div>
+        <div id="rule"></div>
+      </section>
+
+      <svg id="cursor" viewBox="0 0 24 24">
+        <path d="M2 1.5 L2 21 L7.2 16.2 L10.4 23 L14 21.4 L10.9 14.9 L18 14.6 Z"
+              fill="#ffffff" stroke="#0b1a28" stroke-width="1.4" stroke-linejoin="round" />
+      </svg>
+      <div id="ripple"></div>
+    </div>
+
+    <script id="logos">window.LOGOS = /*__LOGOS__*/;</script>
+    <script>
+      // ── timeline（タイムライン） ──
+      const DUR = 30;
+
+      const clamp01 = (x) => (x < 0 ? 0 : x > 1 ? 1 : x);
+      const seg = (t, a, b) => clamp01((t - a) / (b - a));
+      const mix = (a, b, p) => a + (b - a) * p;
+
+      const eOutCubic = (x) => 1 - Math.pow(1 - x, 3);
+      const eOutQuart = (x) => 1 - Math.pow(1 - x, 4);
+      const eOutExpo = (x) => (x >= 1 ? 1 : 1 - Math.pow(2, -11 * x));
+      const eInOutCubic = (x) =>
+        x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+      const eInOutQuart = (x) =>
+        x < 0.5 ? 8 * x * x * x * x : 1 - Math.pow(-2 * x + 2, 4) / 2;
+      const eOutBack = (x) => {
+        const c1 = 1.70158;
+        const c3 = c1 + 1;
+        return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2);
+      };
+
+      const $ = (id) => document.getElementById(id);
+
+      // ── data ──
+      const HARNESS = [
+        ["Claude Code", "claude"],
+        ["Codex", "codex"],
+        ["OpenCode", "opencode"],
+        ["Cursor", "cursor"],
+        ["Copilot", "copilot"],
+        ["Windows", "windows"],
+        ["macOS", "apple"],
+        ["Linux", "linux"],
+      ];
+
+      const TYPES = [
+        "terminal-cli", "wireframe", "brutalist-html", "pure-flat",
+        "swiss-grid", "editorial-typographic", "line-art-handdrawn", "neobrutalism",
+        "card-masonry", "bento-grid", "material-elevated", "layered-dark",
+        "aurora-mesh-gradient", "glassmorphism", "neumorphism", "retro-y2k",
+        "claymorphism", "skeuomorphism", "isometric", "parallax",
+        "scrollytelling-kinetic", "embedded-3d", "webgl-shader", "spatial-webxr",
+      ];
+
+      const ROLES = [
+        "web-architect", "ui-ux-director", "design-system", "motion-designer",
+        "frontend-lead", "a11y-reviewer", "perf-engineer", "seo-strategist",
+        "copy-director", "qa-lead", "sec-reviewer", "release-manager",
+      ];
+
+      const CHECKS = [
+        "contrast", "focus", "320px", "768px", "1024px", "1440px",
+        "reduced", "no-hscroll", "alt-text", "labels", "tab-order", "landmarks",
+        "lcp", "cls", "bundle", "fonts", "og", "json-ld",
+        "tokens", "scale", "grid", "motion", "states", "guard",
+      ];
+
+      const CMD = "claude plugin marketplace add codeandearnyt/NingX-EnggTeam";
+
+      // ── build the data-driven DOM（データから DOM を組む） ──
+      function logoGlyph(name, size) {
+        const logo = window.LOGOS[name];
+        if (!logo) return "";
+        const defs = logo.defs ? `<defs>${logo.defs}</defs>` : "";
+        const paths = logo.paths
+          .map(
+            (p) =>
+              `<path d="${p.d}" fill="${p.fill}"${
+                p.fillRule ? ` fill-rule="${p.fillRule}"` : ""
+              }${p.clipRule ? ` clip-rule="${p.clipRule}"` : ""}${
+                p.opacity ? ` opacity="${p.opacity}"` : ""
+              }/>`,
+          )
+          .join("");
+        return `<svg width="${size}" height="${size}" viewBox="${logo.viewBox}" preserveAspectRatio="xMidYMid meet">${defs}${paths}</svg>`;
+      }
+
+      const wall = $("wall");
+      wall.innerHTML = TYPES.map(
+        (name, i) =>
+          `<div class="tile${name === "swiss-grid" ? " pick" : ""}"><i>ui-${String(
+            i + 1,
+          ).padStart(2, "0")}</i><span>${name}</span></div>`,
+      ).join("");
+
+      const roleCol = $("roleCol");
+      roleCol.innerHTML = ROLES.map(
+        (name, i) =>
+          `<div class="role${name === "ui-ux-director" ? " hot" : ""}"><i>${String(
+            i + 1,
+          ).padStart(2, "0")}</i><span>${name}</span></div>`,
+      ).join("");
+
+      const checksEl = $("checks");
+      checksEl.innerHTML = CHECKS.map(
+        (name) => `<div class="check">${name}</div>`,
+      ).join("");
+
+      $("markRow").innerHTML = HARNESS.map(
+        ([label, icon]) =>
+          `<div class="mk">${logoGlyph(icon, 62)}<span>${label}</span></div>`,
+      ).join("");
+
+      $("osRow").innerHTML = [
+        ["windows", "Windows"],
+        ["apple", "macOS"],
+        ["linux", "Linux"],
+      ]
+        .map(
+          ([icon, label]) =>
+            `<div class="os">${logoGlyph(icon, 30)}<span>${label}</span></div>`,
+        )
+        .join("");
+
+      // ── background（背景） ──
+      const canvas = $("bg");
+      const ctx = canvas.getContext("2d");
+
+      const rand = (() => {
+        let s = 20261127;
+        return () => {
+          s = (s * 1664525 + 1013904223) % 4294967296;
+          return s / 4294967296;
+        };
+      })();
+
+      const particles = Array.from({ length: 70 }, () => ({
+        x: rand() * 1920,
+        y: rand() * 1080,
+        r: 0.7 + rand() * 2.1,
+        speed: 12 + rand() * 34,
+        phase: rand() * Math.PI * 2,
+        drift: 8 + rand() * 22,
+        hue: Math.floor(rand() * 6),
+      }));
+
+      const SPARK = [
+        [169, 216, 248], [90, 167, 233], [139, 108, 255],
+        [34, 211, 238], [244, 114, 182], [251, 191, 36],
+      ];
+
+      function drawBg(t, alpha) {
+        ctx.clearRect(0, 0, 1920, 1080);
+        ctx.globalAlpha = alpha;
+
+        const orbs = [
+          [520 + Math.sin(t * 0.31) * 190, 330 + Math.cos(t * 0.24) * 120, 660, "79,158,232", 0.20],
+          [1460 + Math.cos(t * 0.27) * 210, 740 + Math.sin(t * 0.21) * 130, 740, "139,108,255", 0.15],
+          [960 + Math.sin(t * 0.19 + 2) * 270, 120 + Math.cos(t * 0.3 + 1) * 90, 560, "42,212,200", 0.10],
+          [300 + Math.cos(t * 0.23 + 1) * 200, 900 + Math.sin(t * 0.18) * 100, 620, "244,114,182", 0.09],
+        ];
+        for (const [x, y, r, rgb, a] of orbs) {
+          const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+          g.addColorStop(0, `rgba(${rgb},${a})`);
+          g.addColorStop(1, `rgba(${rgb},0)`);
+          ctx.fillStyle = g;
+          ctx.fillRect(0, 0, 1920, 1080);
+        }
+
+        for (const p of particles) {
+          const y = ((p.y - t * p.speed) % 1080 + 1080) % 1080;
+          const x = p.x + Math.sin(t * 0.6 + p.phase) * p.drift;
+          const twinkle = 0.16 + 0.44 * (0.5 + 0.5 * Math.sin(t * 1.4 + p.phase));
+          const [r, g, b] = SPARK[p.hue];
+          ctx.beginPath();
+          ctx.arc(x, y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${r},${g},${b},${twinkle})`;
+          ctx.fill();
+        }
+
+        ctx.globalAlpha = 1;
+      }
+
+      // ── shot driver（ショット制御） ──
+      const SHOTS = [
+        { el: $("s1"), a: 0.0, b: 2.6, s0: 1.06, s1: 1.0, x0: 0, x1: 0 },
+        { el: $("s2"), a: 2.6, b: 5.2, s0: 1.0, s1: 1.05, x0: 0, x1: 0 },
+        { el: $("s3"), a: 5.2, b: 11.6, s0: 0.96, s1: 1.06, x0: 0, x1: 0 },
+        { el: $("s4"), a: 11.6, b: 15.4, s0: 1.04, s1: 0.99, x0: 30, x1: -30 },
+        { el: $("s5"), a: 15.4, b: 18.4, s0: 1.0, s1: 1.05, x0: 0, x1: 0 },
+        { el: $("s6"), a: 18.4, b: 21.8, s0: 1.05, s1: 1.0, x0: 0, x1: 0 },
+        { el: $("s7"), a: 21.8, b: 24.8, s0: 1.05, s1: 1.0, x0: 0, x1: 0 },
+        { el: $("s8"), a: 24.8, b: 27.2, s0: 1.0, s1: 1.04, x0: 0, x1: 0 },
+        { el: $("s9"), a: 27.2, b: 30.0, s0: 1.05, s1: 1.0, x0: 0, x1: 0 },
+      ];
+
+      function driveShots(t) {
+        for (const sh of SHOTS) {
+          const on = t >= sh.a && t < sh.b;
+          if (!on) {
+            sh.el.style.opacity = "0";
+            continue;
+          }
+          const p = (t - sh.a) / (sh.b - sh.a);
+          // 0.22s fade-in so a cut never strobes
+          const fade = clamp01((t - sh.a) / 0.22);
+          sh.el.style.opacity = fade.toFixed(3);
+          const s = mix(sh.s0, sh.s1, p);
+          const x = mix(sh.x0, sh.x1, p);
+          sh.el.style.transform = `translate3d(${x.toFixed(2)}px, 0, 0) scale(${s.toFixed(4)})`;
+        }
+      }
+
+      // ── 1. cold open ──
+      const s1Eyebrow = $("s1Eyebrow");
+      const wordmark = $("wordmark");
+      const shine = $("shine");
+      const shineWrap = $("shineWrap");
+      const s1Lede = $("s1Lede");
+      const ribbon = $("ribbon");
+
+      // ── 2. the claim ──
+      const c1 = $("c1"), c2 = $("c2"), c3 = $("c3"), s2Lede = $("s2Lede");
+
+      // ── 3. installer ──
+      const win = $("win");
+      const opInstall = $("opInstall");
+      const ringFill = $("ringFill");
+      const logRows = [$("l1"), $("l2"), $("l3"), $("l4")];
+
+      // ── 4. catalogue ──
+      const wallHead = $("wallHead");
+      const tiles = [...wall.children];
+
+      // ── 5. roles ──
+      const rolesHead = $("rolesHead");
+      const roleEls = [...roleCol.children];
+
+      // ── 6. gate ──
+      const gateHead = $("gateHead");
+      const checkEls = [...checksEl.children];
+      const stamp = $("stamp");
+
+      // ── 7. terminal ──
+      const term = $("term");
+      const cmdEl = $("cmd");
+      const caret = $("caret");
+      const t1 = $("t1"), t2 = $("t2"), t3 = $("t3");
+
+      // ── 8. works with ──
+      const markEls = [...$("markRow").children];
+
+      // ── 9. sign-off ──
+      const endWord = $("endWord"), endBy = $("endBy"), endUrl = $("endUrl");
+      const osRow = $("osRow"), rule = $("rule");
+
+      // ── cursor（カーソル） ──
+      const cursorEl = $("cursor");
+      const rippleEl = $("ripple");
+
+      // keyframes: [t, x, y]  — the tip of the pointer
+      const CURSOR = [
+        [5.20, 1420, 860],
+        [5.80, 1300, 800],
+        [6.70, 1010, 545],
+        [7.20, 1000, 548],
+        [7.80, 1120, 640],
+        [9.00, 1180, 700],
+        [10.60, 1240, 720],
+        [11.40, 1500, 900],
+        [11.60, 1900, 1100],
+        [12.40, 1080, 470],
+        [13.60, 700, 470],
+        [14.60, 640, 470],
+        [15.30, 1900, 1100],
+      ];
+      const CLICKS = [7.05];
+
+      function cursorAt(t) {
+        if (t < CURSOR[0][0] || t > CURSOR[CURSOR.length - 1][0]) return null;
+        for (let i = 0; i < CURSOR.length - 1; i++) {
+          const [ta, xa, ya] = CURSOR[i];
+          const [tb, xb, yb] = CURSOR[i + 1];
+          if (t >= ta && t <= tb) {
+            const p = eInOutCubic(seg(t, ta, tb));
+            return [mix(xa, xb, p), mix(ya, yb, p)];
+          }
+        }
+        return null;
+      }
+
+      function driveCursor(t) {
+        const p = cursorAt(t);
+        if (!p) {
+          cursorEl.style.opacity = "0";
+          rippleEl.style.opacity = "0";
+          return;
+        }
+        cursorEl.style.opacity = "1";
+        cursorEl.style.transform = `translate3d(${p[0].toFixed(1)}px, ${p[1].toFixed(1)}px, 0)`;
+
+        // press squish for 0.16s after each click
+        let press = 0;
+        for (const c of CLICKS) {
+          const q = seg(t, c, c + 0.16);
+          if (q > 0 && q < 1) press = Math.sin(q * Math.PI);
+        }
+        cursorEl.style.scale = String(1 - press * 0.16);
+
+        let rip = 0;
+        for (const c of CLICKS) {
+          const q = seg(t, c, c + 0.55);
+          if (q > 0 && q < 1) rip = q;
+        }
+        if (rip > 0) {
+          rippleEl.style.opacity = String((1 - rip) * 0.85);
+          rippleEl.style.transform = `translate3d(${p[0].toFixed(1)}px, ${p[1].toFixed(1)}px, 0) scale(${mix(0.4, 4.2, eOutQuart(rip)).toFixed(3)})`;
+        } else {
+          rippleEl.style.opacity = "0";
+        }
+      }
+
+      // ── the renderer（描画） ──
+      function render(t) {
+        drawBg(t, eOutCubic(seg(t, 0, 1.2)));
+        $("grid").style.opacity = (0.9 * eOutCubic(seg(t, 0.4, 1.8))).toFixed(3);
+
+        driveShots(t);
+        driveCursor(t);
+
+        // ── 1. cold open: 0 → 2.6
+        ribbon.style.width = `${mix(0, 420, eOutQuart(seg(t, 0.15, 1.0))).toFixed(1)}px`;
+        ribbon.style.opacity = String(seg(t, 0.1, 0.5));
+
+        const ep = eOutExpo(seg(t, 0.35, 1.5));
+        s1Eyebrow.style.opacity = ep.toFixed(3);
+        s1Eyebrow.style.letterSpacing = `${mix(26, 9, ep).toFixed(2)}px`;
+
+        wordmark.style.opacity = eOutCubic(seg(t, 0.55, 1.5)).toFixed(3);
+        wordmark.style.transform = `translate3d(0, ${mix(56, 0, eOutQuart(seg(t, 0.55, 1.9))).toFixed(1)}px, 0)`;
+
+        const sh = seg(t, 1.45, 2.55);
+        shine.style.opacity = sh > 0 && sh < 1 ? "1" : "0";
+        shine.style.backgroundPosition = `${mix(-30, 130, eInOutCubic(sh)).toFixed(2)}% 0`;
+
+        s1Lede.style.opacity = eOutCubic(seg(t, 1.35, 2.1)).toFixed(3);
+        s1Lede.style.transform = `translate3d(0, ${mix(26, 0, eOutQuart(seg(t, 1.35, 2.3))).toFixed(1)}px, 0)`;
+
+        // ── 2. the claim: 2.6 → 5.2
+        const claims = [
+          [c1, 2.78],
+          [c2, 3.06],
+          [c3, 3.34],
+        ];
+        for (const [el, at] of claims) {
+          const p = eOutQuart(seg(t, at, at + 0.55));
+          el.style.opacity = eOutCubic(seg(t, at, at + 0.4)).toFixed(3);
+          el.style.transform = `translate3d(0, ${mix(48, 0, p).toFixed(1)}px, 0)`;
+        }
+        s2Lede.style.opacity = eOutCubic(seg(t, 4.0, 4.7)).toFixed(3);
+        s2Lede.style.transform = `translate3d(0, ${mix(22, 0, eOutQuart(seg(t, 4.0, 4.8))).toFixed(1)}px, 0)`;
+
+        // ── 3. installer: 5.2 → 11.6
+        const winIn = eOutQuart(seg(t, 5.2, 6.0));
+        win.style.transform = `translate3d(0, ${mix(46, 0, winIn).toFixed(1)}px, 0)`;
+        win.style.opacity = winIn.toFixed(3);
+
+        // the Install card lifts under the pointer, then flashes on click
+        const hover = eOutCubic(seg(t, 6.5, 6.95));
+        const press = Math.sin(Math.PI * seg(t, 7.05, 7.3));
+        opInstall.style.transform =
+          `translate3d(0, ${(-6 * hover).toFixed(2)}px, 0) scale(${(1 - press * 0.02).toFixed(4)})`;
+        opInstall.style.boxShadow =
+          `0 0 0 4px rgba(90,167,233,${(0.10 + hover * 0.16).toFixed(3)}), ` +
+          `0 ${(18 + hover * 14).toFixed(0)}px ${(40 + hover * 24).toFixed(0)}px rgba(43,127,212,${(0.25 + hover * 0.2).toFixed(3)})`;
+
+        // progress ring fills once the click lands
+        const prog = eInOutQuart(seg(t, 7.25, 10.9));
+        ringFill.setAttribute("stroke-dashoffset", (314.16 * (1 - prog)).toFixed(2));
+
+        const logAt = [8.0, 8.75, 9.55, 10.5];
+        logRows.forEach((el, i) => {
+          const p = eOutCubic(seg(t, logAt[i], logAt[i] + 0.35));
+          el.style.opacity = p.toFixed(3);
+          el.style.transform = `translate3d(${mix(-16, 0, p).toFixed(1)}px, 0, 0)`;
+        });
+
+        // ── 4. catalogue: 11.6 → 15.4
+        wallHead.style.opacity = eOutCubic(seg(t, 11.65, 12.35)).toFixed(3);
+        wallHead.style.transform = `translate3d(0, ${mix(30, 0, eOutQuart(seg(t, 11.65, 12.5))).toFixed(1)}px, 0)`;
+
+        tiles.forEach((el, i) => {
+          const at = 11.85 + (i % 6) * 0.06 + Math.floor(i / 6) * 0.09;
+          const p = eOutBack(seg(t, at, at + 0.5));
+          el.style.opacity = eOutCubic(seg(t, at, at + 0.32)).toFixed(3);
+          el.style.transform = `translate3d(0, ${mix(34, 0, p).toFixed(1)}px, 0) scale(${mix(0.94, 1, p).toFixed(3)})`;
+        });
+
+        // the picked tile gets a slow pulse once the camera has settled
+        const pickPulse = 0.5 + 0.5 * Math.sin((t - 13.6) * 3.2);
+        const pick = tiles.find((el) => el.classList.contains("pick"));
+        if (pick) {
+          const lift = eOutCubic(seg(t, 13.5, 14.1));
+          pick.style.transform =
+            `translate3d(0, ${(-10 * lift).toFixed(1)}px, 0) scale(${(1 + lift * 0.06).toFixed(3)})`;
+          pick.style.boxShadow =
+            `0 0 0 4px rgba(167,139,250,${(0.12 + pickPulse * 0.14).toFixed(3)}), ` +
+            `0 26px 64px rgba(167,139,250,${(0.22 + pickPulse * 0.16).toFixed(3)})`;
+        }
+
+        // ── 5. roles: 15.4 → 18.4
+        rolesHead.style.opacity = eOutCubic(seg(t, 15.45, 16.2)).toFixed(3);
+        rolesHead.style.transform = `translate3d(${mix(-30, 0, eOutQuart(seg(t, 15.45, 16.3))).toFixed(1)}px, 0, 0)`;
+
+        roleEls.forEach((el, i) => {
+          const at = 15.6 + i * 0.075;
+          const p = eOutQuart(seg(t, at, at + 0.42));
+          el.style.opacity = eOutCubic(seg(t, at, at + 0.3)).toFixed(3);
+          el.style.transform = `translate3d(${mix(40, 0, p).toFixed(1)}px, 0, 0)`;
+        });
+
+        const hotPulse = 0.5 + 0.5 * Math.sin((t - 17.0) * 3.4);
+        const hot = roleEls.find((el) => el.classList.contains("hot"));
+        if (hot) {
+          const lift = eOutCubic(seg(t, 17.0, 17.5));
+          hot.style.transform = `translate3d(${(mix(0, -14, lift)).toFixed(1)}px, 0, 0)`;
+          hot.style.boxShadow =
+            `0 0 0 4px rgba(244,114,182,${(0.10 + hotPulse * 0.14).toFixed(3)}), ` +
+            `0 18px 44px rgba(244,114,182,${(0.16 + hotPulse * 0.14).toFixed(3)})`;
+        }
+
+        // ── 6. gate: 18.4 → 21.8
+        gateHead.style.opacity = eOutCubic(seg(t, 18.45, 19.1)).toFixed(3);
+        gateHead.style.transform = `translate3d(0, ${mix(-24, 0, eOutQuart(seg(t, 18.45, 19.2))).toFixed(1)}px, 0)`;
+
+        checkEls.forEach((el, i) => {
+          const at = 18.9 + i * 0.052;
+          const p = seg(t, at, at + 0.2);
+          el.classList.toggle("on", p > 0.5);
+          el.style.opacity = (0.35 + 0.65 * eOutCubic(seg(t, 18.7 + i * 0.03, 19.1 + i * 0.03))).toFixed(3);
+          el.style.transform = `scale(${mix(0.92, 1, eOutBack(p)).toFixed(3)})`;
+        });
+
+        const st = eOutBack(seg(t, 21.05, 21.5));
+        stamp.style.opacity = eOutCubic(seg(t, 21.05, 21.35)).toFixed(3);
+        stamp.style.transform = `scale(${mix(1.35, 1, st).toFixed(3)})`;
+
+        // ── 7. terminal: 21.8 → 24.8
+        const termIn = eOutQuart(seg(t, 21.82, 22.5));
+        term.style.transform = `translate3d(0, ${mix(50, 0, termIn).toFixed(1)}px, 0) scale(${mix(0.96, 1, termIn).toFixed(4)})`;
+        term.style.opacity = termIn.toFixed(3);
+
+        const typed = Math.floor(seg(t, 22.05, 23.05) * CMD.length);
+        cmdEl.textContent = CMD.slice(0, typed);
+        const typing = t > 22.05 && t < 23.07;
+        caret.style.opacity = typing
+          ? "1"
+          : 0.5 + 0.5 * Math.sin((t - 23.07) * 9) > 0.5
+            ? "1"
+            : "0";
+
+        const outs = [
+          [t1, 23.15],
+          [t2, 23.33],
+          [t3, 23.51],
+        ];
+        for (const [el, at] of outs) {
+          const p = eOutCubic(seg(t, at, at + 0.22));
+          el.style.opacity = p.toFixed(3);
+          el.style.transform = `translate3d(${mix(-14, 0, p).toFixed(1)}px, 0, 0)`;
+        }
+
+        // ── 8. works with: 24.8 → 27.2
+        markEls.forEach((el, i) => {
+          const at = 24.95 + i * 0.1;
+          const p = eOutBack(seg(t, at, at + 0.5));
+          el.style.opacity = eOutCubic(seg(t, at, at + 0.32)).toFixed(3);
+          el.style.transform = `translate3d(0, ${mix(40, 0, p).toFixed(1)}px, 0) scale(${mix(0.9, 1, p).toFixed(3)})`;
+        });
+
+        // ── 9. sign-off: 27.2 → 30
+        const endIn = eOutCubic(seg(t, 27.3, 28.2));
+        endWord.style.opacity = endIn.toFixed(3);
+        endWord.style.transform = `translate3d(0, ${mix(44, 0, eOutQuart(seg(t, 27.3, 28.4))).toFixed(1)}px, 0) scale(${mix(0.95, 1, eOutQuart(seg(t, 27.3, 28.6))).toFixed(4)})`;
+        endBy.style.opacity = eOutCubic(seg(t, 27.9, 28.6)).toFixed(3);
+        endUrl.style.opacity = eOutCubic(seg(t, 28.15, 28.85)).toFixed(3);
+        osRow.style.opacity = (0.9 * eOutCubic(seg(t, 28.4, 29.1))).toFixed(3);
+        rule.style.opacity = (0.9 * eOutCubic(seg(t, 0.6, 1.8))).toFixed(3);
+        rule.style.backgroundPosition = `${(seg(t, 0, 1) * 100).toFixed(1)}% 0`;
+      }
+
+      // ── drive it（駆動） ──
+      window.seek = (t) => {
+        render(Math.max(0, Math.min(DUR, t)));
+        return true;
+      };
+      window.__DUR = DUR;
+
+      const params = new URLSearchParams(location.search);
+      const frozen = params.get("t");
+
+      // render-reel.mjs drives the clock itself, so the live loop must stay
+      // off while capturing. （キャプチャ中は自走ループを止める）
+      const offline = params.has("render");
+
+      if (frozen !== null) {
+        window.seek(parseFloat(frozen));
+      } else if (!offline) {
+        const start = performance.now();
+        const loop = (now) => {
+          window.seek(((now - start) / 1000) % DUR);
+          requestAnimationFrame(loop);
+        };
+        requestAnimationFrame(loop);
+      }
+    </script>
+  </body>
+</html>

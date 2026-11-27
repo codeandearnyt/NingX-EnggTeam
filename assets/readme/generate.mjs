@@ -587,8 +587,97 @@ function footer() {
 
 // ── write（書き出し） ────────────────────────────────────────────────
 
+// ── marks.svg（ブランドマーク） ─────────────────────────────────────
+
+function marks() {
+  // Brand tints. These only colour the card and the glow behind the mark —
+  // the mark itself keeps the fills it shipped with.
+  const MARKS = [
+    ["Claude Code", "claude", "#d97757"],
+    ["Codex", "codex", "#8b7bff"],
+    ["OpenCode", "opencode", "#d7dee8"],
+    ["Cursor", "cursor", "#d6d5d2"],
+    ["Copilot", "copilot", "#a78bfa"],
+    ["Windows", "windows", "#0078d4"],
+    ["macOS", "apple", "#d9dee3"],
+    ["Linux", "linux", "#fcc624"],
+  ];
+
+  const M = 24;
+  const GAP = 12;
+  const CW = (1200 - M * 2 - GAP * (MARKS.length - 1)) / MARKS.length;
+
+  const cells = MARKS.map(([label, icon, brand], i) => {
+    const x = M + i * (CW + GAP);
+    const cx = x + CW / 2;
+    const begin = (-i * 0.55).toFixed(2);
+    return `
+  <g>
+    <circle cx="${cx.toFixed(1)}" cy="71" r="30" fill="${brand}" opacity="0.16" filter="url(#soft)">
+      <animate attributeName="opacity" values="0.10;0.28;0.10" dur="5.4s"
+               begin="${begin}s" repeatCount="indefinite"
+               calcMode="spline" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    </circle>
+    <rect x="${x.toFixed(1)}" y="23" width="${CW.toFixed(1)}" height="150" rx="24"
+          fill="${brand}" fill-opacity="0.09"
+          stroke="${brand}" stroke-opacity="0.30" stroke-width="1">
+      <animate attributeName="stroke-opacity" values="0.24;0.52;0.24" dur="5.4s"
+               begin="${begin}s" repeatCount="indefinite"
+               calcMode="spline" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    </rect>
+    <rect x="${(x + 1).toFixed(1)}" y="24" width="${(CW - 2).toFixed(1)}" height="70" rx="23"
+          fill="url(#gel)" opacity="0.5"/>
+    ${logoGlyph(icon, cx - 23, 48, 46)}
+    <text x="${cx.toFixed(1)}" y="140" text-anchor="middle" font-family="${FONT}"
+          font-size="12.5" font-weight="600" fill="#d3e4f4">${esc(label)}</text>
+  </g>`;
+  }).join("");
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="196" viewBox="0 0 1200 196" role="img" aria-label="Works with Claude Code, Codex, OpenCode, Cursor, Copilot, Windows, macOS and Linux">
+  <title>Works with</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#06111c"/>
+      <stop offset="0.55" stop-color="#0d2740"/>
+      <stop offset="1" stop-color="#06111c"/>
+    </linearGradient>
+    <linearGradient id="gel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="rowSweep" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#ffffff" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="soft" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="9"/>
+    </filter>
+    <clipPath id="rowClip">
+      <rect x="0.75" y="0.75" width="1198.5" height="194.5" rx="24"/>
+    </clipPath>
+  </defs>
+
+  <rect x="0.75" y="0.75" width="1198.5" height="194.5" rx="24"
+        fill="url(#bg)" stroke="#123a63" stroke-width="1.5"/>
+
+${cells}
+
+  <g clip-path="url(#rowClip)">
+    <rect x="-260" y="23" width="240" height="150" fill="url(#rowSweep)" transform="skewX(-16)">
+      <animate attributeName="x" values="-260;1240" dur="7.5s" begin="0.6s"
+               repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1"/>
+    </rect>
+  </g>
+</svg>
+`;
+}
+
+// ── write（書き出し） ───────────────────────────────────────────────
+
 const files = {
   "masthead.svg": banner(),
+  "marks.svg": marks(),
   "typing.svg": typing(),
   "author.svg": author(),
   "divider.svg": divider(),

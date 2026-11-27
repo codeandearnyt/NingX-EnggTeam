@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/masthead.svg" alt="NingX-EnggTeam — senior web engineering team for Claude Code, Codex, OpenCode, Cursor and Copilot on Windows, macOS and Linux" width="100%" />
+<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/masthead.svg" alt="NingX-EnggTeam — senior web engineering team. Works with Claude Code, Codex, OpenCode, Cursor and Copilot on Windows, macOS and Linux." width="100%" />
 
 <img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/typing.svg" alt="24 named UI types, 12 senior roles, one guard" width="100%" />
 
@@ -50,28 +50,28 @@ The point is not to describe good web work. **The point is to make a model produ
 <img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/divider.svg" alt="" width="100%" />
 </div>
 
-## Contents
-
-| Understand | Use | Build |
-|:---|:---|:---|
-| [The 30-second version](#the-30-second-version)<br>[The problem this solves](#the-problem-this-solves)<br>[What is inside](#what-is-inside)<br>[The ten non-negotiables](#the-ten-non-negotiables) | [Install](#install)<br>[Desktop app](#desktop-app)<br>[Use](#use)<br>[The mixing rule](#the-mixing-rule) | [The anti-slop gate](#the-anti-slop-gate)<br>[The guard](#the-guard)<br>[The precedence order](#the-precedence-order)<br>[Works with](#works-with) |
-
-<div align="center">
-<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/divider.svg" alt="" width="100%" />
-</div>
-
 ## Watch the reel
 
 <div align="center">
 
 <a href="https://github.com/codeandearnyt/NingX-EnggTeam/releases/download/v1.0.1/reel-30s.mp4">
-<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/reel-loop.gif" alt="NingX-EnggTeam — the 30-second reel" width="100%" />
+<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/reel-loop.gif" alt="NingX-EnggTeam — the 30-second reel, playing" width="100%" />
 </a>
 
 **Thirty seconds, 1080p, no narration.** Install, the 24-type catalogue, the twelve roles, the gate, and one command.<br>
 <sub>[Full reel · 1080p](https://github.com/codeandearnyt/NingX-EnggTeam/releases/download/v1.0.1/reel-30s.mp4) · [720p](https://github.com/codeandearnyt/NingX-EnggTeam/releases/download/v1.0.1/reel-30s-720.mp4) · [poster](https://github.com/codeandearnyt/NingX-EnggTeam/releases/download/v1.0.1/reel-poster.png)</sub>
 
 </div>
+
+<div align="center">
+<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/divider.svg" alt="" width="100%" />
+</div>
+
+## Contents
+
+| Understand | Use | Build |
+|:---|:---|:---|
+| [Watch the reel](#watch-the-reel)<br>[The 30-second version](#the-30-second-version)<br>[The problem this solves](#the-problem-this-solves)<br>[What is inside](#what-is-inside)<br>[The ten non-negotiables](#the-ten-non-negotiables) | [Install](#install)<br>[Desktop app](#desktop-app)<br>[Use](#use)<br>[The mixing rule](#the-mixing-rule) | [The anti-slop gate](#the-anti-slop-gate)<br>[The guard](#the-guard)<br>[The precedence order](#the-precedence-order)<br>[Works with](#works-with) |
 
 <div align="center">
 <img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/divider.svg" alt="" width="100%" />
@@ -416,6 +416,12 @@ A rule never overrides the constitution. A skill never overrides a rule. An agen
 </div>
 
 ## Works with
+
+<div align="center">
+
+<img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/marks.svg" alt="Works with Claude Code, Codex, OpenCode, Cursor, Copilot on Windows, macOS and Linux" width="100%" />
+
+</div>
 
 | Harness | Constitution | Skills | Rules | Commands | Hooks |
 |---|---|---|---|---|---|

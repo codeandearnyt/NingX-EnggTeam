@@ -45,9 +45,22 @@ release/
 # README asset build artefacts
 assets/readme/_ad.built.html
 assets/readme/_reel.built.html
+assets/readme/_stills.built.html
+assets/readme/_poster.tmp.png
+assets/readme/_loop.pal.png
+assets/readme/still-*.png
 
 # Rendered video masters live on the GitHub release, not in git
 assets/readme/reel-30s.mp4
+assets/readme/reel-30s-120.mp4
 assets/readme/reel-30s-720.mp4
+assets/readme/reel-4k.mp4
+assets/readme/reel-30s.wav
+assets/readme/_preview.mp4
+assets/readme/_preview-720.mp4
+assets/readme/_reel-part.mp4
+assets/readme/_reel-part-120.mp4
+assets/readme/_reel-part-720.mp4
+assets/readme/_reel-part-4k.mp4
 assets/readme/ningx-spot.mp4
 assets/readme/ningx-spot-720.mp4

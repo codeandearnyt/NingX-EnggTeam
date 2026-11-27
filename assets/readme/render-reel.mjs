@@ -2,28 +2,42 @@
  * render-reel.mjs — renders reel.html (the 30-second showcase) to MP4.
  * reel.html（30 秒ショーケース）を 1 フレームずつ描画して MP4 にする。
  *
- * Same engine as render-ad.mjs: no dependencies, Node's global WebSocket drives
- * headless Chrome over the DevTools Protocol, frames stream straight into
- * ffmpeg over stdin so nothing large touches the disk.
+ * No dependencies. Node's global WebSocket drives headless Chrome over the
+ * DevTools Protocol, frames stream straight into ffmpeg over stdin so nothing
+ * large touches the disk.
  *
- *   node assets/readme/render-reel.mjs
- *   node assets/readme/render-reel.mjs --fps 60
- *   node assets/readme/render-reel.mjs --from 5.2 --to 11.6   # one shot only
+ * The page is authored in a 1920x1080 design space. `--scale 2` sets the
+ * device scale factor, so Chrome rasterises the same layout at 3840x2160 and
+ * the screenshot comes back at 4K. One capture feeds every deliverable.
+ *
+ *   node assets/readme/render-reel.mjs                 # 1080p120 + 1080p60 + 720p60
+ *   node assets/readme/render-reel.mjs --fps 60        # no 120 tier
+ *   node assets/readme/render-reel.mjs --scale 2       # adds reel-4k.mp4 (60fps)
+ *   node assets/readme/render-reel.mjs --from 5.2 --to 11.6
  *
  * Output:
- *   assets/readme/reel-30s.mp4        1920x1080 master
- *   assets/readme/reel-30s-720.mp4    1280x720 for chat embeds
- *   assets/readme/reel-poster.png     still at 28.4s
+ *   assets/readme/reel-30s-120.mp4    1920x1080 120fps — the smooth one
+ *   assets/readme/reel-30s.mp4        1920x1080  60fps — what browsers play
+ *   assets/readme/reel-30s-720.mp4    1280x720   60fps — chat embeds
+ *   assets/readme/reel-4k.mp4         3840x2160  60fps — only with --scale 2
+ *   assets/readme/reel-poster.png     still at 28.6s, 1920 wide
  *
  * Made by Nitin Sharma.
  */
 
 import { spawn } from "node:child_process";
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { LOGOS } from "./logos.mjs";
+import { GITHUB_PATH } from "./github.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 
@@ -33,11 +47,18 @@ const arg = (name, fallback) => {
   const i = argv.indexOf(`--${name}`);
   return i === -1 ? fallback : argv[i + 1];
 };
-const FPS = Number(arg("fps", 30));
-const KEEP = argv.includes("--keep");
+const has = (name) => argv.includes(`--${name}`);
+
+const FPS = Number(arg("fps", 120));
+const SCALE = Number(arg("scale", 1));
+const KEEP = has("keep");
 const FROM = Number(arg("from", 0));
 const TO = arg("to", null);
 const PORT = Number(arg("port", 9334));
+const NAME = arg("name", "reel-30s");
+const AUDIO = arg("audio", existsSync(join(HERE, "reel-30s.wav")) ? join(HERE, "reel-30s.wav") : null);
+const POSTER = !has("no-poster");
+const POSTER_AT = Number(arg("poster-at", 28.6));
 const CHROME = arg(
   "chrome",
   join(
@@ -53,9 +74,24 @@ if (!existsSync(CHROME)) {
 
 // ── build a self-contained page（自己完結のページを組む） ──
 const template = readFileSync(join(HERE, "reel.html"), "utf8");
-const built = template.replace("/*__LOGOS__*/", JSON.stringify(LOGOS));
+const portraitPath = join(HERE, "portrait-lg.jpg");
+const portrait = existsSync(portraitPath)
+  ? "data:image/jpeg;base64," + readFileSync(portraitPath).toString("base64")
+  : "";
+
+const built = template
+  .replace("/*__LOGOS__*/", JSON.stringify(LOGOS))
+  .replace("/*__PORTRAIT__*/", portrait);
+
 const buildPath = join(HERE, "_reel.built.html");
 writeFileSync(buildPath, built, "utf8");
+
+// The GitHub mark rides in on a second global so the template stays clean.
+const withGh = built.replace(
+  '<script id="logos">',
+  `<script>window.GITHUB_PATH = ${JSON.stringify(GITHUB_PATH)};</script>\n    <script id="logos">`,
+);
+writeFileSync(buildPath, withGh, "utf8");
 
 // ── small CDP client（小さな CDP クライアント） ──
 class CDP {
@@ -175,7 +211,7 @@ await cdp.send("Runtime.enable");
 await cdp.send("Emulation.setDeviceMetricsOverride", {
   width: 1920,
   height: 1080,
-  deviceScaleFactor: 1,
+  deviceScaleFactor: SCALE,
   mobile: false,
 });
 
@@ -209,43 +245,92 @@ if (!duration) {
 const START = Math.max(0, Math.min(duration, FROM));
 const END = TO === null ? duration : Math.max(START, Math.min(duration, Number(TO)));
 
-// Give webfonts and the first canvas paint a beat to settle.
-await sleep(800);
+// Give the webfonts, the portrait and the first canvas paint a beat to settle.
+await sleep(900);
 
 const total = Math.round((END - START) * FPS);
-console.log(`rendering ${total} frames at ${FPS}fps — ${START}s → ${END}s, 1920x1080`);
+const OUT_W = 1920 * SCALE;
+const OUT_H = 1080 * SCALE;
+console.log(
+  `rendering ${total} frames at ${FPS}fps — ${START}s → ${END}s, ${OUT_W}x${OUT_H}` +
+    (AUDIO ? `, audio ${AUDIO.split(/[\\/]/).pop()}` : ", silent"),
+);
 
 // ── ffmpeg sinks（ffmpeg へ流す） ──
-function openEncoder(outPath, width, crf) {
-  const ff = spawn(
-    "ffmpeg",
-    [
-      "-hide_banner",
-      "-loglevel", "error",
-      "-f", "image2pipe",
-      "-framerate", String(FPS),
-      "-i", "-",
-      "-vf", `scale=${width}:-2:flags=lanczos`,
-      "-c:v", "libx264",
-      "-preset", "slow",
-      "-crf", String(crf),
-      "-pix_fmt", "yuv420p",
-      "-profile:v", "high",
-      "-movflags", "+faststart",
-      "-y", outPath,
-    ],
-    { stdio: ["pipe", "inherit", "inherit"] },
+const partial = TO !== null;
+
+function openEncoder(outPath, width, crf, preset, outFps = FPS, maxMbps = null) {
+  const args = [
+    "-hide_banner",
+    "-loglevel", "error",
+    "-f", "image2pipe",
+    "-framerate", String(FPS),
+    "-i", "-",
+  ];
+
+  if (AUDIO && !partial) {
+    args.push("-ss", String(START), "-i", AUDIO);
+  }
+
+  // Downscale and drop frames in one chain, so every tier is cut from the same
+  // captured JPEG stream — no second decode pass. （同じ素材から各画質を作る）
+  const chain = [];
+  if (width && width !== OUT_W) chain.push(`scale=${width}:-2:flags=lanczos`);
+  if (outFps !== FPS) chain.push(`fps=${outFps}`);
+  if (chain.length) args.push("-vf", chain.join(","));
+
+  args.push(
+    "-c:v", "libx264",
+    "-preset", preset,
+    "-crf", String(crf),
+    // B-frames buy back bitrate on a piece that is mostly slow drift and type.
+    // （遅い動きが主体なので B フレームで圧縮効率を取る）
+    "-bf", "2",
+    "-pix_fmt", "yuv420p",
+    "-profile:v", "high",
+    "-g", String(outFps * 2),
+    "-movflags", "+faststart",
   );
-  return ff;
+
+  // CRF alone starves fast motion at high frame rates: the encoder spends the
+  // budget on the first fast pan and smears everything after it. A ceiling with
+  // a two-second buffer keeps the cursor and the cuts clean without inflating
+  // the flat-background shots. （高 fps で動きが破綻しないよう上限を張る）
+  if (maxMbps) {
+    args.push("-maxrate", `${maxMbps}M`, "-bufsize", `${maxMbps * 2}M`);
+  }
+
+  if (AUDIO && !partial) {
+    args.push("-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-ac", "2", "-shortest");
+  }
+
+  args.push("-y", outPath);
+
+  return spawn("ffmpeg", args, { stdio: ["pipe", "inherit", "inherit"] });
 }
 
-const partial = TO !== null;
-const masterPath = join(HERE, partial ? "_reel-part.mp4" : "reel-30s.mp4");
-const smallPath = join(HERE, partial ? "_reel-part-720.mp4" : "reel-30s-720.mp4");
+const fourKPath = join(HERE, partial ? "_reel-part-4k.mp4" : "reel-4k.mp4");
+const highPath = join(HERE, partial ? "_reel-part-120.mp4" : `${NAME}-120.mp4`);
+const masterPath = join(HERE, partial ? "_reel-part.mp4" : `${NAME}.mp4`);
+const smallPath = join(HERE, partial ? "_reel-part-720.mp4" : `${NAME}-720.mp4`);
 const posterPath = join(HERE, "reel-poster.png");
 
-const master = openEncoder(masterPath, 1920, 17);
-const small = openEncoder(smallPath, 1280, 21);
+// 4K only makes sense when the capture is actually 4K.
+const want4k = SCALE >= 2 && !partial;
+
+// ── one capture, four sinks（一括エンコード） ──
+// Every tier is muxed from the same pipe. The 120 tier is the smooth one; the
+// 60 tier is what browsers and phones actually play; 720 is for chat embeds.
+const sinks = [];
+const addSink = (path, ...rest) => {
+  const p = openEncoder(path, ...rest);
+  sinks.push({ path, proc: p });
+};
+
+if (FPS >= 120 && !partial) addSink(highPath, 1920, 18, "slow", 120, 28);
+addSink(masterPath, 1920, 18, "slow", 60, 16);
+if (!partial) addSink(smallPath, 1280, 20, "medium", 60, 8);
+if (want4k) addSink(fourKPath, OUT_W, 18, "medium", 60, 55);
 
 const write = (stream, buf) =>
   new Promise((res) => {
@@ -255,7 +340,7 @@ const write = (stream, buf) =>
 
 // ── frame loop（フレームループ） ──
 const t0 = Date.now();
-let posterDone = partial;
+let posterDone = partial || !POSTER;
 
 for (let f = 0; f < total; f++) {
   const t = START + f / FPS;
@@ -280,11 +365,10 @@ for (let f = 0; f < total; f++) {
   });
 
   const buf = Buffer.from(shot.data, "base64");
-  await write(master.stdin, buf);
-  await write(small.stdin, buf);
+  for (const s of sinks) await write(s.proc.stdin, buf);
 
-  // Poster lands on the sign-off, where the frame reads best as a still.
-  if (!posterDone && t >= 28.4) {
+  // Poster lands on the end card, where the frame reads best as a still.
+  if (!posterDone && t >= POSTER_AT) {
     const png = await cdp.send("Page.captureScreenshot", {
       format: "png",
       fromSurface: true,
@@ -294,32 +378,61 @@ for (let f = 0; f < total; f++) {
     posterDone = true;
   }
 
-  if (f % 60 === 0) {
+  if (f % Math.max(1, Math.round(FPS)) === 0) {
     const pct = ((f / total) * 100).toFixed(0).padStart(3);
     const secs = ((Date.now() - t0) / 1000).toFixed(0);
     process.stdout.write(`  ${pct}%  frame ${f}/${total}  ${secs}s\n`);
   }
 }
 
-master.stdin.end();
-small.stdin.end();
+for (const s of sinks) s.proc.stdin.end();
 
-await Promise.all([
-  new Promise((r) => master.on("close", r)),
-  new Promise((r) => small.on("close", r)),
-]);
+// Every sink has to finish muxing before the derived passes read its file.
+await Promise.all(
+  sinks.map(
+    (s) =>
+      new Promise((res, rej) => {
+        s.proc.on("close", (c) => (c === 0 ? res() : rej(new Error(`${s.path} exited ${c}`))));
+      }),
+  ),
+);
 
 // If the poster timestamp was past the last frame, grab it explicitly.
-if (!posterDone) {
-  await cdp.send("Runtime.evaluate", { expression: "window.seek(28.4)" });
+if (!posterDone && POSTER) {
+  await cdp.send("Runtime.evaluate", {
+    expression: `window.seek(${POSTER_AT})`,
+    returnByValue: true,
+  });
   const png = await cdp.send("Page.captureScreenshot", { format: "png" });
   writeFileSync(posterPath, Buffer.from(png.data, "base64"));
 }
 
+// ── derived outputs（派生ファイル） ──
+const run = (args) =>
+  new Promise((res, rej) => {
+    const p = spawn("ffmpeg", args, { stdio: "inherit" });
+    p.on("close", (c) => (c === 0 ? res() : rej(new Error(`ffmpeg exited ${c}`))));
+  });
+
+if (!partial && existsSync(posterPath)) {
+  // ffmpeg refuses to read and write the same PNG, so the rescale goes through
+  // a temp file. （同一パスの読み書きは不可）
+  console.log("  → poster 1920");
+  const posterTmp = join(HERE, "_poster.tmp.png");
+  await run([
+    "-hide_banner", "-loglevel", "error",
+    "-i", posterPath,
+    "-vf", "scale=1920:-2:flags=lanczos",
+    "-y", posterTmp,
+  ]);
+  rmSync(posterPath, { force: true });
+  writeFileSync(posterPath, readFileSync(posterTmp));
+  rmSync(posterTmp, { force: true });
+}
+
 console.log(`done in ${((Date.now() - t0) / 1000).toFixed(0)}s`);
-console.log(`  ${masterPath}`);
-console.log(`  ${smallPath}`);
-if (!partial) console.log(`  ${posterPath}`);
+for (const s of sinks) console.log(`  ${s.path}`);
+if (!partial && POSTER && existsSync(posterPath)) console.log(`  ${posterPath}`);
 
 cleanup();
 process.exit(0);

@@ -58,8 +58,8 @@ The point is not to describe good web work. **The point is to make a model produ
 <img src="https://raw.githubusercontent.com/codeandearnyt/NingX-EnggTeam/main/assets/readme/reel-loop.gif" alt="NingX-EnggTeam — the 30-second reel, playing" width="100%" />
 </a>
 
-**Thirty seconds, 1080p, no narration.** Install, the 24-type catalogue, the twelve roles, the gate, and one command.<br>
-<sub>[Full reel · 1080p](https://github.com/codeandearnyt/NingX-EnggTeam/releases/download/v1.0.1/reel-30s.mp4) · [720p](https://github.com/codeandearnyt/NingX-EnggTeam/releases/download/v1.0.1/reel-30s-720.mp4) · [poster](https://github.com/codeandearnyt/NingX-EnggTeam/releases/download/v1.0.1/reel-poster.png)</sub>
+**Thirty seconds, sixteen scenes, 120 fps.** Install, the 24-type catalogue, the twelve roles, the gate, and one command — scored and sound-designed.<br>
+<sub>[1080p · 120 fps](https://github.com/codeandearnyt/NingX-EnggTeam/releases/download/v1.0.1/reel-30s-120.mp4) · [1080p · 60 fps](https://github.com/codeandearnyt/NingX-EnggTeam/releases/download/v1.0.1/reel-30s.mp4) · [720p](https://github.com/codeandearnyt/NingX-EnggTeam/releases/download/v1.0.1/reel-30s-720.mp4) · [poster](https://github.com/codeandearnyt/NingX-EnggTeam/releases/download/v1.0.1/reel-poster.png)</sub>
 
 </div>
 

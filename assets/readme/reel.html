@@ -10,8 +10,9 @@
       can be asked for at any timestamp and always comes out the same. That is
       what makes the capture deterministic and the encode clean.
 
-      Nine shots, hard cuts, each with its own slow camera push. One cursor
-      does the pointing so the product explains itself.
+      Sixteen shots on the storyboard grid, hard cuts, one cursor doing the
+      pointing. Design space is 1920x1080; the renderer asks for a 2x device
+      scale factor and gets 3840x2160 out of the same layout.
 
       Open in a browser to watch it loop. Append ?t=12.5 to freeze.
 
@@ -31,6 +32,7 @@
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
           "Helvetica Neue", Arial, sans-serif;
         -webkit-font-smoothing: antialiased;
+        text-rendering: geometricPrecision;
       }
 
       #stage {
@@ -42,7 +44,7 @@
         transform-origin: 0 0;
       }
 
-      #bg { position: absolute; inset: 0; }
+      #bg { position: absolute; inset: 0; width: 1920px; height: 1080px; }
 
       #grid {
         position: absolute;
@@ -53,22 +55,27 @@
         opacity: 0;
       }
 
+      /* Corner falloff only. A centred ellipse this wide used to grey out the
+         left third of every headline; the frame still closes, the type stays
+         clean. （四隅だけを暗くする） */
       #vignette {
         position: absolute;
         inset: 0;
         background: radial-gradient(
-          ellipse 78% 62% at 50% 46%,
-          transparent 28%,
-          #04090f 100%
+          ellipse 118% 108% at 50% 47%,
+          transparent 66%,
+          rgba(4, 9, 15, 0.55) 88%,
+          rgba(4, 9, 15, 0.95) 100%
         );
         pointer-events: none;
+        z-index: 40;
       }
 
       /* ── shared type ── */
       .eyebrow {
-        font-size: 21px;
+        font-size: 19px;
         font-weight: 700;
-        letter-spacing: 9px;
+        letter-spacing: 8px;
         text-transform: uppercase;
         background: linear-gradient(90deg, #7fc0f5, #a78bfa, #f472b6);
         -webkit-background-clip: text;
@@ -77,9 +84,9 @@
       }
 
       .display {
-        font-size: 156px;
+        font-size: 140px;
         font-weight: 800;
-        letter-spacing: -6.5px;
+        letter-spacing: -5.5px;
         line-height: 1;
         background: linear-gradient(180deg, #ffffff 0%, #dcecfb 58%, #b7c6ff 100%);
         -webkit-background-clip: text;
@@ -89,7 +96,7 @@
       }
 
       .lede {
-        font-size: 33px;
+        font-size: 30px;
         font-weight: 400;
         color: #93b3d0;
         letter-spacing: -0.2px;
@@ -106,417 +113,946 @@
         opacity: 0;
         transform-origin: 50% 50%;
         will-change: transform, opacity;
+        z-index: 10;
       }
 
-      /* ── 1. cold open ── */
-      #s1 { display: flex; flex-direction: column; justify-content: center; padding: 0 150px; }
-      #s1 #shineWrap { position: relative; display: inline-block; }
-      #s1 #shine {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-image: linear-gradient(
-          100deg,
-          #ffffff00 0%,
-          #ffffff00 38%,
-          #ffffff 48%,
-          #ffffff 52%,
-          #ffffff00 62%,
-          #ffffff00 100%
-        );
-        background-size: 300% 100%;
-        background-repeat: no-repeat;
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
-        opacity: 0;
-      }
-      #ribbon {
-        position: absolute;
-        left: 150px;
-        top: 300px;
-        height: 4px;
-        width: 0;
-        border-radius: 2px;
-        background: linear-gradient(90deg, #5aa7e9, #8b6cff, #f472b6, #fbbf24, #34d399, #22d3ee);
-      }
-
-      /* ── 2. the claim ── */
-      #s2 { display: flex; flex-direction: column; justify-content: center; padding: 0 150px; gap: 6px; }
-      .claim {
-        font-size: 96px;
-        font-weight: 800;
-        letter-spacing: -3.6px;
-        line-height: 1.12;
-        color: #eaf3fb;
-        opacity: 0;
-      }
-      .claim em {
-        font-style: normal;
-        background: linear-gradient(90deg, #5aa7e9, #a78bfa, #f472b6);
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
-      }
-      #s2 .lede { margin-top: 34px; opacity: 0; }
-
-      /* ── 3. installer ── */
-      #s3 { display: flex; align-items: center; justify-content: center; }
-
-      .glass {
+      /* ── panels ── */
+      .panel {
         position: relative;
-        border-radius: 26px;
+        border-radius: 24px;
         background: linear-gradient(180deg, #10263c, #071523);
         border: 1px solid #235a8d;
-        box-shadow: 0 50px 140px #000000b3, inset 0 1px 0 #ffffff1f,
+        box-shadow: 0 46px 130px #000000b8, inset 0 1px 0 #ffffff1f,
           inset 0 -1px 0 #00000066;
       }
 
-      #win { width: 1250px; height: 700px; overflow: hidden; }
+      .glass {
+        background: linear-gradient(180deg, #ffffff12, #ffffff05);
+        border: 1px solid #ffffff1f;
+        border-radius: 18px;
+        box-shadow: inset 0 1px 0 #ffffff20;
+      }
 
-      #winBar {
+      .bar {
         display: flex;
         align-items: center;
         gap: 10px;
-        height: 58px;
-        padding: 0 24px;
-        border-bottom: 1px solid #ffffff14;
-        background: linear-gradient(180deg, #ffffff0f, #ffffff00);
-      }
-      .dot { width: 14px; height: 14px; border-radius: 50%; flex: none; }
-      #winBar em {
-        font-style: normal;
-        font-size: 16px;
-        font-weight: 600;
-        color: #7fa6c8;
-        margin-left: 16px;
-        letter-spacing: 0.2px;
-      }
-
-      #winBody { padding: 40px 46px 44px; }
-
-      #winHead { display: flex; align-items: baseline; gap: 16px; }
-      #winHead h1 {
-        font-size: 42px;
-        font-weight: 800;
-        letter-spacing: -1.4px;
-        color: #eaf3fb;
-      }
-      #winHead .ver {
-        font-size: 14px;
-        font-weight: 700;
-        color: #5aa7e9;
-        border: 1px solid #2b7fd466;
-        background: #2b7fd41f;
-        padding: 4px 11px;
-        border-radius: 999px;
-      }
-      #winHead p { font-size: 17px; color: #7fa6c8; margin-left: auto; }
-
-      #ops {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-        margin-top: 30px;
-      }
-
-      .op {
-        position: relative;
-        height: 104px;
-        border-radius: 18px;
-        border: 1px solid #ffffff1a;
-        background: linear-gradient(180deg, #ffffff0d, #ffffff03);
-        padding: 20px 24px;
-        display: flex;
-        align-items: center;
-        gap: 18px;
-      }
-      .op .glyph {
-        width: 44px;
-        height: 44px;
-        border-radius: 12px;
-        display: grid;
-        place-items: center;
-        font-size: 21px;
-        font-weight: 700;
-        color: #cfe6fa;
-        background: #5aa7e91f;
-        border: 1px solid #5aa7e94d;
-        flex: none;
-      }
-      .op b { display: block; font-size: 21px; font-weight: 700; color: #eaf3fb; letter-spacing: -0.3px; }
-      .op span { display: block; font-size: 15px; color: #7fa6c8; margin-top: 3px; }
-
-      #opInstall {
-        border-color: #5aa7e999;
-        background: linear-gradient(180deg, #5aa7e92e, #5aa7e90f);
-        box-shadow: 0 0 0 4px #5aa7e91a, 0 18px 40px #2b7fd440;
-      }
-
-      #progWrap { margin-top: 28px; display: flex; align-items: center; gap: 26px; }
-      #ring { width: 108px; height: 108px; flex: none; }
-      #log {
-        flex: 1;
-        font-family: "SF Mono", "Cascadia Mono", Consolas, monospace;
-        font-size: 19px;
-        line-height: 1.95;
-        color: #8fb0cd;
-      }
-      #log .row { opacity: 0; }
-      #log .ok { color: #5fd394; }
-      #log b { color: #eaf3fb; font-weight: 600; }
-
-      /* ── 4. catalogue ── */
-      #s4 #wall {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        width: 1680px;
-        margin-left: -840px;
-        margin-top: -268px;
-        display: grid;
-        grid-template-columns: repeat(6, 1fr);
-        gap: 18px;
-      }
-      #s4 .tile {
-        height: 126px;
-        border-radius: 18px;
-        background: linear-gradient(180deg, #0e2539, #071523);
-        border: 1px solid #1d4b7a;
-        padding: 20px 22px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-      }
-      #s4 .tile i {
-        font-style: normal;
-        font-family: "SF Mono", "Cascadia Mono", Consolas, monospace;
-        font-size: 15px;
-        font-weight: 700;
-        color: #5aa7e9;
-      }
-      #s4 .tile span {
-        font-size: 19px;
-        font-weight: 600;
-        color: #dbe9f6;
-        letter-spacing: -0.3px;
-      }
-      #s4 #wallHead { position: absolute; left: 150px; top: 96px; }
-      #s4 #wallHead h2 {
-        font-size: 60px;
-        font-weight: 800;
-        letter-spacing: -2.4px;
-        color: #eaf3fb;
-        margin-top: 12px;
-      }
-      #s4 .pick {
-        border-color: #a78bfa !important;
-        background: linear-gradient(180deg, #a78bfa2e, #a78bfa12) !important;
-        box-shadow: 0 0 0 4px #a78bfa22, 0 24px 60px #a78bfa40;
-      }
-
-      /* ── 5. roles ── */
-      #s5 { display: flex; align-items: center; padding: 0 150px; gap: 90px; }
-      #s5 #rolesHead { width: 620px; flex: none; }
-      #s5 #rolesHead h2 {
-        font-size: 62px;
-        font-weight: 800;
-        letter-spacing: -2.4px;
-        color: #eaf3fb;
-        margin-top: 14px;
-        line-height: 1.08;
-      }
-      #s5 #rolesHead p { font-size: 24px; color: #8fb0cd; margin-top: 20px; line-height: 1.5; }
-      #roleCol { display: flex; flex-direction: column; gap: 11px; flex: 1; }
-      #s5 .role {
-        height: 62px;
-        border-radius: 14px;
-        border: 1px solid #ffffff14;
-        background: linear-gradient(90deg, #ffffff0b, #ffffff02);
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        padding: 0 20px;
-      }
-      #s5 .role i {
-        font-style: normal;
-        font-family: "SF Mono", "Cascadia Mono", Consolas, monospace;
-        font-size: 14px;
-        color: #5d7d99;
-        width: 26px;
-      }
-      #s5 .role span { font-size: 21px; font-weight: 600; color: #c7dcf0; }
-      #s5 .role.hot {
-        border-color: #f472b6aa;
-        background: linear-gradient(90deg, #f472b62e, #f472b60a);
-        box-shadow: 0 0 0 4px #f472b61f;
-      }
-      #s5 .role.hot span { color: #ffffff; }
-
-      /* ── 6. gate ── */
-      #s6 { display: flex; flex-direction: column; align-items: center; justify-content: center; }
-      #s6 #gateHead { text-align: center; }
-      #s6 #gateHead h2 {
-        font-size: 64px;
-        font-weight: 800;
-        letter-spacing: -2.6px;
-        color: #eaf3fb;
-        margin-top: 14px;
-      }
-      #checks {
-        display: grid;
-        grid-template-columns: repeat(8, 1fr);
-        gap: 12px;
-        width: 1560px;
-        margin-top: 42px;
-      }
-      .check {
-        height: 58px;
-        border-radius: 12px;
-        border: 1px solid #ffffff12;
-        background: #ffffff06;
-        display: grid;
-        place-items: center;
-        font-size: 15px;
-        font-weight: 600;
-        color: #5d7d99;
-      }
-      .check.on {
-        border-color: #34d39966;
-        background: #34d3991a;
-        color: #6ee7b7;
-      }
-      #stamp {
-        margin-top: 48px;
-        font-size: 34px;
-        font-weight: 800;
-        letter-spacing: 5px;
-        text-transform: uppercase;
-        color: #6ee7b7;
-        border: 2px solid #34d39988;
-        border-radius: 16px;
-        padding: 14px 34px;
-        opacity: 0;
-        background: #34d39914;
-      }
-
-      /* ── 7. terminal ── */
-      #s7 { display: flex; align-items: center; justify-content: center; }
-      #term { width: 1360px; }
-      #termBar {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        height: 54px;
+        height: 52px;
         padding: 0 22px;
         border-bottom: 1px solid #ffffff12;
+        background: linear-gradient(180deg, #ffffff0d, #ffffff00);
+        border-radius: 24px 24px 0 0;
       }
-      #termBar em {
-        font-style: normal;
-        font-family: "SF Mono", "Cascadia Mono", Consolas, monospace;
-        font-size: 15px;
-        color: #5d7d99;
-        margin-left: 14px;
-      }
-      #termBody {
-        padding: 40px 46px 44px;
-        font-family: "SF Mono", "Cascadia Mono", Consolas, monospace;
-        font-size: 27px;
-        line-height: 1.75;
-        color: #eaf3fb;
-      }
-      .prompt { color: #5aa7e9; font-weight: 700; }
-      .caret {
-        display: inline-block;
-        width: 13px;
-        height: 30px;
-        background: #5aa7e9;
-        vertical-align: -5px;
-      }
-      .ok { color: #5fd394; }
-      .dim { color: #8fb0cd; }
-      .out { opacity: 0; }
+      .dot { width: 13px; height: 13px; border-radius: 50%; flex: none; }
 
-      /* ── 8. works with ── */
-      #s8 { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 44px; }
-      #s8 h2 {
-        font-size: 58px;
-        font-weight: 800;
-        letter-spacing: -2.2px;
-        color: #eaf3fb;
+      /* ── 1. brand reveal ── */
+      #s1 { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+      #spark { position: absolute; inset: 0; }
+      .sp {
+        position: absolute;
+        left: 0;
+        top: 0;
+        border-radius: 50%;
+        will-change: transform, opacity;
       }
-      #markRow { display: flex; gap: 20px; }
-      #s8 .mk {
-        width: 176px;
-        height: 176px;
-        border-radius: 32px;
+      #s1core { position: relative; width: 340px; height: 340px; margin-top: -70px; }
+      #emblem { width: 340px; height: 340px; overflow: visible; }
+      #s1text { text-align: center; margin-top: 24px; }
+      #s1word {
+        font-size: 74px;
+        font-weight: 800;
+        letter-spacing: 12px;
+        background: linear-gradient(180deg, #ffffff, #bcd6f2 62%, #8ba6ff);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        white-space: nowrap;
+        opacity: 0;
+      }
+      #s1tag {
+        margin-top: 16px;
+        font-size: 24px;
+        letter-spacing: 0.4px;
+        color: #8fb0cd;
+        opacity: 0;
+      }
+
+      /* ── 2. kinetic type ── */
+      #s2 { display: flex; flex-direction: column; justify-content: center; padding: 0 140px; }
+      .kline {
+        font-size: 148px;
+        font-weight: 800;
+        letter-spacing: -5px;
+        line-height: 1.04;
+        white-space: nowrap;
+      }
+      #k1 { color: #eaf3fb; }
+      #k2 { color: #a78bfa; }
+      .kchar { display: inline-block; will-change: transform, opacity; }
+      #k2wrap { position: relative; display: inline-block; }
+      #kUnder {
+        position: absolute;
+        left: 0;
+        bottom: -16px;
+        height: 9px;
+        width: 0;
+        border-radius: 5px;
+        background: linear-gradient(90deg, #22d3ee, #a78bfa, #f472b6);
+        box-shadow: 0 0 26px #22d3ee99;
+      }
+
+      /* ── 3. repository ── */
+      #s3 { display: flex; align-items: center; justify-content: center; }
+      #repo { width: 1320px; height: 630px; overflow: hidden; }
+      #urlPill {
+        flex: 1;
+        height: 32px;
+        border-radius: 9px;
+        background: #ffffff0d;
+        border: 1px solid #ffffff14;
         display: flex;
-        flex-direction: column;
         align-items: center;
-        justify-content: center;
-        gap: 16px;
-        border: 1px solid #ffffff17;
-        background: linear-gradient(180deg, #ffffff0c, #ffffff03);
+        padding: 0 14px;
+        font-size: 14px;
+        color: #8fb0cd;
+        letter-spacing: 0.2px;
       }
-      #s8 .mk span { font-size: 17px; font-weight: 600; color: #c7dcf0; }
-      #s8 .note { font-size: 22px; color: #7fa6c8; }
+      #urlPill b { color: #cfe6fa; font-weight: 600; }
+      #repoBody { padding: 38px 52px 0; }
+      #repoHead { display: flex; align-items: center; gap: 16px; }
+      #repoHead .gh { width: 48px; height: 48px; fill: #cfe6fa; flex: none; }
+      #repoName { font-size: 40px; font-weight: 700; color: #eaf3fb; letter-spacing: -0.8px; }
+      #repoName i { font-style: normal; color: #7fa6c8; font-weight: 500; }
+      .pill {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.6px;
+        color: #8fb0cd;
+        border: 1px solid #ffffff26;
+        border-radius: 999px;
+        padding: 3px 10px;
+      }
+      #repoDesc { margin-top: 18px; font-size: 20px; color: #9db8d2; line-height: 1.5; max-width: 1040px; }
+      #repoStats { display: flex; gap: 14px; margin-top: 26px; }
+      .stat {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        padding: 12px 18px;
+        border-radius: 12px;
+        background: #ffffff08;
+        border: 1px solid #ffffff14;
+      }
+      .stat b { font-size: 26px; font-weight: 800; color: #eaf3fb; }
+      .stat span { font-size: 15px; color: #7fa6c8; }
+      #files { margin-top: 28px; border-top: 1px solid #ffffff12; }
+      .frow {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        height: 54px;
+        border-bottom: 1px solid #ffffff0a;
+        font-size: 18px;
+        color: #a8c2d9;
+      }
+      .frow .ic { width: 20px; height: 20px; border-radius: 5px; background: #5aa7e92e; border: 1px solid #5aa7e966; flex: none; }
+      .frow .msg { margin-left: auto; color: #6b8ba6; font-size: 15px; }
 
-      /* ── 9. sign-off ── */
-      #s9 { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px; }
-      #s9 h2 {
-        font-size: 112px;
+      /* ── 4. developer ── */
+      #s4 { display: flex; align-items: center; padding: 0 120px; gap: 90px; }
+      #portWrap { position: relative; width: 520px; height: 520px; flex: none; }
+      #portRing1, #portRing2 {
+        position: absolute;
+        inset: -26px;
+        border-radius: 50%;
+        border: 1px solid #22d3ee3d;
+      }
+      #portRing2 { inset: -54px; border-color: #a78bfa2b; }
+      #portrait {
+        width: 520px;
+        height: 520px;
+        border-radius: 50%;
+        object-fit: cover;
+        position: relative;
+        box-shadow: 0 0 0 3px #22d3ee40, 0 0 90px #22d3ee44, 0 40px 90px #000000aa;
+      }
+      #portGlow {
+        position: absolute;
+        inset: -80px;
+        border-radius: 50%;
+        background: radial-gradient(circle, #22d3ee30 0%, transparent 62%);
+        filter: blur(18px);
+      }
+      #s4text { flex: 1; }
+      #s4name {
+        font-size: 104px;
         font-weight: 800;
-        letter-spacing: -4.5px;
-        background: linear-gradient(180deg, #ffffff, #b7c6ff);
+        letter-spacing: -4px;
+        line-height: 1;
+        background: linear-gradient(180deg, #ffffff, #cfe6fa 60%, #9db8ff);
         -webkit-background-clip: text;
         background-clip: text;
         color: transparent;
       }
-      #s9 .by { font-size: 30px; color: #8fb0cd; letter-spacing: 0.4px; }
-      #s9 .url {
-        font-family: "SF Mono", "Cascadia Mono", Consolas, monospace;
-        font-size: 27px;
-        color: #5aa7e9;
-        letter-spacing: -0.4px;
+      #s4role { margin-top: 22px; }
+      #s4proj { margin-top: 18px; font-size: 30px; color: #7fa6c8; letter-spacing: 0.4px; }
+      #s4tag { margin-top: 12px; font-size: 20px; color: #5f7e99; letter-spacing: 0.3px; }
+      #s4rule { margin-top: 34px; height: 3px; width: 260px; border-radius: 2px; background: linear-gradient(90deg, #22d3ee, #a78bfa, #f472b6); transform-origin: 0 50%; }
+      .blob {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(70px);
+        opacity: 0.22;
       }
-      #s9 #osRow { display: flex; gap: 40px; margin-top: 20px; align-items: center; opacity: 0; }
-      #s9 .os { display: flex; align-items: center; gap: 13px; }
-      #s9 .os span { font-size: 21px; color: #8fb0cd; font-weight: 500; }
-      #s9 #rule {
+
+      /* ── 5. roles ── */
+      #s5 { display: flex; align-items: center; justify-content: center; }
+      #hub { position: relative; width: 1200px; height: 900px; }
+      #hubLines { position: absolute; inset: 0; width: 1200px; height: 900px; }
+      #hubTitle {
         position: absolute;
         left: 0;
-        bottom: 0;
-        height: 4px;
-        width: 100%;
-        background: linear-gradient(90deg, #5aa7e9, #8b6cff, #f472b6, #fbbf24, #34d399, #22d3ee);
+        right: 0;
+        top: 0;
+        text-align: center;
       }
+      #hubCore {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 190px;
+        height: 190px;
+        margin: -95px 0 0 -95px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        text-align: center;
+        background: radial-gradient(circle at 50% 30%, #17395c, #081a2b 70%);
+        border: 1px solid #2b7fd4aa;
+        box-shadow: 0 0 0 10px #2b7fd41a, 0 0 80px #2b7fd455;
+      }
+      #hubCore b { display: block; font-size: 54px; font-weight: 800; color: #eaf3fb; line-height: 1; }
+      #hubCore span { display: block; font-size: 13px; letter-spacing: 4px; color: #7fa6c8; margin-top: 6px; text-transform: uppercase; }
+      .role {
+        position: absolute;
+        width: 214px;
+        height: 62px;
+        margin: -31px 0 0 -107px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 11px;
+        background: linear-gradient(180deg, #ffffff10, #ffffff05);
+        border: 1px solid #ffffff1c;
+        font-size: 13px;
+        font-weight: 600;
+        color: #c2d6e8;
+        letter-spacing: -0.2px;
+        white-space: nowrap;
+        will-change: transform, opacity;
+      }
+      .role i {
+        font-style: normal;
+        font-size: 10px;
+        font-weight: 700;
+        color: #5aa7e9;
+        background: #5aa7e91f;
+        border-radius: 5px;
+        padding: 2px 5px;
+        flex: none;
+      }
+
+      /* ── 6. ui system ── */
+      #s6 { display: flex; align-items: center; justify-content: center; }
+      #s6head { position: absolute; left: 100px; top: 372px; width: 384px; }
+      #s6head h2 {
+        font-size: 54px;
+        font-weight: 800;
+        letter-spacing: -2px;
+        line-height: 1.06;
+        color: #eaf3fb;
+        margin-top: 14px;
+      }
+      #s6head p {
+        font-size: 17px;
+        line-height: 1.55;
+        color: #8fb0cd;
+        margin-top: 16px;
+        max-width: 340px;
+      }
+      #tileWall { position: relative; width: 1540px; height: 620px; }
+      .tile {
+        position: absolute;
+        width: 240px;
+        height: 140px;
+        border-radius: 16px;
+        background: linear-gradient(180deg, #ffffff0e, #ffffff04);
+        border: 1px solid #ffffff1a;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 14px 16px;
+        will-change: transform, opacity;
+        overflow: hidden;
+      }
+      .tile i {
+        font-style: normal;
+        font-size: 11px;
+        font-weight: 700;
+        color: #5aa7e9;
+        letter-spacing: 1.4px;
+      }
+      .tile span {
+        font-size: 15px;
+        font-weight: 600;
+        color: #cfe6fa;
+        letter-spacing: -0.2px;
+        margin-top: 4px;
+        white-space: nowrap;
+      }
+      .tile::after {
+        content: "";
+        position: absolute;
+        left: 14px;
+        right: 14px;
+        top: 18px;
+        height: 34px;
+        border-radius: 8px;
+        background: linear-gradient(90deg, #5aa7e933, #a78bfa22);
+        opacity: 0.7;
+      }
+      #bento {
+        position: absolute;
+        left: 520px;
+        top: 280px;
+        width: 880px;
+        height: 520px;
+        border-radius: 24px;
+        background: linear-gradient(180deg, #10263c, #071523);
+        border: 1px solid #2b7fd4aa;
+        box-shadow: 0 40px 110px #000000bb, 0 0 80px #2b7fd43d;
+        padding: 26px 30px;
+        opacity: 0;
+        will-change: transform, opacity;
+      }
+      #bentoNav { display: flex; align-items: center; gap: 10px; }
+      #bentoNav .nm { font-size: 16px; font-weight: 700; color: #eaf3fb; }
+      #bentoNav .sp { flex: 1; }
+      #bentoNav .navpill { width: 54px; height: 8px; border-radius: 4px; background: #ffffff24; }
+      #bentoNav .navpill.on { background: #22d3ee; }
+      #bentoHero { display: flex; gap: 16px; margin-top: 20px; }
+      #bentoBig {
+        flex: 1.35;
+        height: 190px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #22d3ee1f, #a78bfa1a);
+        border: 1px solid #ffffff1a;
+        padding: 20px 22px;
+      }
+      #bentoBig b { display: block; font-size: 58px; font-weight: 800; color: #eaf3fb; line-height: 1; letter-spacing: -2px; }
+      #bentoBig span { display: block; font-size: 14px; color: #7fa6c8; margin-top: 10px; }
+      #bentoChart { flex: 1; height: 190px; border-radius: 16px; background: #ffffff08; border: 1px solid #ffffff14; }
+      #bentoRow { display: flex; gap: 14px; margin-top: 16px; }
+      .bcard { flex: 1; height: 96px; border-radius: 14px; background: #ffffff08; border: 1px solid #ffffff14; padding: 14px 16px; }
+      .bcard b { display: block; font-size: 30px; font-weight: 800; color: #eaf3fb; line-height: 1; letter-spacing: -1px; }
+      .bcard span { display: block; font-size: 12px; color: #7fa6c8; margin-top: 8px; }
+      #bentoChips { display: flex; gap: 8px; margin-top: 16px; }
+      .chip {
+        flex: none;
+        height: 30px;
+        padding: 0 12px;
+        border-radius: 8px;
+        background: #ffffff0a;
+        border: 1px solid #ffffff1a;
+        color: #a8c2d9;
+        font-size: 12px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        letter-spacing: 0.2px;
+      }
+      .chip.more { color: #22d3ee; border-color: #22d3ee55; background: #22d3ee14; }
+      #bentoBtn { margin-top: 18px; display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 20px; border-radius: 10px; background: linear-gradient(180deg, #22d3ee, #2b7fd4); color: #04121f; font-size: 14px; font-weight: 800; }
+
+      /* ── 7. craft skills ── */
+      #s7 { display: flex; align-items: center; justify-content: center; }
+      #orbit { position: relative; width: 1180px; height: 880px; }
+      #orbRings { position: absolute; inset: 0; width: 1180px; height: 880px; opacity: 0; }
+      #orbitCore {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 210px;
+        height: 210px;
+        margin: -105px 0 0 -105px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        text-align: center;
+        background: radial-gradient(circle at 50% 34%, #1b2f52, #071523 72%);
+        border: 1px solid #a78bfa88;
+        box-shadow: 0 0 0 12px #a78bfa14, 0 0 90px #a78bfa44;
+      }
+      #orbitCore b { font-size: 58px; font-weight: 800; color: #eaf3fb; line-height: 1; }
+      #orbitCore span { display: block; font-size: 12px; letter-spacing: 3.6px; color: #9db8d2; margin-top: 8px; text-transform: uppercase; }
+      .mod {
+        position: absolute;
+        width: 244px;
+        height: 88px;
+        margin: -44px 0 0 -122px;
+        border-radius: 22px;
+        background: linear-gradient(180deg, #16273f, #0a1725);
+        border: 1px solid #ffffff1c;
+        box-shadow: inset 0 1px 0 #ffffff20, 0 18px 44px #00000077;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0 16px;
+        will-change: transform, opacity;
+      }
+      .mod .orb2 {
+        width: 38px;
+        height: 38px;
+        border-radius: 13px;
+        flex: none;
+        background: linear-gradient(140deg, #22d3ee, #a78bfa);
+        box-shadow: 0 0 22px #22d3ee66;
+      }
+      .mod b { display: block; font-size: 15px; font-weight: 700; color: #eaf3fb; letter-spacing: -0.2px; }
+      .mod span { display: block; font-size: 11px; color: #7fa6c8; margin-top: 3px; letter-spacing: 0.6px; }
+
+      /* ── 8. rules ── */
+      #s8 { display: flex; align-items: center; justify-content: center; }
+      #ruleWrap { position: relative; width: 1560px; height: 800px; }
+      #ruleHead {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        display: flex;
+        align-items: center;
+        gap: 28px;
+      }
+      #shield { position: relative; width: 124px; height: 124px; flex: none; }
+      #ruleHead h2 {
+        font-size: 64px;
+        font-weight: 800;
+        letter-spacing: -2.4px;
+        line-height: 1.05;
+        color: #eaf3fb;
+        margin-top: 6px;
+      }
+      #ruleGrid {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 208px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+      }
+      .rcard {
+        position: relative;
+        height: 268px;
+        border-radius: 22px;
+        background: linear-gradient(180deg, #102033, #08131f);
+        border: 1px solid #ffffff2b;
+        box-shadow: inset 0 1px 0 #ffffff2b, 0 22px 50px #00000099;
+        padding: 24px;
+        overflow: hidden;
+        will-change: transform, opacity;
+      }
+      .rcard i { font-style: normal; font-size: 12px; font-weight: 800; letter-spacing: 2px; color: #22d3ee; }
+      .rcard b { display: block; font-size: 24px; font-weight: 700; color: #eaf3fb; margin-top: 12px; letter-spacing: -0.6px; }
+      .rcard span { display: block; font-size: 14px; color: #8fb0cd; margin-top: 8px; line-height: 1.45; }
+      .rcard em {
+        position: absolute;
+        left: 24px;
+        bottom: 20px;
+        font-style: normal;
+        font-family: "SF Mono", "Cascadia Mono", Consolas, Menlo, monospace;
+        font-size: 12px;
+        color: #4d6d88;
+        letter-spacing: 0.2px;
+      }
+      .rcard u {
+        position: absolute;
+        right: 14px;
+        top: 62%;
+        transform: translateY(-50%);
+        text-decoration: none;
+        font-size: 112px;
+        font-weight: 800;
+        color: #ffffff06;
+        letter-spacing: -6px;
+      }
+
+      /* ── 9. gate ── */
+      #s9 { display: flex; align-items: center; justify-content: center; }
+      #gate { width: 1420px; height: 700px; padding: 32px 40px; overflow: hidden; }
+      #gateTop { display: flex; align-items: baseline; gap: 20px; }
+      #gateTop h2 { font-size: 38px; font-weight: 800; color: #eaf3fb; letter-spacing: -1.2px; }
+      #gateTop .sub { font-size: 16px; color: #7fa6c8; }
+      #gateCount { margin-left: auto; font-size: 54px; font-weight: 800; color: #22d3ee; letter-spacing: -2px; }
+      #gateCount i { font-style: normal; font-size: 22px; color: #4d6d88; }
+      #gateGrid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 16px; margin-top: 32px; position: relative; }
+      .chk {
+        height: 140px;
+        border-radius: 14px;
+        background: #ffffff07;
+        border: 1px solid #ffffff12;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #5d7c96;
+        position: relative;
+        overflow: hidden;
+      }
+      .chk .tick {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 2px solid #2d4c66;
+        display: grid;
+        place-items: center;
+        font-size: 17px;
+        color: #04121f;
+        background: transparent;
+      }
+      .chk.on { color: #cfe6fa; border-color: #34d39966; background: #34d3990f; }
+      .chk.on .tick { background: #34d399; border-color: #34d399; }
+      #scan {
+        position: absolute;
+        top: -18px;
+        bottom: -18px;
+        width: 150px;
+        left: 0;
+        background: linear-gradient(90deg, transparent, #22d3ee33 45%, #22d3eecc 50%, #22d3ee33 55%, transparent);
+        mix-blend-mode: screen;
+        opacity: 0;
+      }
+      #gateFoot { display: flex; align-items: center; gap: 16px; margin-top: 30px; font-size: 17px; color: #8fb0cd; }
+      #gateBadge {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        height: 40px;
+        padding: 0 18px;
+        border-radius: 999px;
+        background: #34d3991a;
+        border: 1px solid #34d39966;
+        color: #6ee7b7;
+        font-weight: 700;
+        font-size: 14px;
+        letter-spacing: 0.6px;
+      }
+
+      /* ── 10. terminal ── */
+      #s10 { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 30px; }
+      #termCaption { text-align: center; }
+      #termCaption h2 { font-size: 52px; font-weight: 800; color: #eaf3fb; letter-spacing: -1.8px; margin-top: 12px; }
+      #term { width: 1240px; height: 396px; overflow: hidden; }
+      #termBody {
+        padding: 0 40px;
+        height: calc(100% - 52px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        font-size: 20px;
+        line-height: 1.95;
+      }
+      #termBody .p { color: #34d399; }
+      #termBody .u { color: #7fa6c8; }
+      #termBody .c { color: #eaf3fb; }
+      #termBody .o { color: #8fb0cd; }
+      #termBody .ok { color: #34d399; }
+      #termBody .dim { color: #5d7c96; }
+      #caret {
+        display: inline-block;
+        width: 12px;
+        height: 24px;
+        background: #22d3ee;
+        vertical-align: -4px;
+        margin-left: 2px;
+        box-shadow: 0 0 14px #22d3eeaa;
+      }
+      .tline { opacity: 0; }
+
+      /* ── 11. what ships ── */
+      #s11 { display: flex; align-items: center; justify-content: center; }
+      #ship { width: 1480px; height: 620px; display: flex; gap: 44px; padding: 38px 48px; }
+      #shipL { flex: 1; }
+      #shipL h2 { font-size: 54px; font-weight: 800; color: #eaf3fb; letter-spacing: -1.8px; line-height: 1.08; }
+      #shipL p { font-size: 18px; color: #8fb0cd; margin-top: 14px; line-height: 1.5; max-width: 540px; }
+      #counters { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 30px; }
+      .cnt { padding: 18px 20px; border-radius: 16px; background: #ffffff08; border: 1px solid #ffffff14; }
+      .cnt b { display: block; font-size: 52px; font-weight: 800; color: #eaf3fb; line-height: 1; letter-spacing: -2px; }
+      .cnt span { display: block; font-size: 13px; color: #7fa6c8; margin-top: 8px; letter-spacing: 0.4px; }
+      #shipR {
+        width: 660px;
+        padding: 26px 28px;
+        border-radius: 20px;
+        background: #ffffff06;
+        border: 1px solid #ffffff14;
+        display: flex;
+        flex-direction: column;
+      }
+      #shipR h3 { font-size: 15px; font-weight: 700; letter-spacing: 2.4px; color: #7fa6c8; text-transform: uppercase; }
+      #bars { flex: 1; margin-top: 18px; display: flex; flex-direction: column; justify-content: center; gap: 30px; }
+      .brow { display: flex; align-items: center; gap: 14px; font-size: 15px; color: #a8c2d9; }
+      .brow .lab { width: 124px; flex: none; }
+      .brow .track {
+        display: block;
+        flex: 1;
+        height: 16px;
+        border-radius: 8px;
+        background: #ffffff0d;
+        overflow: hidden;
+      }
+      .brow .fill {
+        display: block;
+        height: 100%;
+        width: 0;
+        border-radius: 8px;
+        background: linear-gradient(90deg, #22d3ee, #a78bfa);
+      }
+      .brow .num { width: 34px; text-align: right; font-weight: 700; color: #eaf3fb; flex: none; }
+      #shipFoot {
+        margin-top: auto;
+        padding-top: 20px;
+        border-top: 1px solid #ffffff10;
+        font-size: 13px;
+        color: #5d7c96;
+        letter-spacing: 0.3px;
+      }
+
+      /* ── 12. collaboration ── */
+      #s12 { display: flex; align-items: center; justify-content: center; }
+      #collab { position: relative; width: 1500px; height: 880px; }
+      #collabLines { position: absolute; inset: 0; width: 1500px; height: 880px; }
+      .cnode {
+        position: absolute;
+        width: 236px;
+        height: 80px;
+        margin: -40px 0 0 -118px;
+        border-radius: 16px;
+        background: linear-gradient(180deg, #16273f, #0a1725);
+        border: 1px solid #ffffff1c;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0 14px;
+        will-change: transform, opacity;
+      }
+      .cnode .av {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        flex: none;
+        background: linear-gradient(140deg, #22d3ee, #a78bfa);
+        box-shadow: inset 0 1px 0 #ffffff55;
+      }
+      .cnode b { display: block; font-size: 15px; font-weight: 700; color: #eaf3fb; letter-spacing: -0.2px; }
+      .cnode span { display: block; font-size: 12px; color: #7fa6c8; margin-top: 3px; letter-spacing: 0.5px; }
+      #collabHub {
+        position: absolute;
+        left: 750px;
+        top: 440px;
+        width: 190px;
+        height: 190px;
+        margin: -95px 0 0 -95px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        text-align: center;
+        background: radial-gradient(circle at 50% 32%, #14314f, #071523 74%);
+        border: 1px solid #34d39988;
+        box-shadow: 0 0 0 14px #34d39912, 0 0 80px #34d39940;
+      }
+      #collabHub b { display: block; font-size: 62px; font-weight: 800; color: #6ee7b7; line-height: 1; }
+      #collabHub span { display: block; font-size: 12px; letter-spacing: 4px; color: #8fb0cd; margin-top: 10px; text-transform: uppercase; }
+      .bubble {
+        position: absolute;
+        padding: 12px 18px;
+        border-radius: 14px;
+        font-size: 15px;
+        font-weight: 600;
+        background: #12263a;
+        border: 1px solid #ffffff22;
+        box-shadow: 0 14px 34px #00000077;
+        color: #cfe6fa;
+        white-space: nowrap;
+        will-change: transform, opacity;
+      }
+      .bubble.me { background: linear-gradient(180deg, #22d3ee, #2b7fd4); color: #04121f; border-color: transparent; }
+
+      /* ── 13. devices ── */
+      #s13 { display: flex; align-items: center; justify-content: center; gap: 44px; }
+      #laptop {
+        width: 940px;
+        height: 600px;
+        border-radius: 20px;
+        padding: 13px;
+        background: linear-gradient(180deg, #1b3148, #0a1622);
+        border: 1px solid #2b4a6b;
+        box-shadow: 0 50px 120px #000000bb;
+      }
+      #laptop .scr {
+        width: 100%;
+        height: 100%;
+        border-radius: 11px;
+        background: #06111c;
+        overflow: hidden;
+        border: 1px solid #ffffff12;
+        display: flex;
+        flex-direction: column;
+      }
+      #phone {
+        width: 250px;
+        height: 520px;
+        border-radius: 34px;
+        padding: 9px;
+        background: linear-gradient(180deg, #1b3148, #0a1622);
+        border: 1px solid #2b4a6b;
+        box-shadow: 0 50px 120px #000000bb;
+      }
+      #phone .scr {
+        width: 100%;
+        height: 100%;
+        border-radius: 27px;
+        background: #06111c;
+        overflow: hidden;
+        border: 1px solid #ffffff12;
+        display: flex;
+        flex-direction: column;
+      }
+      .lapbar {
+        height: 42px;
+        flex: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 16px;
+        border-bottom: 1px solid #ffffff10;
+      }
+      .lapbar .d { width: 10px; height: 10px; border-radius: 50%; }
+      .lapbar .nm { margin-left: 10px; font-size: 13px; font-weight: 700; color: #cfe6fa; letter-spacing: 0.4px; }
+      .lapbar .tag { margin-left: auto; font-size: 10px; letter-spacing: 2px; color: #4d6d88; text-transform: uppercase; }
+      .lapbody { flex: 1; display: flex; min-height: 0; }
+      .lapside {
+        width: 208px;
+        flex: none;
+        border-right: 1px solid #ffffff0e;
+        padding: 18px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .lapside .grp { font-size: 10px; letter-spacing: 2px; color: #43607a; text-transform: uppercase; padding: 0 10px 8px; }
+      .lapside .it {
+        height: 34px;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 0 10px;
+        font-size: 13px;
+        color: #8fb0cd;
+      }
+      .lapside .it i { width: 14px; height: 14px; border-radius: 4px; background: #ffffff1f; flex: none; }
+      .lapside .it.on { background: #22d3ee1c; color: #eaf3fb; font-weight: 600; }
+      .lapside .it.on i { background: #22d3ee; }
+      .lapfoot {
+        margin-top: auto;
+        padding: 10px 12px;
+        border-radius: 9px;
+        background: #ffffff07;
+        border: 1px solid #ffffff10;
+        font-size: 11px;
+        color: #6b8ba6;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .lapfoot .dot { width: 7px; height: 7px; border-radius: 50%; background: #34d399; flex: none; }
+      .lapmain { flex: 1; padding: 22px 24px; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+      .laphead { display: flex; align-items: flex-end; gap: 12px; }
+      .laphead b { font-size: 22px; font-weight: 800; color: #eaf3fb; letter-spacing: -0.6px; }
+      .laphead span { margin-left: auto; font-size: 12px; color: #6b8ba6; }
+      .lapstats { display: flex; gap: 12px; }
+      .lapstat {
+        flex: 1;
+        height: 78px;
+        border-radius: 12px;
+        background: #ffffff08;
+        border: 1px solid #ffffff14;
+        padding: 12px 14px;
+      }
+      .lapstat b { display: block; font-size: 26px; font-weight: 800; color: #eaf3fb; line-height: 1; letter-spacing: -0.8px; }
+      .lapstat span { display: block; font-size: 11px; color: #7fa6c8; margin-top: 7px; letter-spacing: 0.4px; }
+      .laptable {
+        flex: 1;
+        min-height: 0;
+        border-radius: 12px;
+        border: 1px solid #ffffff12;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      .laptable .th,
+      .laptable .tr { display: flex; align-items: center; gap: 12px; padding: 0 14px; font-size: 12px; flex: none; }
+      .laptable .th {
+        height: 38px;
+        background: #ffffff08;
+        color: #6b8ba6;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        font-size: 10px;
+      }
+      .laptable .tr { flex: 1; min-height: 38px; border-top: 1px solid #ffffff08; color: #a8c2d9; }
+      .laptable .c1 { width: 24px; flex: none; }
+      .laptable .c1 i { display: block; width: 10px; height: 10px; border-radius: 50%; background: #34d399; }
+      .laptable .c2 { flex: 1; }
+      .laptable .c3 { width: 92px; flex: none; }
+      .laptable .c4 { width: 74px; flex: none; }
+      .laptable .pill {
+        display: inline-flex;
+        align-items: center;
+        height: 20px;
+        padding: 0 9px;
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.4px;
+      }
+      .laptable .pill.ok { background: #34d3991f; color: #6ee7b7; }
+      .laptable .pill.run { background: #22d3ee1f; color: #67e8f9; }
+      .phhead { padding: 20px 16px 14px; border-bottom: 1px solid #ffffff0e; flex: none; }
+      .phhead b { display: block; font-size: 16px; font-weight: 800; color: #eaf3fb; letter-spacing: -0.3px; }
+      .phhead span { display: block; font-size: 11px; color: #6b8ba6; margin-top: 4px; }
+      .phlist { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+      .phrow {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        border-radius: 12px;
+        background: #ffffff07;
+        border: 1px solid #ffffff10;
+      }
+      .phrow .av { width: 30px; height: 30px; border-radius: 9px; flex: none; background: linear-gradient(140deg, #22d3ee, #a78bfa); }
+      .phrow .meta { flex: 1; min-width: 0; }
+      .phrow b { display: block; font-size: 12px; font-weight: 700; color: #eaf3fb; }
+      .phrow span { display: block; font-size: 10px; color: #6b8ba6; margin-top: 2px; }
+      .phrow .pill {
+        height: 18px;
+        padding: 0 8px;
+        border-radius: 999px;
+        font-size: 9px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        background: #34d3991f;
+        color: #6ee7b7;
+        flex: none;
+      }
+      .phfoot {
+        margin: 2px 12px 12px;
+        height: 38px;
+        border-radius: 11px;
+        background: linear-gradient(180deg, #22d3ee, #2b7fd4);
+        color: #04121f;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.3px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* ── 14. three words ── */
+      #s14 { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 26px; }
+      .word {
+        font-size: 134px;
+        font-weight: 800;
+        letter-spacing: -4px;
+        line-height: 1;
+        white-space: nowrap;
+        will-change: transform, opacity;
+      }
+      .word em { font-style: normal; }
+
+      /* ── 15. brand again ── */
+      #s15 { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+      #s15core { position: relative; width: 320px; height: 320px; }
+      #emblem2 { width: 320px; height: 320px; overflow: visible; }
+      #s15word { margin-top: 28px; font-size: 80px; font-weight: 800; letter-spacing: 13px; background: linear-gradient(180deg, #ffffff, #bcd6f2 62%, #8ba6ff); -webkit-background-clip: text; background-clip: text; color: transparent; opacity: 0; }
+      #s15tag { margin-top: 14px; font-size: 24px; color: #8fb0cd; opacity: 0; }
+
+      /* ── 16. cta ── */
+      #s16 { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+      #ctaCard {
+        width: 1120px;
+        padding: 62px 70px 54px;
+        border-radius: 32px;
+        text-align: center;
+        background: linear-gradient(180deg, #0f2438, #06111c);
+        border: 1px solid #2b7fd488;
+        box-shadow: 0 60px 160px #000000cc, 0 0 120px #2b7fd42e;
+        opacity: 0;
+      }
+      #ctaMark { width: 108px; height: 108px; margin: 0 auto 26px; }
+      #ctaWord { font-size: 62px; font-weight: 800; letter-spacing: 9px; background: linear-gradient(180deg, #ffffff, #bcd6f2 62%, #8ba6ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+      #ctaTag { margin-top: 16px; font-size: 25px; color: #9db8d2; }
+      #ctaBtn {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 34px;
+        height: 62px;
+        padding: 0 34px;
+        border-radius: 16px;
+        background: linear-gradient(180deg, #22d3ee, #2b7fd4);
+        color: #04121f;
+        font-size: 19px;
+        font-weight: 800;
+        letter-spacing: 0.4px;
+        box-shadow: 0 18px 44px #22d3ee40, inset 0 1px 0 #ffffff66;
+        will-change: transform;
+      }
+      #ctaBtn svg { width: 24px; height: 24px; fill: #04121f; }
+      #ctaBy { margin-top: 30px; font-size: 15px; color: #6b8ba6; letter-spacing: 0.6px; }
 
       /* ── cursor ── */
       #cursor {
         position: absolute;
         left: 0;
         top: 0;
-        width: 46px;
-        height: 46px;
+        width: 34px;
+        height: 44px;
         opacity: 0;
-        pointer-events: none;
-        filter: drop-shadow(0 10px 18px #00000099);
-        z-index: 50;
+        z-index: 60;
+        will-change: transform;
+        filter: drop-shadow(0 0 10px #22d3eecc) drop-shadow(0 6px 12px #000000aa);
+        transform-origin: 3px 2px;
       }
       #ripple {
         position: absolute;
         left: 0;
         top: 0;
-        width: 20px;
-        height: 20px;
-        margin: -10px 0 0 -10px;
+        width: 40px;
+        height: 40px;
+        margin: -20px 0 0 -20px;
         border-radius: 50%;
-        border: 3px solid #ffffff;
+        border: 2px solid #22d3ee;
         opacity: 0;
-        pointer-events: none;
-        z-index: 49;
+        z-index: 59;
+        will-change: transform, opacity;
       }
     </style>
   </head>
@@ -524,157 +1060,371 @@
     <div id="stage">
       <canvas id="bg" width="1920" height="1080"></canvas>
       <div id="grid"></div>
-      <div id="vignette"></div>
 
-      <!-- 1 -->
+      <!-- 1 ── brand reveal -->
       <section class="shot" id="s1">
-        <div id="ribbon"></div>
-        <div class="eyebrow" id="s1Eyebrow">Senior web engineering team</div>
-        <div id="shineWrap" style="margin-top: 26px">
-          <div class="display" id="wordmark">NingX-EnggTeam</div>
-          <div class="display" id="shine">NingX-EnggTeam</div>
+        <div id="spark"></div>
+        <div id="s1core">
+          <svg id="emblem" viewBox="0 0 240 240">
+            <defs>
+              <linearGradient id="emGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#22d3ee" />
+                <stop offset="0.55" stop-color="#5aa7e9" />
+                <stop offset="1" stop-color="#a78bfa" />
+              </linearGradient>
+              <linearGradient id="emFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#16375a" />
+                <stop offset="1" stop-color="#06111c" />
+              </linearGradient>
+              <filter id="emSoft" x="-80%" y="-80%" width="260%" height="260%">
+                <feGaussianBlur stdDeviation="7" />
+              </filter>
+            </defs>
+            <g id="emRings">
+              <ellipse cx="120" cy="120" rx="118" ry="52" fill="none" stroke="#22d3ee" stroke-opacity="0.42" stroke-width="1.6" />
+              <ellipse cx="120" cy="120" rx="118" ry="52" fill="none" stroke="#a78bfa" stroke-opacity="0.28" stroke-width="1.6" transform="rotate(60 120 120)" />
+            </g>
+            <path d="M120 18 L212 71 V177 L120 230 L28 177 V71 Z" fill="url(#emGrad)" opacity="0.5" filter="url(#emSoft)" />
+            <path d="M120 18 L212 71 V177 L120 230 L28 177 V71 Z" fill="url(#emFill)" stroke="url(#emGrad)" stroke-width="3" />
+            <path d="M78 168 V72 L162 168 V72" fill="none" stroke="url(#emGrad)" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
         </div>
-        <div class="lede" id="s1Lede" style="margin-top: 34px">
-          Twelve roles. Twenty-four named UI types. One guard that fails the build.
+        <div id="s1text">
+          <div id="s1word">NINGX-ENGGTEAM</div>
+          <div id="s1tag">Build with Intention. Ship with Confidence.</div>
         </div>
       </section>
 
-      <!-- 2 -->
+      <!-- 2 ── kinetic type -->
       <section class="shot" id="s2">
-        <div class="claim" id="c1">Twelve roles that</div>
-        <div class="claim" id="c2">own the decision.</div>
-        <div class="claim" id="c3"><em>Twenty-four</em> named UI types.</div>
-        <div class="lede" id="s2Lede">No role answers outside its remit. No page ships unnamed.</div>
+        <div class="kline" id="k1"></div>
+        <div class="kline" id="k2"><span id="k2wrap"><span id="k2chars"></span><span id="kUnder"></span></span></div>
       </section>
 
-      <!-- 3 -->
+      <!-- 3 ── repository -->
       <section class="shot" id="s3">
-        <div class="glass" id="win">
-          <div id="winBar">
-            <i class="dot" style="background: #ff5f57"></i>
-            <i class="dot" style="background: #febc2e"></i>
-            <i class="dot" style="background: #28c840"></i>
-            <em>NingX Installer</em>
+        <div class="panel" id="repo">
+          <div class="bar">
+            <span class="dot" style="background:#ff5f57"></span>
+            <span class="dot" style="background:#febc2e"></span>
+            <span class="dot" style="background:#28c840"></span>
+            <div id="urlPill"><span id="urlText"></span></div>
           </div>
-          <div id="winBody">
-            <div id="winHead">
-              <h1>NingX-EnggTeam</h1>
-              <span class="ver">v1.0.2</span>
-              <p>github.com/codeandearnyt/NingX-EnggTeam</p>
+          <div id="repoBody">
+            <div id="repoHead">
+              <svg class="gh" viewBox="0 0 24 24"><path id="ghPath" d=""/></svg>
+              <div id="repoName"><i>codeandearnyt /</i> NingX-EnggTeam</div>
+              <span class="pill">Public</span>
             </div>
-
-            <div id="ops">
-              <div class="op" id="opInstall">
-                <div class="glyph">↓</div>
-                <div><b>Install</b><span>Clone the plugin and register the marketplace</span></div>
-              </div>
-              <div class="op">
-                <div class="glyph">↺</div>
-                <div><b>Update</b><span>Fetch main and refresh the plugin</span></div>
-              </div>
-              <div class="op">
-                <div class="glyph">⟳</div>
-                <div><b>Reinstall</b><span>Drop the local copy and rebuild it</span></div>
-              </div>
-              <div class="op">
-                <div class="glyph">✕</div>
-                <div><b>Uninstall</b><span>Remove the plugin, keep your files</span></div>
-              </div>
+            <div id="repoDesc">Senior web engineering team for Claude Code, Codex, OpenCode, Cursor and Copilot. 24 UI types, 12 agents, one guard.</div>
+            <div id="repoStats">
+              <div class="stat"><b>12</b><span>agents</span></div>
+              <div class="stat"><b>24</b><span>UI types</span></div>
+              <div class="stat"><b>7</b><span>skills</span></div>
+              <div class="stat"><b>8</b><span>rules</span></div>
             </div>
-
-            <div id="progWrap">
-              <svg id="ring" viewBox="0 0 120 120">
-                <circle cx="60" cy="60" r="50" fill="none" stroke="#1d4b7a" stroke-width="7" />
-                <circle id="ringFill" cx="60" cy="60" r="50" fill="none" stroke="url(#ringGrad)"
-                        stroke-width="7" stroke-linecap="round" stroke-dasharray="314.16"
-                        stroke-dashoffset="314.16" transform="rotate(-90 60 60)" />
-                <defs>
-                  <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0" stop-color="#5aa7e9" />
-                    <stop offset="0.5" stop-color="#a78bfa" />
-                    <stop offset="1" stop-color="#34d399" />
-                  </linearGradient>
-                </defs>
-              </svg>
-              <div id="log">
-                <div class="row" id="l1"><span class="ok">✓</span> marketplace added — <b>ningx</b></div>
-                <div class="row" id="l2"><span class="ok">✓</span> plugin installed — <b>ningx-enggteam@ningx</b></div>
-                <div class="row" id="l3"><b>31</b> skills · <b>12</b> agents · <b>9</b> commands · <b>6</b> hooks</div>
-                <div class="row dim" id="l4">Ready. Open your harness and ask for a page.</div>
-              </div>
-            </div>
+            <div id="files"></div>
           </div>
         </div>
       </section>
 
-      <!-- 4 -->
+      <!-- 4 ── developer -->
       <section class="shot" id="s4">
-        <div id="wallHead">
-          <div class="eyebrow">The catalogue</div>
-          <h2>Twenty-four named UI types</h2>
+        <div class="blob" style="width:420px;height:420px;left:40px;top:80px;background:#22d3ee"></div>
+        <div class="blob" style="width:360px;height:360px;left:1180px;top:620px;background:#a78bfa"></div>
+        <div id="portWrap">
+          <div id="portGlow"></div>
+          <div id="portRing2"></div>
+          <div id="portRing1"></div>
+          <img id="portrait" alt="Nitin Sharma" src="/*__PORTRAIT__*/" />
         </div>
-        <div id="wall"></div>
+        <div id="s4text">
+          <div class="eyebrow" id="s4eyebrow">Senior web engineer</div>
+          <div id="s4name">NITIN SHARMA</div>
+          <div id="s4rule"></div>
+          <div id="s4proj">NingX-EnggTeam</div>
+          <div id="s4tag">Build with Intention. Ship with Confidence.</div>
+        </div>
       </section>
 
-      <!-- 5 -->
+      <!-- 5 ── roles -->
       <section class="shot" id="s5">
-        <div id="rolesHead">
-          <div class="eyebrow">The bench</div>
-          <h2>One role owns<br />each decision.</h2>
-          <p>Palette and type pairing belong to <b>ui-ux-director</b>. Routes and rendering belong to <b>web-architect</b>.</p>
+        <div id="hub">
+          <svg id="hubLines" viewBox="0 0 1200 900"></svg>
+          <div id="hubTitle"><div class="eyebrow">The team</div></div>
+          <div id="hubCore"><div><b>12</b><span>agents</span></div></div>
+          <div id="hubCards"></div>
         </div>
-        <div id="roleCol"></div>
       </section>
 
-      <!-- 6 -->
+      <!-- 6 ── ui system -->
       <section class="shot" id="s6">
-        <div id="gateHead">
-          <div class="eyebrow">The gate</div>
-          <h2>Twenty-four checks. None optional.</h2>
+        <div id="tileWall"></div>
+        <div id="s6head">
+          <div class="eyebrow">UI system</div>
+          <h2>24 UI types, one design language.</h2>
+          <p>Each one ships tokens, states and a live demo — no template defaults.</p>
         </div>
-        <div id="checks"></div>
-        <div id="stamp">build passes</div>
+        <div id="bento">
+          <div id="bentoNav">
+            <div class="nm">NingX</div>
+            <div class="sp"></div>
+            <div class="navpill on"></div>
+            <div class="navpill"></div>
+            <div class="navpill"></div>
+          </div>
+          <div id="bentoHero">
+            <div id="bentoBig"><b>24</b><span>UI types, one system</span></div>
+            <div id="bentoChart">
+              <svg viewBox="0 0 260 150" width="100%" height="100%">
+                <polyline id="bentoLine" points="" fill="none" stroke="#22d3ee" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </div>
+          </div>
+          <div id="bentoRow">
+            <div class="bcard"><b>12</b><span>agents</span></div>
+            <div class="bcard"><b>7</b><span>skills</span></div>
+            <div class="bcard"><b>8</b><span>rules</span></div>
+            <div class="bcard"><b>24</b><span>checks</span></div>
+          </div>
+          <div id="bentoChips">
+            <span class="chip">bento-grid</span>
+            <span class="chip">glassmorphism</span>
+            <span class="chip">neobrutalism</span>
+            <span class="chip">editorial</span>
+            <span class="chip">swiss-grid</span>
+            <span class="chip">webgl-shader</span>
+            <span class="chip more">+18 more</span>
+          </div>
+          <div id="bentoBtn">Ship it</div>
+        </div>
       </section>
 
-      <!-- 7 -->
+      <!-- 7 ── craft skills -->
       <section class="shot" id="s7">
-        <div class="glass" id="term">
-          <div id="termBar">
-            <i class="dot" style="background: #ff5f57"></i>
-            <i class="dot" style="background: #febc2e"></i>
-            <i class="dot" style="background: #28c840"></i>
-            <em>~ — zsh</em>
+        <div id="orbit">
+          <svg id="orbRings" viewBox="0 0 1180 880">
+            <ellipse cx="590" cy="440" rx="300" ry="258" fill="none" stroke="#a78bfa" stroke-opacity="0.34" stroke-width="1.6" stroke-dasharray="5 11" />
+            <ellipse cx="590" cy="440" rx="396" ry="340" fill="none" stroke="#a78bfa" stroke-opacity="0.22" stroke-width="1.6" stroke-dasharray="5 11" />
+          </svg>
+          <div id="orbitCore"><div><b>7</b><span>craft skills</span></div></div>
+          <div id="orbitCards"></div>
+        </div>
+      </section>
+
+      <!-- 8 ── rules -->
+      <section class="shot" id="s8">
+        <div id="ruleWrap">
+          <div id="ruleHead">
+            <svg id="shield" viewBox="0 0 400 400">
+              <defs>
+                <linearGradient id="shGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#22d3ee" />
+                  <stop offset="1" stop-color="#a78bfa" />
+                </linearGradient>
+              </defs>
+              <path id="shOuter" d="M200 26 L352 84 V206 C352 288 288 344 200 374 C112 344 48 288 48 206 V84 Z"
+                    fill="#22d3ee0d" stroke="url(#shGrad)" stroke-width="5" />
+              <path id="shInner" d="M200 74 L310 116 V208 C310 268 262 308 200 330 C138 308 90 268 90 208 V116 Z"
+                    fill="none" stroke="#22d3ee55" stroke-width="3" />
+              <path id="shTick" d="M148 200 L188 240 L258 162" fill="none" stroke="url(#shGrad)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <div>
+              <div class="eyebrow">Eight rules</div>
+              <h2>Guardrails that hold.</h2>
+            </div>
           </div>
-          <div id="termBody">
-            <div><span class="prompt">$</span> <span id="cmd"></span><span class="caret" id="caret"></span></div>
-            <div class="out" id="t1"><span class="ok">✓</span> marketplace added</div>
-            <div class="out" id="t2"><span class="ok">✓</span> 31 skills · 12 agents · 9 commands · 6 hooks</div>
-            <div class="out dim" id="t3">NingX-EnggTeam is ready.</div>
+          <div id="ruleGrid"></div>
+        </div>
+      </section>
+
+      <!-- 9 ── gate -->
+      <section class="shot" id="s9">
+        <div class="panel" id="gate">
+          <div id="gateTop">
+            <h2>24-point quality gate</h2>
+            <div class="sub">every page, before it ships</div>
+            <div id="gateCount">0<i>/24</i></div>
+          </div>
+          <div id="gateGrid"></div>
+          <div id="gateFoot">
+            <div id="gateBadge">SHIPPED</div>
+            <div>nothing leaves the bench until all twenty-four pass</div>
           </div>
         </div>
       </section>
 
-      <!-- 8 -->
-      <section class="shot" id="s8">
-        <h2>Works with</h2>
-        <div id="markRow"></div>
-        <div class="note">One install · Windows, macOS and Linux</div>
+      <!-- 10 ── terminal -->
+      <section class="shot" id="s10">
+        <div id="termCaption">
+          <div class="eyebrow">Install</div>
+          <h2>Two commands. That is the whole install.</h2>
+        </div>
+        <div class="panel" id="term">
+          <div class="bar">
+            <span class="dot" style="background:#ff5f57"></span>
+            <span class="dot" style="background:#febc2e"></span>
+            <span class="dot" style="background:#28c840"></span>
+            <span style="margin-left:14px;font-size:13px;color:#5d7c96;letter-spacing:0.6px" class="mono">zsh — ningx</span>
+          </div>
+          <div id="termBody" class="mono">
+            <div><span class="u">~/projects</span> <span class="p">❯</span> <span class="c" id="cmd"></span><span id="caret"></span></div>
+            <div class="tline" id="t1"><span class="ok">✓</span> <span class="o">marketplace added</span> <span class="dim">· ningx</span></div>
+            <div class="tline" id="t2"><span class="ok">✓</span> <span class="o">24 UI types, 12 agents, 7 skills, 8 rules</span></div>
+            <div class="tline" id="t3"><span class="u">~/projects</span> <span class="p">❯</span> <span class="c">claude plugin install ningx-enggteam@ningx</span></div>
+            <div class="tline" id="t4"><span class="ok">✓</span> <span class="o">installed</span> <span class="dim">· five harnesses detected</span></div>
+          </div>
+        </div>
       </section>
 
-      <!-- 9 -->
-      <section class="shot" id="s9">
-        <h2 id="endWord">NingX-EnggTeam</h2>
-        <div class="by" id="endBy">Made by Nitin Sharma</div>
-        <div class="url" id="endUrl">github.com/codeandearnyt/NingX-EnggTeam</div>
-        <div id="osRow"></div>
-        <div id="rule"></div>
+      <!-- 11 ── what ships -->
+      <section class="shot" id="s11">
+        <div class="panel" id="ship">
+          <div id="shipL">
+            <div class="eyebrow">In the repository</div>
+            <h2 style="margin-top:18px">Everything the team<br/>needs to ship.</h2>
+            <p>Counted from the tree, not invented. Agents, skills, rules and the gate all live in the repo.</p>
+            <div id="counters">
+              <div class="cnt"><b id="c1">0</b><span>UI types</span></div>
+              <div class="cnt"><b id="c2">0</b><span>agents</span></div>
+              <div class="cnt"><b id="c3">0</b><span>craft skills</span></div>
+              <div class="cnt"><b id="c4">0</b><span>gate checks</span></div>
+            </div>
+          </div>
+          <div id="shipR">
+            <h3>Counts by folder</h3>
+            <div id="bars"></div>
+            <div id="shipFoot">counted from the repository tree — nothing here is an estimate</div>
+          </div>
+        </div>
       </section>
 
-      <svg id="cursor" viewBox="0 0 24 24">
-        <path d="M2 1.5 L2 21 L7.2 16.2 L10.4 23 L14 21.4 L10.9 14.9 L18 14.6 Z"
-              fill="#ffffff" stroke="#0b1a28" stroke-width="1.4" stroke-linejoin="round" />
-      </svg>
+      <!-- 12 ── collaboration -->
+      <section class="shot" id="s12">
+        <div id="collab">
+          <svg id="collabLines" viewBox="0 0 1500 880"></svg>
+          <div id="collabHub"><div><b>✓</b><span>merged</span></div></div>
+          <div id="collabNodes"></div>
+          <div class="bubble" id="b1" style="left:1050px;top:186px">diff reviewed — 2 nits</div>
+          <div class="bubble me" id="b2" style="left:1010px;top:826px">ship it</div>
+          <div class="bubble" id="b3" style="left:206px;top:632px">a11y pass ✓</div>
+        </div>
+      </section>
+
+      <!-- 13 ── devices -->
+      <section class="shot" id="s13">
+        <div id="laptop">
+          <div class="scr">
+            <div class="lapbar">
+              <span class="d" style="background:#ff5f57"></span>
+              <span class="d" style="background:#febc2e"></span>
+              <span class="d" style="background:#28c840"></span>
+              <span class="nm">NingX-EnggTeam</span>
+              <span class="tag">desktop</span>
+            </div>
+            <div class="lapbody">
+              <div class="lapside">
+                <div class="grp">Workspace</div>
+                <div class="it on"><i></i>Overview</div>
+                <div class="it"><i></i>Agents</div>
+                <div class="it"><i></i>Skills</div>
+                <div class="it"><i></i>Rules</div>
+                <div class="it"><i></i>Updates</div>
+                <div class="grp" style="margin-top:14px">Install</div>
+                <div class="it"><i></i>Install</div>
+                <div class="it"><i></i>Uninstall</div>
+                <div class="it"><i></i>Reinstall</div>
+                <div class="lapfoot"><span class="dot"></span>Synced · main</div>
+              </div>
+              <div class="lapmain">
+                <div class="laphead"><b>Team overview</b><span>v1.0.2 · all systems go</span></div>
+                <div class="lapstats">
+                  <div class="lapstat"><b>12</b><span>agents</span></div>
+                  <div class="lapstat"><b>24</b><span>UI types</span></div>
+                  <div class="lapstat"><b>7</b><span>skills</span></div>
+                  <div class="lapstat"><b>8</b><span>rules</span></div>
+                </div>
+                <div class="laptable">
+                  <div class="th"><span class="c1"></span><span class="c2">Agent</span><span class="c3">Scope</span><span class="c4">State</span></div>
+                  <div class="tr"><span class="c1"><i></i></span><span class="c2">web-architect</span><span class="c3">routing</span><span class="c4"><span class="pill ok">ready</span></span></div>
+                  <div class="tr"><span class="c1"><i></i></span><span class="c2">ui-ux-director</span><span class="c3">direction</span><span class="c4"><span class="pill ok">ready</span></span></div>
+                  <div class="tr"><span class="c1"><i></i></span><span class="c2">design-system</span><span class="c3">tokens</span><span class="c4"><span class="pill run">live</span></span></div>
+                  <div class="tr"><span class="c1"><i></i></span><span class="c2">a11y</span><span class="c3">audit</span><span class="c4"><span class="pill ok">ready</span></span></div>
+                  <div class="tr"><span class="c1"><i></i></span><span class="c2">perf</span><span class="c3">budget</span><span class="c4"><span class="pill ok">ready</span></span></div>
+                  <div class="tr"><span class="c1"><i></i></span><span class="c2">review</span><span class="c3">diff</span><span class="c4"><span class="pill run">live</span></span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="phone">
+          <div class="scr">
+            <div class="lapbar" style="height:38px;padding:0 12px">
+              <span class="d" style="background:#28c840;width:8px;height:8px"></span>
+              <span class="nm" style="font-size:11px;margin-left:6px">NingX</span>
+            </div>
+            <div class="phhead"><b>Agents</b><span>12 online · 5 harnesses</span></div>
+            <div class="phlist">
+              <div class="phrow"><span class="av"></span><div class="meta"><b>web-architect</b><span>routing</span></div><span class="pill">ready</span></div>
+              <div class="phrow"><span class="av"></span><div class="meta"><b>ui-ux-director</b><span>direction</span></div><span class="pill">ready</span></div>
+              <div class="phrow"><span class="av"></span><div class="meta"><b>design-system</b><span>tokens</span></div><span class="pill">live</span></div>
+              <div class="phrow"><span class="av"></span><div class="meta"><b>a11y</b><span>audit</span></div><span class="pill">ready</span></div>
+              <div class="phrow"><span class="av"></span><div class="meta"><b>motion</b><span>timing</span></div><span class="pill">ready</span></div>
+            </div>
+            <div class="phfoot">Open desktop</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 14 ── three words -->
+      <section class="shot" id="s14">
+        <div class="word" id="w1"><em style="color:#22d3ee">BUILD.</em></div>
+        <div class="word" id="w2"><em style="color:#a78bfa">COLLABORATE.</em></div>
+        <div class="word" id="w3"><em style="color:#34d399">INNOVATE.</em></div>
+      </section>
+
+      <!-- 15 ── brand again -->
+      <section class="shot" id="s15">
+        <div id="s15core">
+          <svg id="emblem2" viewBox="0 0 240 240">
+            <g id="emRings2">
+              <ellipse cx="120" cy="120" rx="118" ry="52" fill="none" stroke="#22d3ee" stroke-opacity="0.45" stroke-width="1.6" />
+              <ellipse cx="120" cy="120" rx="118" ry="52" fill="none" stroke="#a78bfa" stroke-opacity="0.3" stroke-width="1.6" transform="rotate(60 120 120)" />
+            </g>
+            <path d="M120 18 L212 71 V177 L120 230 L28 177 V71 Z" fill="url(#emFill)" stroke="url(#emGrad)" stroke-width="3" />
+            <path d="M78 168 V72 L162 168 V72" fill="none" stroke="url(#emGrad)" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </div>
+        <div id="s15word">NINGX-ENGGTEAM</div>
+        <div id="s15tag">Build with Intention. Ship with Confidence.</div>
+      </section>
+
+      <!-- 16 ── cta -->
+      <section class="shot" id="s16">
+        <div id="ctaCard">
+          <svg id="ctaMark" viewBox="0 0 240 240">
+            <path d="M120 18 L212 71 V177 L120 230 L28 177 V71 Z" fill="url(#emFill)" stroke="url(#emGrad)" stroke-width="3" />
+            <path d="M78 168 V72 L162 168 V72" fill="none" stroke="url(#emGrad)" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <div id="ctaWord">NINGX-ENGGTEAM</div>
+          <div id="ctaTag">Build with Intention. Ship with Confidence.</div>
+          <div id="ctaBtn">
+            <svg viewBox="0 0 24 24"><path id="ghPath2" d=""/></svg>
+            VIEW ON GITHUB
+          </div>
+          <div id="ctaBy">Made by Nitin Sharma.</div>
+        </div>
+      </section>
+
       <div id="ripple"></div>
+      <div id="cursor">
+        <svg width="34" height="44" viewBox="0 0 34 44">
+          <path d="M3 2 L3 33 L11.5 25.5 L16.5 38.5 L22.5 36 L17.5 23.5 L28 23 Z"
+                fill="#ffffff" stroke="#22d3ee" stroke-width="2" stroke-linejoin="round" />
+        </svg>
+      </div>
+
+      <div id="vignette"></div>
     </div>
 
     <script id="logos">window.LOGOS = /*__LOGOS__*/;</script>
@@ -698,21 +1448,11 @@
         const c3 = c1 + 1;
         return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2);
       };
+      const eInQuad = (x) => x * x;
 
       const $ = (id) => document.getElementById(id);
 
-      // ── data ──
-      const HARNESS = [
-        ["Claude Code", "claude"],
-        ["Codex", "codex"],
-        ["OpenCode", "opencode"],
-        ["Cursor", "cursor"],
-        ["Copilot", "copilot"],
-        ["Windows", "windows"],
-        ["macOS", "apple"],
-        ["Linux", "linux"],
-      ];
-
+      // ── data（実データ） ──
       const TYPES = [
         "terminal-cli", "wireframe", "brutalist-html", "pure-flat",
         "swiss-grid", "editorial-typographic", "line-art-handdrawn", "neobrutalism",
@@ -723,9 +1463,26 @@
       ];
 
       const ROLES = [
-        "web-architect", "ui-ux-director", "design-system", "motion-designer",
-        "frontend-lead", "a11y-reviewer", "perf-engineer", "seo-strategist",
-        "copy-director", "qa-lead", "sec-reviewer", "release-manager",
+        "web-architect", "ui-ux-director", "design-system-engineer", "motion-engineer",
+        "frontend-lead", "accessibility-lead", "performance-engineer", "seo-engineer",
+        "backend-lead", "qa-lead", "code-reviewer", "webgl-engineer",
+      ];
+
+      const SKILLS = [
+        "accessibility-wcag", "anti-slop-review", "backend-architecture",
+        "design-system-tokens", "frontend-architecture", "responsive-layout",
+        "web-performance",
+      ];
+
+      const RULES = [
+        ["01", "ACCESSIBILITY", "WCAG 2.2 AA, keyboard, focus", "rules/accessibility.md"],
+        ["02", "ANTI-SLOP", "no template defaults", "rules/anti-slop.md"],
+        ["03", "BACKEND CRAFT", "layers, validation, errors", "rules/backend-craft.md"],
+        ["04", "DESIGN QUALITY", "type, colour, spacing", "rules/design-quality.md"],
+        ["05", "FRONTEND CRAFT", "semantics, state, motion", "rules/frontend-craft.md"],
+        ["06", "PERFORMANCE", "LCP, INP, CLS", "rules/performance.md"],
+        ["07", "SECURITY", "XSS, CSRF, secrets", "rules/security.md"],
+        ["08", "UI GUARD", "blocks the write, not the review", "hooks/ui-guard.py"],
       ];
 
       const CHECKS = [
@@ -737,87 +1494,359 @@
 
       const CMD = "claude plugin marketplace add codeandearnyt/NingX-EnggTeam";
 
-      // ── build the data-driven DOM（データから DOM を組む） ──
+      // ── helpers ──
       function logoGlyph(name, size) {
         const logo = window.LOGOS[name];
         if (!logo) return "";
-        const defs = logo.defs ? `<defs>${logo.defs}</defs>` : "";
+        const defs = logo.defs ? "<defs>" + logo.defs + "</defs>" : "";
         const paths = logo.paths
           .map(
             (p) =>
-              `<path d="${p.d}" fill="${p.fill}"${
-                p.fillRule ? ` fill-rule="${p.fillRule}"` : ""
-              }${p.clipRule ? ` clip-rule="${p.clipRule}"` : ""}${
-                p.opacity ? ` opacity="${p.opacity}"` : ""
-              }/>`,
+              '<path d="' + p.d + '" fill="' + p.fill + '"' +
+              (p.fillRule ? ' fill-rule="' + p.fillRule + '"' : "") +
+              (p.clipRule ? ' clip-rule="' + p.clipRule + '"' : "") +
+              (p.opacity ? ' opacity="' + p.opacity + '"' : "") + "/>",
           )
           .join("");
-        return `<svg width="${size}" height="${size}" viewBox="${logo.viewBox}" preserveAspectRatio="xMidYMid meet">${defs}${paths}</svg>`;
+        return (
+          '<svg width="' + size + '" height="' + size + '" viewBox="' + logo.viewBox +
+          '" preserveAspectRatio="xMidYMid meet">' + defs + paths + "</svg>"
+        );
       }
 
-      const wall = $("wall");
-      wall.innerHTML = TYPES.map(
+      const setOp = (el, v) => { el.style.opacity = v.toFixed(3); };
+      const setT = (el, x, y, s, r) => {
+        el.style.transform =
+          "translate3d(" + x.toFixed(1) + "px," + y.toFixed(1) + "px,0)" +
+          (s === undefined ? "" : " scale(" + s.toFixed(4) + ")") +
+          (r === undefined ? "" : " rotate(" + r.toFixed(2) + "deg)");
+      };
+
+      // ── 1. sparks（集まる粒子） ──
+      const sparkHost = $("spark");
+      const SPARK_RGB = [
+        [34, 211, 238], [90, 167, 233], [167, 139, 250],
+        [52, 211, 153], [244, 114, 182], [255, 255, 255],
+      ];
+      let seed = 20261127;
+      const rnd = () => {
+        seed = (seed * 1664525 + 1013904223) % 4294967296;
+        return seed / 4294967296;
+      };
+
+      const SPARKS = Array.from({ length: 150 }, () => {
+        const a = rnd() * Math.PI * 2;
+        const r = 420 + rnd() * 780;
+        return {
+          x: 960 + Math.cos(a) * r,
+          y: 400 + Math.sin(a) * r * 0.72,
+          dx: (rnd() - 0.5) * 90,
+          dy: (rnd() - 0.5) * 90,
+          d: rnd(),
+          s: 1.2 + rnd() * 3.4,
+          rgb: SPARK_RGB[Math.floor(rnd() * SPARK_RGB.length)],
+          ph: rnd() * 6.28,
+        };
+      });
+
+      sparkHost.innerHTML = SPARKS.map(
+        (p) =>
+          '<span class="sp" style="width:' +
+          p.s.toFixed(1) +
+          "px;height:" +
+          p.s.toFixed(1) +
+          'px;background:rgb(' +
+          p.rgb.join(",") +
+          ')"></span>',
+      ).join("");
+      const sparkEls = [...sparkHost.children];
+
+      // ── 2. kinetic type ──
+      const k1 = $("k1");
+      const k2chars = $("k2chars");
+      const splitLine = (text) =>
+        text
+          .split("")
+          .map((c) => '<span class="kchar">' + (c === " " ? "&nbsp;" : c) + "</span>")
+          .join("");
+      k1.innerHTML = splitLine("GOOD CODE IS");
+      k2chars.innerHTML = splitLine("ENGINEERED.");
+      const kc1 = [...k1.children];
+      const kc2 = [...k2chars.children];
+      const kUnder = $("kUnder");
+      // The rule under the headline is drawn to the measured width of the
+      // word, so it always ends where the type ends. （実測幅に合わせる）
+      let kUnderW = 860;
+      requestAnimationFrame(() => {
+        kUnderW = $("k2wrap").getBoundingClientRect().width || 860;
+      });
+
+      // A gradient across the line, painted per character. A parent
+      // background-clip:text would be lost the moment each glyph gets its own
+      // transform, so the colour is computed here instead.
+      const GRAD_STOPS = [
+        [34, 211, 238], [90, 167, 233], [139, 108, 255],
+        [167, 139, 250], [244, 114, 182],
+      ];
+      kc2.forEach((el, i) => {
+        const p = kc2.length <= 1 ? 0 : i / (kc2.length - 1);
+        const s = p * (GRAD_STOPS.length - 1);
+        const k = Math.min(GRAD_STOPS.length - 2, Math.floor(s));
+        const f = s - k;
+        const a = GRAD_STOPS[k];
+        const b = GRAD_STOPS[k + 1];
+        el.style.color =
+          "rgb(" + Math.round(mix(a[0], b[0], f)) + "," +
+          Math.round(mix(a[1], b[1], f)) + "," +
+          Math.round(mix(a[2], b[2], f)) + ")";
+      });
+
+      // ── 3. repository ──
+      const urlText = $("urlText");
+      const urlFull = "github.com/codeandearnyt/NingX-EnggTeam";
+      const filesEl = $("files");
+      const FILES = [
+        ["agents", "12 senior roles", "#22d3ee"],
+        ["skills", "24 UI types, 7 craft skills", "#a78bfa"],
+        ["rules", "7 rules, one guard", "#f472b6"],
+        ["desktop", "Electron app, three platforms", "#34d399"],
+        ["README.md", "the page you are reading", "#fbbf24"],
+      ];
+      filesEl.innerHTML = FILES.map(
+        ([name, msg, tint]) =>
+          '<div class="frow"><span class="ic" style="background:' + tint +
+          '26;border-color:' + tint + '80"></span><span>' + name +
+          '</span><span class="msg">' + msg + "</span></div>",
+      ).join("");
+      const frows = [...filesEl.children];
+
+      // ── 4. portrait ──
+      const portrait = $("portrait");
+      const portRing1 = $("portRing1");
+      const portRing2 = $("portRing2");
+      const s4name = $("s4name");
+      const s4eyebrow = $("s4eyebrow");
+      const s4proj = $("s4proj");
+      const s4rule = $("s4rule");
+
+      // ── 5. roles hub ──
+      const hub = $("hub");
+      const hubCards = $("hubCards");
+      const hubLines = $("hubLines");
+      const HUB_R = 366;
+      const HUB_R2 = 476;
+      const hubPos = ROLES.map((_, i) => {
+        const a = -Math.PI / 2 + (i / ROLES.length) * Math.PI * 2;
+        const r = i % 2 === 0 ? HUB_R : HUB_R2;
+        return [600 + Math.cos(a) * r, 450 + Math.sin(a) * r * 0.84];
+      });
+      hubCards.innerHTML = ROLES.map(
         (name, i) =>
-          `<div class="tile${name === "swiss-grid" ? " pick" : ""}"><i>ui-${String(
-            i + 1,
-          ).padStart(2, "0")}</i><span>${name}</span></div>`,
+          '<div class="role"><i>' + String(i + 1).padStart(2, "0") + "</i><span>" +
+          name + "</span></div>",
       ).join("");
+      // Lines stop short of the card so they read as connectors, not spokes
+      // running underneath the labels. （カードの手前で止める）
+      const hubLine = (p, insetA, insetB) => {
+        const dx = p[0] - 600;
+        const dy = p[1] - 450;
+        const d = Math.hypot(dx, dy) || 1;
+        const ux = dx / d;
+        const uy = dy / d;
+        const ax = 600 + ux * insetA;
+        const ay = 450 + uy * insetA;
+        const bx = p[0] - ux * insetB;
+        const by = p[1] - uy * insetB;
+        return (
+          '<line x1="' + ax.toFixed(1) + '" y1="' + ay.toFixed(1) +
+          '" x2="' + bx.toFixed(1) + '" y2="' + by.toFixed(1) +
+          '" stroke="#2b7fd4" stroke-width="1.4" stroke-opacity="0" />'
+        );
+      };
+      hubLines.innerHTML =
+        hubPos.map((p) => hubLine(p, 112, 132)).join("") +
+        '<circle cx="600" cy="450" r="196" fill="none" stroke="#2b7fd4" stroke-opacity="0.18" stroke-width="1.4" stroke-dasharray="6 10" />';
+      const roleEls = [...hubCards.children];
+      const hubLineEls = [...hubLines.querySelectorAll("line")];
 
-      const roleCol = $("roleCol");
-      roleCol.innerHTML = ROLES.map(
+      // ── 6. tile wall ──
+      const tileWall = $("tileWall");
+      const COLS = 6;
+      const TW = 240, TH = 140, TG = 20;
+      const WALL_W = COLS * TW + (COLS - 1) * TG;
+      const WALL_X = (1540 - WALL_W) / 2;
+      tileWall.innerHTML = TYPES.map((name, i) => {
+        const c = i % COLS;
+        const r = Math.floor(i / COLS);
+        const x = WALL_X + c * (TW + TG);
+        const y = r * (TH + TG);
+        return (
+          '<div class="tile" style="left:' + x + "px;top:" + y + 'px"><i>ui-' +
+          String(i + 1).padStart(2, "0") + "</i><span>" + name + "</span></div>"
+        );
+      }).join("");
+      const tileEls = [...tileWall.children];
+      const BENTO_INDEX = TYPES.indexOf("bento-grid");
+      const bento = $("bento");
+      const bentoLine = $("bentoLine");
+      const bentoBtn = $("bentoBtn");
+      const chipEls = [...document.querySelectorAll("#bentoChips .chip")];
+
+      // ── 7. orbit ──
+      const orbitCards = $("orbitCards");
+      const ORB_R = 300;
+      const ORB_R2 = 396;
+      const orbPos = SKILLS.map((_, i) => {
+        const a = -Math.PI / 2 + (i / SKILLS.length) * Math.PI * 2;
+        const r = i % 2 === 0 ? ORB_R : ORB_R2;
+        return [590 + Math.cos(a) * r, 440 + Math.sin(a) * r * 0.86];
+      });
+      orbitCards.innerHTML = SKILLS.map(
         (name, i) =>
-          `<div class="role${name === "ui-ux-director" ? " hot" : ""}"><i>${String(
-            i + 1,
-          ).padStart(2, "0")}</i><span>${name}</span></div>`,
+          '<div class="mod"><span class="orb2"></span><div><b>' + name +
+          '</b><span>skill ' + String(i + 1).padStart(2, "0") + "</span></div></div>",
       ).join("");
+      const modEls = [...orbitCards.children];
 
-      const checksEl = $("checks");
-      checksEl.innerHTML = CHECKS.map(
-        (name) => `<div class="check">${name}</div>`,
+      // ── 8. rules ──
+      const ruleGrid = $("ruleGrid");
+      ruleGrid.innerHTML = RULES.map(
+        ([n, name, desc, path]) =>
+          '<div class="rcard"><i>' + n + "</i><b>" + name + "</b><span>" + desc +
+          "</span><em>" + path + "</em><u>" + n + "</u></div>",
       ).join("");
+      const rcardEls = [...ruleGrid.children];
+      const shOuter = $("shOuter");
+      const shInner = $("shInner");
+      const shTick = $("shTick");
+      const shLen = [0, 0, 0].map((_, i) => {
+        const el = [shOuter, shInner, shTick][i];
+        const L = el.getTotalLength();
+        el.style.strokeDasharray = L;
+        el.style.strokeDashoffset = L;
+        return L;
+      });
 
-      $("markRow").innerHTML = HARNESS.map(
-        ([label, icon]) =>
-          `<div class="mk">${logoGlyph(icon, 62)}<span>${label}</span></div>`,
+      // ── 9. gate ──
+      const gateGrid = $("gateGrid");
+      gateGrid.innerHTML = CHECKS.map(
+        (name) =>
+          '<div class="chk"><span class="tick">✓</span><span>' + name + "</span></div>",
       ).join("");
+      const chkEls = [...gateGrid.children];
+      const scanEl = document.createElement("div");
+      scanEl.id = "scan";
+      gateGrid.appendChild(scanEl);
+      const gateCount = $("gateCount");
+      const gateBadge = $("gateBadge");
 
-      $("osRow").innerHTML = [
-        ["windows", "Windows"],
-        ["apple", "macOS"],
-        ["linux", "Linux"],
-      ]
-        .map(
-          ([icon, label]) =>
-            `<div class="os">${logoGlyph(icon, 30)}<span>${label}</span></div>`,
-        )
-        .join("");
+      // ── 10. terminal ──
+      const cmdEl = $("cmd");
+      const caret = $("caret");
+      const t1 = $("t1"), t2 = $("t2"), t3 = $("t3"), t4 = $("t4");
+
+      // ── 11. ship ──
+      const c1 = $("c1"), c2 = $("c2"), c3 = $("c3"), c4 = $("c4");
+      const barsEl = $("bars");
+      const BAR_DATA = [
+        ["UI types", 24],
+        ["agents", 12],
+        ["craft skills", 7],
+        ["rules", 8],
+        ["commands", 7],
+        ["harnesses", 5],
+      ];
+      barsEl.innerHTML = BAR_DATA.map(
+        ([label, n]) =>
+          '<div class="brow"><span class="lab">' + label +
+          '</span><span class="track"><span class="fill"></span></span><span class="num">' +
+          n + "</span></div>",
+      ).join("");
+      const barFills = [...barsEl.querySelectorAll(".fill")];
+
+      // ── 12. collaboration ──
+      const collabNodes = $("collabNodes");
+      const collabLines = $("collabLines");
+      const COLLAB = [
+        ["web-architect", "architecture"],
+        ["ui-ux-director", "direction"],
+        ["design-system", "tokens"],
+        ["motion", "timing"],
+        ["frontend", "build"],
+        ["seo", "metadata"],
+        ["perf", "budget"],
+        ["a11y", "audit"],
+        ["backend", "api"],
+        ["qa", "checks"],
+        ["review", "diff"],
+        ["webgl", "scene"],
+      ];
+      // Alternating radii keep neighbouring cards clear of each other at the
+      // 30° spacing this many agents need. （内外の半径を交互にする）
+      const COL_POS = COLLAB.map((_, i) => {
+        const a = -Math.PI / 2 + (i / COLLAB.length) * Math.PI * 2;
+        const r = i % 2 === 0 ? 360 : 500;
+        return [750 + Math.cos(a) * r, 440 + Math.sin(a) * r * 0.78];
+      });
+      collabNodes.innerHTML = COLLAB.map(
+        ([name, role], i) =>
+          '<div class="cnode"><span class="av"></span><div><b>' + name +
+          "</b><span>" + role + "</span></div></div>",
+      ).join("");
+      const cnodeEls = [...collabNodes.children];
+      // Connectors run hub edge → card edge, so no line disappears under a
+      // label and the hub stays readable. （両端を空ける）
+      const collabLine = (p) => {
+        const dx = p[0] - 750;
+        const dy = p[1] - 440;
+        const d = Math.hypot(dx, dy) || 1;
+        const ux = dx / d;
+        const uy = dy / d;
+        const ax = 750 + ux * 108;
+        const ay = 440 + uy * 108;
+        const bx = p[0] - ux * 134;
+        const by = p[1] - uy * 134;
+        return (
+          '<line x1="' + ax.toFixed(1) + '" y1="' + ay.toFixed(1) +
+          '" x2="' + bx.toFixed(1) + '" y2="' + by.toFixed(1) +
+          '" stroke="#2b7fd4" stroke-width="1.3" stroke-opacity="0" />'
+        );
+      };
+      collabLines.innerHTML =
+        COL_POS.map(collabLine).join("") +
+        '<ellipse cx="750" cy="440" rx="360" ry="281" fill="none" stroke="#2b7fd4" stroke-opacity="0.16" stroke-width="1.3" stroke-dasharray="6 12" />';
+      const cLineEls = [...collabLines.querySelectorAll("line")];
+
+      // ── 14. words ──
+      const w1 = $("w1"), w2 = $("w2"), w3 = $("w3");
+
+      // ── 16. cta ──
+      const ctaCard = $("ctaCard");
+      const ctaBtn = $("ctaBtn");
+      const ctaMark = $("ctaMark");
+
+      // ── github mark ──
+      const GHP = window.GITHUB_PATH || "";
+      $("ghPath").setAttribute("d", GHP);
+      $("ghPath2").setAttribute("d", GHP);
 
       // ── background（背景） ──
       const canvas = $("bg");
+      const DPR = Math.min(2, window.devicePixelRatio || 1);
+      canvas.width = 1920 * DPR;
+      canvas.height = 1080 * DPR;
       const ctx = canvas.getContext("2d");
+      ctx.scale(DPR, DPR);
 
-      const rand = (() => {
-        let s = 20261127;
-        return () => {
-          s = (s * 1664525 + 1013904223) % 4294967296;
-          return s / 4294967296;
-        };
-      })();
-
-      const particles = Array.from({ length: 70 }, () => ({
-        x: rand() * 1920,
-        y: rand() * 1080,
-        r: 0.7 + rand() * 2.1,
-        speed: 12 + rand() * 34,
-        phase: rand() * Math.PI * 2,
-        drift: 8 + rand() * 22,
-        hue: Math.floor(rand() * 6),
+      const BG_P = Array.from({ length: 90 }, () => ({
+        x: rnd() * 1920,
+        y: rnd() * 1080,
+        r: 0.6 + rnd() * 2.2,
+        speed: 10 + rnd() * 30,
+        phase: rnd() * Math.PI * 2,
+        drift: 8 + rnd() * 20,
+        hue: Math.floor(rnd() * 6),
       }));
-
-      const SPARK = [
-        [169, 216, 248], [90, 167, 233], [139, 108, 255],
-        [34, 211, 238], [244, 114, 182], [251, 191, 36],
-      ];
 
       function drawBg(t, alpha) {
         ctx.clearRect(0, 0, 1920, 1080);
@@ -831,37 +1860,44 @@
         ];
         for (const [x, y, r, rgb, a] of orbs) {
           const g = ctx.createRadialGradient(x, y, 0, x, y, r);
-          g.addColorStop(0, `rgba(${rgb},${a})`);
-          g.addColorStop(1, `rgba(${rgb},0)`);
+          g.addColorStop(0, "rgba(" + rgb + "," + a + ")");
+          g.addColorStop(1, "rgba(" + rgb + ",0)");
           ctx.fillStyle = g;
           ctx.fillRect(0, 0, 1920, 1080);
         }
 
-        for (const p of particles) {
+        for (const p of BG_P) {
           const y = ((p.y - t * p.speed) % 1080 + 1080) % 1080;
           const x = p.x + Math.sin(t * 0.6 + p.phase) * p.drift;
-          const twinkle = 0.16 + 0.44 * (0.5 + 0.5 * Math.sin(t * 1.4 + p.phase));
-          const [r, g, b] = SPARK[p.hue];
+          const tw = 0.14 + 0.4 * (0.5 + 0.5 * Math.sin(t * 1.4 + p.phase));
+          const [r, g, b] = SPARK_RGB[p.hue];
           ctx.beginPath();
           ctx.arc(x, y, p.r, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(${r},${g},${b},${twinkle})`;
+          ctx.fillStyle = "rgba(" + r + "," + g + "," + b + "," + tw + ")";
           ctx.fill();
         }
 
         ctx.globalAlpha = 1;
       }
 
-      // ── shot driver（ショット制御） ──
+      // ── shot driver ──
       const SHOTS = [
-        { el: $("s1"), a: 0.0, b: 2.6, s0: 1.06, s1: 1.0, x0: 0, x1: 0 },
-        { el: $("s2"), a: 2.6, b: 5.2, s0: 1.0, s1: 1.05, x0: 0, x1: 0 },
-        { el: $("s3"), a: 5.2, b: 11.6, s0: 0.96, s1: 1.06, x0: 0, x1: 0 },
-        { el: $("s4"), a: 11.6, b: 15.4, s0: 1.04, s1: 0.99, x0: 30, x1: -30 },
-        { el: $("s5"), a: 15.4, b: 18.4, s0: 1.0, s1: 1.05, x0: 0, x1: 0 },
-        { el: $("s6"), a: 18.4, b: 21.8, s0: 1.05, s1: 1.0, x0: 0, x1: 0 },
-        { el: $("s7"), a: 21.8, b: 24.8, s0: 1.05, s1: 1.0, x0: 0, x1: 0 },
-        { el: $("s8"), a: 24.8, b: 27.2, s0: 1.0, s1: 1.04, x0: 0, x1: 0 },
-        { el: $("s9"), a: 27.2, b: 30.0, s0: 1.05, s1: 1.0, x0: 0, x1: 0 },
+        { el: $("s1"), a: 0.0, b: 2.0, s0: 1.08, s1: 1.0 },
+        { el: $("s2"), a: 2.0, b: 4.0, s0: 1.0, s1: 1.05 },
+        { el: $("s3"), a: 4.0, b: 6.0, s0: 1.05, s1: 1.0 },
+        { el: $("s4"), a: 6.0, b: 8.0, s0: 1.06, s1: 1.0 },
+        { el: $("s5"), a: 8.0, b: 10.0, s0: 1.0, s1: 1.05 },
+        { el: $("s6"), a: 10.0, b: 12.0, s0: 1.04, s1: 1.0 },
+        { el: $("s7"), a: 12.0, b: 14.0, s0: 1.0, s1: 1.06 },
+        { el: $("s8"), a: 14.0, b: 16.0, s0: 1.05, s1: 1.0 },
+        { el: $("s9"), a: 16.0, b: 18.0, s0: 1.0, s1: 1.04 },
+        { el: $("s10"), a: 18.0, b: 20.0, s0: 1.05, s1: 1.0 },
+        { el: $("s11"), a: 20.0, b: 22.0, s0: 1.0, s1: 1.04 },
+        { el: $("s12"), a: 22.0, b: 24.0, s0: 1.05, s1: 1.0 },
+        { el: $("s13"), a: 24.0, b: 25.5, s0: 1.06, s1: 1.0 },
+        { el: $("s14"), a: 25.5, b: 27.0, s0: 1.0, s1: 1.05 },
+        { el: $("s15"), a: 27.0, b: 28.5, s0: 1.07, s1: 1.0 },
+        { el: $("s16"), a: 28.5, b: 30.0, s0: 1.0, s1: 1.03 },
       ];
 
       function driveShots(t) {
@@ -872,81 +1908,54 @@
             continue;
           }
           const p = (t - sh.a) / (sh.b - sh.a);
-          // 0.22s fade-in so a cut never strobes
-          const fade = clamp01((t - sh.a) / 0.22);
+          const fade = clamp01((t - sh.a) / 0.10);
           sh.el.style.opacity = fade.toFixed(3);
           const s = mix(sh.s0, sh.s1, p);
-          const x = mix(sh.x0, sh.x1, p);
-          sh.el.style.transform = `translate3d(${x.toFixed(2)}px, 0, 0) scale(${s.toFixed(4)})`;
+          sh.el.style.transform = "scale(" + s.toFixed(4) + ")";
         }
       }
 
-      // ── 1. cold open ──
-      const s1Eyebrow = $("s1Eyebrow");
-      const wordmark = $("wordmark");
-      const shine = $("shine");
-      const shineWrap = $("shineWrap");
-      const s1Lede = $("s1Lede");
-      const ribbon = $("ribbon");
-
-      // ── 2. the claim ──
-      const c1 = $("c1"), c2 = $("c2"), c3 = $("c3"), s2Lede = $("s2Lede");
-
-      // ── 3. installer ──
-      const win = $("win");
-      const opInstall = $("opInstall");
-      const ringFill = $("ringFill");
-      const logRows = [$("l1"), $("l2"), $("l3"), $("l4")];
-
-      // ── 4. catalogue ──
-      const wallHead = $("wallHead");
-      const tiles = [...wall.children];
-
-      // ── 5. roles ──
-      const rolesHead = $("rolesHead");
-      const roleEls = [...roleCol.children];
-
-      // ── 6. gate ──
-      const gateHead = $("gateHead");
-      const checkEls = [...checksEl.children];
-      const stamp = $("stamp");
-
-      // ── 7. terminal ──
-      const term = $("term");
-      const cmdEl = $("cmd");
-      const caret = $("caret");
-      const t1 = $("t1"), t2 = $("t2"), t3 = $("t3");
-
-      // ── 8. works with ──
-      const markEls = [...$("markRow").children];
-
-      // ── 9. sign-off ──
-      const endWord = $("endWord"), endBy = $("endBy"), endUrl = $("endUrl");
-      const osRow = $("osRow"), rule = $("rule");
-
-      // ── cursor（カーソル） ──
+      // ── cursor ──
       const cursorEl = $("cursor");
       const rippleEl = $("ripple");
 
-      // keyframes: [t, x, y]  — the tip of the pointer
       const CURSOR = [
-        [5.20, 1420, 860],
-        [5.80, 1300, 800],
-        [6.70, 1010, 545],
-        [7.20, 1000, 548],
-        [7.80, 1120, 640],
-        [9.00, 1180, 700],
-        [10.60, 1240, 720],
-        [11.40, 1500, 900],
-        [11.60, 1900, 1100],
-        [12.40, 1080, 470],
-        [13.60, 700, 470],
-        [14.60, 640, 470],
-        [15.30, 1900, 1100],
+        [2.42, 1560, 1010],
+        [3.02, 1066, 636],
+        [3.10, 1062, 634],
+        [3.62, 1300, 700],
+        [3.96, 1720, 1010],
+        [4.58, 1620, 1010],
+        [5.05, 1012, 604],
+        [5.10, 1008, 602],
+        [5.58, 1220, 760],
+        [5.96, 1760, 1030],
+        [18.04, 1570, 960],
+        [18.44, 706, 566],
+        [18.50, 702, 564],
+        [19.96, 1500, 470],
+        [22.06, 1570, 980],
+        [22.90, 1194, 664],
+        [22.95, 1190, 662],
+        [23.60, 1360, 760],
+        [23.96, 1800, 1040],
+        [28.68, 1570, 1000],
+        [29.25, 966, 796],
+        [29.32, 962, 794],
+        [29.96, 1120, 880],
       ];
-      const CLICKS = [7.05];
+      const CLICKS = [3.10, 5.10, 18.50, 22.95, 29.32];
+      const CURSOR_ON = [
+        [2.38, 3.98],
+        [4.54, 5.98],
+        [18.0, 20.0],
+        [22.0, 24.0],
+        [28.64, 30.0],
+      ];
 
       function cursorAt(t) {
+        const on = CURSOR_ON.some(([a, b]) => t >= a && t <= b);
+        if (!on) return null;
         if (t < CURSOR[0][0] || t > CURSOR[CURSOR.length - 1][0]) return null;
         for (let i = 0; i < CURSOR.length - 1; i++) {
           const [ta, xa, ya] = CURSOR[i];
@@ -959,6 +1968,10 @@
         return null;
       }
 
+      // A ripple belongs to the point that was clicked, so it is pinned at
+      // capture time instead of tracking the cursor afterwards. （クリック位置に固定）
+      const CLICK_POS = CLICKS.map((c) => cursorAt(c));
+
       function driveCursor(t) {
         const p = cursorAt(t);
         if (!p) {
@@ -967,9 +1980,9 @@
           return;
         }
         cursorEl.style.opacity = "1";
-        cursorEl.style.transform = `translate3d(${p[0].toFixed(1)}px, ${p[1].toFixed(1)}px, 0)`;
+        cursorEl.style.transform =
+          "translate3d(" + p[0].toFixed(1) + "px," + p[1].toFixed(1) + "px,0)";
 
-        // press squish for 0.16s after each click
         let press = 0;
         for (const c of CLICKS) {
           const q = seg(t, c, c + 0.16);
@@ -978,13 +1991,19 @@
         cursorEl.style.scale = String(1 - press * 0.16);
 
         let rip = 0;
-        for (const c of CLICKS) {
-          const q = seg(t, c, c + 0.55);
-          if (q > 0 && q < 1) rip = q;
+        let ripPos = null;
+        for (let ci = 0; ci < CLICKS.length; ci++) {
+          const q = seg(t, CLICKS[ci], CLICKS[ci] + 0.55);
+          if (q > 0 && q < 1) {
+            rip = q;
+            ripPos = CLICK_POS[ci];
+          }
         }
-        if (rip > 0) {
+        if (rip > 0 && ripPos) {
           rippleEl.style.opacity = String((1 - rip) * 0.85);
-          rippleEl.style.transform = `translate3d(${p[0].toFixed(1)}px, ${p[1].toFixed(1)}px, 0) scale(${mix(0.4, 4.2, eOutQuart(rip)).toFixed(3)})`;
+          rippleEl.style.transform =
+            "translate3d(" + ripPos[0].toFixed(1) + "px," + ripPos[1].toFixed(1) + "px,0) scale(" +
+            mix(0.4, 4.2, eOutQuart(rip)).toFixed(3) + ")";
         } else {
           rippleEl.style.opacity = "0";
         }
@@ -992,196 +2011,377 @@
 
       // ── the renderer（描画） ──
       function render(t) {
-        drawBg(t, eOutCubic(seg(t, 0, 1.2)));
-        $("grid").style.opacity = (0.9 * eOutCubic(seg(t, 0.4, 1.8))).toFixed(3);
+        drawBg(t, eOutCubic(seg(t, 0, 1.0)));
+        $("grid").style.opacity = (0.9 * eOutCubic(seg(t, 0.3, 1.6))).toFixed(3);
 
         driveShots(t);
         driveCursor(t);
 
-        // ── 1. cold open: 0 → 2.6
-        ribbon.style.width = `${mix(0, 420, eOutQuart(seg(t, 0.15, 1.0))).toFixed(1)}px`;
-        ribbon.style.opacity = String(seg(t, 0.1, 0.5));
+        // ══ 1. brand reveal: 0 → 2.0
+        const em = $("emblem");
+        const emScale = mix(0.55, 1, eOutBack(seg(t, 0.25, 1.05)));
+        em.style.transform = "scale(" + emScale.toFixed(4) + ")";
+        em.style.opacity = eOutCubic(seg(t, 0.2, 0.62)).toFixed(3);
+        $("emRings").style.transform =
+          "rotate(" + (t * 34).toFixed(2) + "deg)";
+        $("emRings").style.transformOrigin = "120px 120px";
 
-        const ep = eOutExpo(seg(t, 0.35, 1.5));
-        s1Eyebrow.style.opacity = ep.toFixed(3);
-        s1Eyebrow.style.letterSpacing = `${mix(26, 9, ep).toFixed(2)}px`;
-
-        wordmark.style.opacity = eOutCubic(seg(t, 0.55, 1.5)).toFixed(3);
-        wordmark.style.transform = `translate3d(0, ${mix(56, 0, eOutQuart(seg(t, 0.55, 1.9))).toFixed(1)}px, 0)`;
-
-        const sh = seg(t, 1.45, 2.55);
-        shine.style.opacity = sh > 0 && sh < 1 ? "1" : "0";
-        shine.style.backgroundPosition = `${mix(-30, 130, eInOutCubic(sh)).toFixed(2)}% 0`;
-
-        s1Lede.style.opacity = eOutCubic(seg(t, 1.35, 2.1)).toFixed(3);
-        s1Lede.style.transform = `translate3d(0, ${mix(26, 0, eOutQuart(seg(t, 1.35, 2.3))).toFixed(1)}px, 0)`;
-
-        // ── 2. the claim: 2.6 → 5.2
-        const claims = [
-          [c1, 2.78],
-          [c2, 3.06],
-          [c3, 3.34],
-        ];
-        for (const [el, at] of claims) {
-          const p = eOutQuart(seg(t, at, at + 0.55));
-          el.style.opacity = eOutCubic(seg(t, at, at + 0.4)).toFixed(3);
-          el.style.transform = `translate3d(0, ${mix(48, 0, p).toFixed(1)}px, 0)`;
-        }
-        s2Lede.style.opacity = eOutCubic(seg(t, 4.0, 4.7)).toFixed(3);
-        s2Lede.style.transform = `translate3d(0, ${mix(22, 0, eOutQuart(seg(t, 4.0, 4.8))).toFixed(1)}px, 0)`;
-
-        // ── 3. installer: 5.2 → 11.6
-        const winIn = eOutQuart(seg(t, 5.2, 6.0));
-        win.style.transform = `translate3d(0, ${mix(46, 0, winIn).toFixed(1)}px, 0)`;
-        win.style.opacity = winIn.toFixed(3);
-
-        // the Install card lifts under the pointer, then flashes on click
-        const hover = eOutCubic(seg(t, 6.5, 6.95));
-        const press = Math.sin(Math.PI * seg(t, 7.05, 7.3));
-        opInstall.style.transform =
-          `translate3d(0, ${(-6 * hover).toFixed(2)}px, 0) scale(${(1 - press * 0.02).toFixed(4)})`;
-        opInstall.style.boxShadow =
-          `0 0 0 4px rgba(90,167,233,${(0.10 + hover * 0.16).toFixed(3)}), ` +
-          `0 ${(18 + hover * 14).toFixed(0)}px ${(40 + hover * 24).toFixed(0)}px rgba(43,127,212,${(0.25 + hover * 0.2).toFixed(3)})`;
-
-        // progress ring fills once the click lands
-        const prog = eInOutQuart(seg(t, 7.25, 10.9));
-        ringFill.setAttribute("stroke-dashoffset", (314.16 * (1 - prog)).toFixed(2));
-
-        const logAt = [8.0, 8.75, 9.55, 10.5];
-        logRows.forEach((el, i) => {
-          const p = eOutCubic(seg(t, logAt[i], logAt[i] + 0.35));
-          el.style.opacity = p.toFixed(3);
-          el.style.transform = `translate3d(${mix(-16, 0, p).toFixed(1)}px, 0, 0)`;
+        sparkEls.forEach((el, i) => {
+          const p = SPARKS[i];
+          const q = eOutQuart(seg(t, 0.02 + p.d * 0.5, 0.62 + p.d * 0.5));
+          const x = mix(p.x, 960 + p.dx * 0.3, q);
+          const y = mix(p.y, 400 + p.dy * 0.3, q);
+          const tw = 0.55 + 0.45 * Math.sin(t * 3 + p.ph);
+          const s = mix(1, 0.35, q);
+          el.style.transform =
+            "translate3d(" + x.toFixed(1) + "px," + y.toFixed(1) + "px,0) scale(" +
+            s.toFixed(3) + ")";
+          el.style.opacity = (mix(0.9, 0.28, q) * (0.7 + tw * 0.3)).toFixed(3);
         });
 
-        // ── 4. catalogue: 11.6 → 15.4
-        wallHead.style.opacity = eOutCubic(seg(t, 11.65, 12.35)).toFixed(3);
-        wallHead.style.transform = `translate3d(0, ${mix(30, 0, eOutQuart(seg(t, 11.65, 12.5))).toFixed(1)}px, 0)`;
+        $("s1word").style.opacity = eOutCubic(seg(t, 1.02, 1.5)).toFixed(3);
+        $("s1word").style.transform =
+          "translate3d(0," + mix(34, 0, eOutQuart(seg(t, 1.02, 1.62))).toFixed(1) + "px,0)";
+        $("s1tag").style.opacity = eOutCubic(seg(t, 1.28, 1.78)).toFixed(3);
+        $("s1tag").style.transform =
+          "translate3d(0," + mix(18, 0, eOutQuart(seg(t, 1.28, 1.86))).toFixed(1) + "px,0)";
 
-        tiles.forEach((el, i) => {
-          const at = 11.85 + (i % 6) * 0.06 + Math.floor(i / 6) * 0.09;
-          const p = eOutBack(seg(t, at, at + 0.5));
-          el.style.opacity = eOutCubic(seg(t, at, at + 0.32)).toFixed(3);
-          el.style.transform = `translate3d(0, ${mix(34, 0, p).toFixed(1)}px, 0) scale(${mix(0.94, 1, p).toFixed(3)})`;
+        // ══ 2. kinetic type: 2.0 → 4.0
+        const kp = (el, at) => {
+          const q = eOutBack(seg(t, at, at + 0.42));
+          el.style.opacity = eOutCubic(seg(t, at, at + 0.2)).toFixed(3);
+          el.style.transform =
+            "translate3d(0," + mix(120, 0, q).toFixed(1) + "px,0) " +
+            "rotate(" + mix(-16, 0, q).toFixed(2) + "deg) scale(" +
+            mix(1.35, 1, q).toFixed(3) + ")";
+        };
+        kc1.forEach((el, i) => kp(el, 2.04 + i * 0.016));
+        kc2.forEach((el, i) => kp(el, 2.26 + i * 0.016));
+
+        const click2 = eOutQuart(seg(t, 3.10, 3.42));
+        kUnder.style.width = (mix(0, kUnderW, click2)).toFixed(1) + "px";
+        kUnder.style.opacity = (click2 > 0 ? 1 : 0).toFixed(3);
+
+        // ══ 3. repository: 4.0 → 6.0
+        const rp = eOutQuart(seg(t, 4.0, 4.46));
+        $("repo").style.opacity = eOutCubic(seg(t, 4.0, 4.3)).toFixed(3);
+        $("repo").style.transform =
+          "translate3d(0," + mix(56, 0, rp).toFixed(1) + "px,0) scale(" +
+          mix(0.965, 1, rp).toFixed(4) + ")";
+
+        const typed = Math.floor(seg(t, 4.26, 4.86) * urlFull.length);
+        urlText.innerHTML = "<b>" + urlFull.slice(0, typed) + "</b>" +
+          (typed < urlFull.length ? '<span style="opacity:.7">|</span>' : "");
+
+        frows.forEach((el, i) => {
+          const q = eOutCubic(seg(t, 4.62 + i * 0.06, 4.9 + i * 0.06));
+          el.style.opacity = q.toFixed(3);
+          el.style.transform = "translate3d(" + mix(-18, 0, q).toFixed(1) + "px,0,0)";
         });
 
-        // the picked tile gets a slow pulse once the camera has settled
-        const pickPulse = 0.5 + 0.5 * Math.sin((t - 13.6) * 3.2);
-        const pick = tiles.find((el) => el.classList.contains("pick"));
-        if (pick) {
-          const lift = eOutCubic(seg(t, 13.5, 14.1));
-          pick.style.transform =
-            `translate3d(0, ${(-10 * lift).toFixed(1)}px, 0) scale(${(1 + lift * 0.06).toFixed(3)})`;
-          pick.style.boxShadow =
-            `0 0 0 4px rgba(167,139,250,${(0.12 + pickPulse * 0.14).toFixed(3)}), ` +
-            `0 26px 64px rgba(167,139,250,${(0.22 + pickPulse * 0.16).toFixed(3)})`;
-        }
+        const hit3 = seg(t, 5.10, 5.42);
+        $("repo").style.boxShadow =
+          "0 46px 130px #000000b8, 0 0 " + (mix(0, 90, Math.sin(Math.PI * hit3))).toFixed(0) +
+          "px rgba(34,211,238," + (0.55 * Math.sin(Math.PI * hit3)).toFixed(3) + "), " +
+          "inset 0 1px 0 #ffffff1f";
 
-        // ── 5. roles: 15.4 → 18.4
-        rolesHead.style.opacity = eOutCubic(seg(t, 15.45, 16.2)).toFixed(3);
-        rolesHead.style.transform = `translate3d(${mix(-30, 0, eOutQuart(seg(t, 15.45, 16.3))).toFixed(1)}px, 0, 0)`;
+        // ══ 4. developer: 6.0 → 8.0
+        const pp = eOutQuart(seg(t, 6.0, 6.62));
+        portrait.style.transform =
+          "scale(" + mix(0.9, 1, pp).toFixed(4) + ") translate3d(0," +
+          mix(24, 0, pp).toFixed(1) + "px,0)";
+        portrait.style.opacity = eOutCubic(seg(t, 6.0, 6.35)).toFixed(3);
+        portRing1.style.transform = "rotate(" + (t * 46).toFixed(1) + "deg)";
+        portRing2.style.transform = "rotate(" + (-t * 30).toFixed(1) + "deg)";
 
+        s4eyebrow.style.opacity = eOutCubic(seg(t, 6.36, 6.7)).toFixed(3);
+        s4name.style.opacity = eOutCubic(seg(t, 6.44, 6.86)).toFixed(3);
+        s4name.style.transform =
+          "translate3d(" + mix(40, 0, eOutQuart(seg(t, 6.44, 6.94))).toFixed(1) + "px,0,0)";
+        s4rule.style.transform = "scaleX(" + eOutQuart(seg(t, 6.7, 7.1)).toFixed(4) + ")";
+        s4proj.style.opacity = eOutCubic(seg(t, 6.86, 7.2)).toFixed(3);
+        s4proj.style.transform =
+          "translate3d(0," + mix(18, 0, eOutQuart(seg(t, 6.86, 7.26))).toFixed(1) + "px,0)";
+        $("s4tag").style.opacity = eOutCubic(seg(t, 7.04, 7.38)).toFixed(3);
+
+        // ══ 5. roles: 8.0 → 10.0
+        $("hubTitle").style.opacity = eOutCubic(seg(t, 8.0, 8.34)).toFixed(3);
+        $("hubTitle").style.transform =
+          "translate3d(0," + mix(-16, 0, eOutQuart(seg(t, 8.0, 8.4))).toFixed(1) + "px,0)";
+        hubLineEls.forEach((el, i) => {
+          el.setAttribute("stroke-opacity", (0.55 * eOutCubic(seg(t, 8.0 + i * 0.02, 8.3 + i * 0.02))).toFixed(3));
+        });
         roleEls.forEach((el, i) => {
-          const at = 15.6 + i * 0.075;
-          const p = eOutQuart(seg(t, at, at + 0.42));
-          el.style.opacity = eOutCubic(seg(t, at, at + 0.3)).toFixed(3);
-          el.style.transform = `translate3d(${mix(40, 0, p).toFixed(1)}px, 0, 0)`;
+          const at = 8.04 + i * 0.055;
+          const q = eOutBack(seg(t, at, at + 0.4));
+          const [x, y] = hubPos[i];
+          el.style.opacity = eOutCubic(seg(t, at, at + 0.2)).toFixed(3);
+          setT(el, x, y, mix(0.7, 1, q), 0);
+          const lit = eOutCubic(seg(t, 8.5 + i * 0.055, 8.72 + i * 0.055));
+          el.style.borderColor = "rgba(34,211,238," + (0.12 + lit * 0.5).toFixed(3) + ")";
+          el.style.boxShadow =
+            "0 0 " + (lit * 26).toFixed(0) + "px rgba(34,211,238," + (lit * 0.35).toFixed(3) + ")";
         });
 
-        const hotPulse = 0.5 + 0.5 * Math.sin((t - 17.0) * 3.4);
-        const hot = roleEls.find((el) => el.classList.contains("hot"));
+        // ══ 6. ui system: 10.0 → 12.0
+        const bw = $("bento");
+        $("s6head").style.opacity = eOutCubic(seg(t, 10.5, 10.84)).toFixed(3);
+        $("s6head").style.transform =
+          "translate3d(0," + mix(26, 0, eOutQuart(seg(t, 10.5, 10.96))).toFixed(1) + "px,0)";
+        tileEls.forEach((el, i) => {
+          const at = 10.0 + (i % 6) * 0.035 + Math.floor(i / 6) * 0.05;
+          const q = eOutBack(seg(t, at, at + 0.4));
+          el.style.opacity = eOutCubic(seg(t, at, at + 0.24)).toFixed(3);
+          el.style.transform =
+            "translate3d(0," + mix(46, 0, q).toFixed(1) + "px,0) scale(" +
+            mix(0.9, 1, q).toFixed(3) + ")";
+        });
+
+        const lift = eInOutQuart(seg(t, 10.68, 11.16));
+        const pick = tileEls[BENTO_INDEX];
+        const pickX = WALL_X + (BENTO_INDEX % COLS) * (TW + TG);
+        const pickY = Math.floor(BENTO_INDEX / COLS) * (TH + TG);
+        tileEls.forEach((el, i) => {
+          if (i === BENTO_INDEX) return;
+          el.style.opacity = (1 - lift * 0.86).toFixed(3);
+          el.style.transform =
+            "translate3d(0," + (-lift * 18).toFixed(1) + "px,0) scale(" +
+            (1 - lift * 0.1).toFixed(3) + ")";
+        });
+        pick.style.opacity = (1 - lift).toFixed(3);
+        pick.style.transform =
+          "translate3d(" + (960 - (pickX + TW / 2)).toFixed(1) + "px," +
+          (540 - (pickY + TH / 2)).toFixed(1) + "px,0) scale(" +
+          (1 + lift * 1.4).toFixed(3) + ")";
+
+        const bp = eOutQuart(seg(t, 10.82, 11.26));
+        bw.style.opacity = bp.toFixed(3);
+        bw.style.transform = "scale(" + mix(0.34, 1, bp).toFixed(4) + ")";
+
+        const pts = [];
+        const draw = eOutQuart(seg(t, 11.02, 11.66));
+        for (let i = 0; i <= 20; i++) {
+          const x = (i / 20) * 260;
+          const y = 118 - (Math.sin(i * 0.62) * 0.5 + 0.5) * 74 - i * 0.9;
+          pts.push(x.toFixed(1) + "," + (y + (1 - draw) * 40).toFixed(1));
+        }
+        bentoLine.setAttribute("points", pts.slice(0, Math.max(2, Math.floor(draw * 21))).join(" "));
+        bentoLine.style.opacity = draw > 0 ? "1" : "0";
+
+        const btn = eOutBack(seg(t, 11.34, 11.66));
+        bentoBtn.style.transform = "scale(" + mix(0.6, 1, btn).toFixed(3) + ")";
+        bentoBtn.style.opacity = eOutCubic(seg(t, 11.34, 11.54)).toFixed(3);
+
+        chipEls.forEach((el, i) => {
+          const at = 11.06 + i * 0.035;
+          const q = eOutBack(seg(t, at, at + 0.3));
+          el.style.opacity = eOutCubic(seg(t, at, at + 0.14)).toFixed(3);
+          el.style.transform =
+            "translate3d(0," + mix(14, 0, q).toFixed(1) + "px,0) scale(" +
+            mix(0.86, 1, q).toFixed(3) + ")";
+        });
+
+        // ══ 7. craft skills: 12.0 → 14.0
+        $("orbRings").style.opacity = (0.85 * eOutCubic(seg(t, 12.0, 12.6))).toFixed(3);
+        modEls.forEach((el, i) => {
+          const at = 12.02 + i * 0.075;
+          const q = eOutBack(seg(t, at, at + 0.42));
+          const [x, y] = orbPos[i];
+          el.style.opacity = eOutCubic(seg(t, at, at + 0.22)).toFixed(3);
+          setT(el, x, y, mix(0.72, 1, q), 0);
+          const lit = eOutCubic(seg(t, at + 0.06, at + 0.3));
+          el.style.borderColor = "rgba(167,139,250," + (0.1 + lit * 0.5).toFixed(3) + ")";
+          el.style.boxShadow =
+            "inset 0 1px 0 #ffffff20, 0 18px 44px #00000077, 0 0 " +
+            (lit * 30).toFixed(0) + "px rgba(167,139,250," + (lit * 0.4).toFixed(3) + ")";
+        });
+        $("orbitCore").style.transform = "scale(" + mix(0.86, 1, eOutBack(seg(t, 12.0, 12.4))).toFixed(4) + ")";
+
+        // ══ 8. rules: 14.0 → 16.0
+        const drawSh = eInOutCubic(seg(t, 14.0, 14.72));
+        shOuter.style.strokeDashoffset = (shLen[0] * (1 - drawSh)).toFixed(1);
+        shInner.style.strokeDashoffset = (shLen[1] * (1 - eInOutCubic(seg(t, 14.16, 14.86)))).toFixed(1);
+        shTick.style.strokeDashoffset = (shLen[2] * (1 - eInOutCubic(seg(t, 14.5, 14.9)))).toFixed(1);
+        $("shield").style.opacity = "1";
+        $("shield").style.transform = "scale(" + mix(0.8, 1, eOutBack(seg(t, 14.0, 14.5))).toFixed(4) + ")";
+        $("ruleHead").style.opacity = eOutCubic(seg(t, 14.02, 14.36)).toFixed(3);
+
+        rcardEls.forEach((el, i) => {
+          const at = 14.1 + i * 0.06;
+          const q = eOutBack(seg(t, at, at + 0.44));
+          el.style.opacity = eOutCubic(seg(t, at, at + 0.22)).toFixed(3);
+          el.style.transform =
+            "perspective(700px) translate3d(0," + mix(60, 0, q).toFixed(1) +
+            "px,0) rotateX(" + mix(-42, 0, q).toFixed(1) + "deg)";
+        });
+
+        // ══ 9. gate: 16.0 → 18.0
+        const scan = seg(t, 16.06, 17.5);
+        scanEl.style.opacity = scan > 0 && scan < 1 ? "1" : "0";
+        scanEl.style.left = mix(-160, 1420, eInOutCubic(scan)).toFixed(0) + "px";
+
+        let passed = 0;
+        chkEls.forEach((el, i) => {
+          const at = 16.14 + (i / CHECKS.length) * 1.28;
+          const on = t >= at;
+          if (on) passed++;
+          el.classList.toggle("on", on);
+          const q = eOutCubic(seg(t, at, at + 0.18));
+          el.style.transform = "scale(" + mix(0.94, 1, q).toFixed(3) + ")";
+        });
+        gateCount.innerHTML = passed + "<i>/24</i>";
+        const badge = eOutBack(seg(t, 17.42, 17.74));
+        gateBadge.style.opacity = eOutCubic(seg(t, 17.42, 17.6)).toFixed(3);
+        gateBadge.style.transform = "scale(" + mix(0.7, 1, badge).toFixed(3) + ")";
+
+        // ══ 10. terminal: 18.0 → 20.0
+        const tp = eOutQuart(seg(t, 18.06, 18.42));
+        $("termCaption").style.opacity = eOutCubic(seg(t, 18.0, 18.3)).toFixed(3);
+        $("termCaption").style.transform =
+          "translate3d(0," + mix(-18, 0, eOutQuart(seg(t, 18.0, 18.4))).toFixed(1) + "px,0)";
+        $("term").style.opacity = eOutCubic(seg(t, 18.06, 18.3)).toFixed(3);
+        $("term").style.transform =
+          "translate3d(0," + mix(44, 0, tp).toFixed(1) + "px,0) scale(" +
+          mix(0.97, 1, tp).toFixed(4) + ")";
+
+        const chars = Math.floor(seg(t, 18.26, 18.86) * CMD.length);
+        cmdEl.textContent = CMD.slice(0, chars);
+        const caretOn = t < 18.88 ? (Math.floor(t * 6) % 2 === 0 ? 1 : 0.15) : 0;
+        caret.style.opacity = String(caretOn);
+
+        const o1 = eOutCubic(seg(t, 18.92, 19.04));
+        const o2 = eOutCubic(seg(t, 19.0, 19.12));
+        const o3 = eOutCubic(seg(t, 19.5, 19.62));
+        const o4 = eOutCubic(seg(t, 19.58, 19.7));
+        [t1, t2, t3, t4].forEach((el, i) => {
+          const q = [o1, o2, o3, o4][i];
+          el.style.opacity = q.toFixed(3);
+          el.style.transform = "translate3d(" + mix(-14, 0, q).toFixed(1) + "px,0,0)";
+        });
+
+        // ══ 11. what ships: 20.0 → 22.0
+        const cnt = (el, n, at) => {
+          const q = eOutQuart(seg(t, at, at + 0.9));
+          el.textContent = String(Math.round(n * q));
+        };
+        cnt(c1, 24, 20.12);
+        cnt(c2, 12, 20.2);
+        cnt(c3, 7, 20.28);
+        cnt(c4, 24, 20.36);
+
+        barFills.forEach((el, i) => {
+          const at = 20.3 + i * 0.07;
+          const q = eInOutQuart(seg(t, at, at + 0.72));
+          el.style.width = (q * (BAR_DATA[i][1] / 24) * 100).toFixed(2) + "%";
+        });
+
+        // ══ 12. collaboration: 22.0 → 24.0
+        const hub12 = $("collabHub");
+        const hub12In = eOutBack(seg(t, 22.3, 22.86));
+        hub12.style.opacity = eOutCubic(seg(t, 22.3, 22.56)).toFixed(3);
+        hub12.style.transform = "scale(" + mix(0.7, 1, hub12In).toFixed(3) + ")";
+        cLineEls.forEach((el, i) => {
+          el.setAttribute("stroke-opacity", (0.4 * eOutCubic(seg(t, 22.0 + i * 0.02, 22.4 + i * 0.02))).toFixed(3));
+        });
+        cnodeEls.forEach((el, i) => {
+          const at = 22.02 + i * 0.045;
+          const q = eOutBack(seg(t, at, at + 0.4));
+          const [x, y] = COL_POS[i];
+          el.style.opacity = eOutCubic(seg(t, at, at + 0.2)).toFixed(3);
+          setT(el, x, y, mix(0.7, 1, q), 0);
+        });
+
+        const click12 = seg(t, 22.95, 23.2);
+        const hotIdx = 4;
+        const hot = cnodeEls[hotIdx];
         if (hot) {
-          const lift = eOutCubic(seg(t, 17.0, 17.5));
-          hot.style.transform = `translate3d(${(mix(0, -14, lift)).toFixed(1)}px, 0, 0)`;
-          hot.style.boxShadow =
-            `0 0 0 4px rgba(244,114,182,${(0.10 + hotPulse * 0.14).toFixed(3)}), ` +
-            `0 18px 44px rgba(244,114,182,${(0.16 + hotPulse * 0.14).toFixed(3)})`;
+          const lift = eOutBack(seg(t, 22.95, 23.3));
+          hot.style.borderColor = "rgba(34,211,238," + (0.2 + 0.6 * lift).toFixed(3) + ")";
+          hot.style.boxShadow = "0 0 " + (lift * 34).toFixed(0) + "px rgba(34,211,238," + (0.45 * lift).toFixed(3) + ")";
         }
 
-        // ── 6. gate: 18.4 → 21.8
-        gateHead.style.opacity = eOutCubic(seg(t, 18.45, 19.1)).toFixed(3);
-        gateHead.style.transform = `translate3d(0, ${mix(-24, 0, eOutQuart(seg(t, 18.45, 19.2))).toFixed(1)}px, 0)`;
+        const bub = (el, at) => {
+          const q = eOutBack(seg(t, at, at + 0.36));
+          el.style.opacity = eOutCubic(seg(t, at, at + 0.18)).toFixed(3);
+          el.style.transform = "translate3d(0," + mix(18, 0, q).toFixed(1) + "px,0) scale(" + mix(0.8, 1, q).toFixed(3) + ")";
+        };
+        bub($("b1"), 22.5);
+        bub($("b3"), 22.78);
+        bub($("b2"), 23.06);
 
-        checkEls.forEach((el, i) => {
-          const at = 18.9 + i * 0.052;
-          const p = seg(t, at, at + 0.2);
-          el.classList.toggle("on", p > 0.5);
-          el.style.opacity = (0.35 + 0.65 * eOutCubic(seg(t, 18.7 + i * 0.03, 19.1 + i * 0.03))).toFixed(3);
-          el.style.transform = `scale(${mix(0.92, 1, eOutBack(p)).toFixed(3)})`;
-        });
+        // ══ 13. devices: 24.0 → 25.5
+        const dp = eOutQuart(seg(t, 24.0, 24.66));
+        $("laptop").style.opacity = eOutCubic(seg(t, 24.0, 24.3)).toFixed(3);
+        $("laptop").style.transform =
+          "translate3d(" + mix(-90, 0, dp).toFixed(1) + "px," + mix(50, 0, dp).toFixed(1) +
+          "px,0) rotateY(" + mix(-16, 0, dp).toFixed(2) + "deg)";
+        const ph = eOutQuart(seg(t, 24.12, 24.78));
+        $("phone").style.opacity = eOutCubic(seg(t, 24.12, 24.4)).toFixed(3);
+        $("phone").style.transform =
+          "translate3d(" + mix(90, 0, ph).toFixed(1) + "px," + mix(70, 0, ph).toFixed(1) +
+          "px,0) rotateY(" + mix(18, 0, ph).toFixed(2) + "deg)";
 
-        const st = eOutBack(seg(t, 21.05, 21.5));
-        stamp.style.opacity = eOutCubic(seg(t, 21.05, 21.35)).toFixed(3);
-        stamp.style.transform = `scale(${mix(1.35, 1, st).toFixed(3)})`;
+        // ══ 14. three words: 25.5 → 27.0
+        const wordIn = (el, at) => {
+          const q = eOutBack(seg(t, at, at + 0.3));
+          el.style.opacity = eOutCubic(seg(t, at, at + 0.12)).toFixed(3);
+          el.style.transform =
+            "translate3d(0," + mix(70, 0, q).toFixed(1) + "px,0) scale(" +
+            mix(0.82, 1, q).toFixed(3) + ")";
+        };
+        wordIn(w1, 25.5);
+        wordIn(w2, 26.0);
+        wordIn(w3, 26.5);
 
-        // ── 7. terminal: 21.8 → 24.8
-        const termIn = eOutQuart(seg(t, 21.82, 22.5));
-        term.style.transform = `translate3d(0, ${mix(50, 0, termIn).toFixed(1)}px, 0) scale(${mix(0.96, 1, termIn).toFixed(4)})`;
-        term.style.opacity = termIn.toFixed(3);
+        // ══ 15. brand again: 27.0 → 28.5
+        const em2 = $("emblem2");
+        em2.style.transform = "scale(" + mix(0.7, 1, eOutBack(seg(t, 27.02, 27.62))).toFixed(4) + ")";
+        em2.style.opacity = eOutCubic(seg(t, 27.02, 27.3)).toFixed(3);
+        $("emRings2").style.transformOrigin = "120px 120px";
+        $("emRings2").style.transform = "rotate(" + (-t * 40).toFixed(2) + "deg)";
+        $("s15word").style.opacity = eOutCubic(seg(t, 27.58, 27.96)).toFixed(3);
+        $("s15word").style.transform =
+          "translate3d(0," + mix(30, 0, eOutQuart(seg(t, 27.58, 28.04))).toFixed(1) + "px,0)";
+        $("s15tag").style.opacity = eOutCubic(seg(t, 27.86, 28.2)).toFixed(3);
 
-        const typed = Math.floor(seg(t, 22.05, 23.05) * CMD.length);
-        cmdEl.textContent = CMD.slice(0, typed);
-        const typing = t > 22.05 && t < 23.07;
-        caret.style.opacity = typing
-          ? "1"
-          : 0.5 + 0.5 * Math.sin((t - 23.07) * 9) > 0.5
-            ? "1"
-            : "0";
+        // ══ 16. cta: 28.5 → 30.0
+        const cp = eOutQuart(seg(t, 28.5, 28.96));
+        ctaCard.style.opacity = eOutCubic(seg(t, 28.5, 28.74)).toFixed(3);
+        ctaCard.style.transform =
+          "translate3d(0," + mix(44, 0, cp).toFixed(1) + "px,0) scale(" +
+          mix(0.97, 1, cp).toFixed(4) + ")";
+        ctaMark.style.transform = "scale(" + mix(0.6, 1, eOutBack(seg(t, 28.56, 28.92))).toFixed(4) + ")";
 
-        const outs = [
-          [t1, 23.15],
-          [t2, 23.33],
-          [t3, 23.51],
-        ];
-        for (const [el, at] of outs) {
-          const p = eOutCubic(seg(t, at, at + 0.22));
-          el.style.opacity = p.toFixed(3);
-          el.style.transform = `translate3d(${mix(-14, 0, p).toFixed(1)}px, 0, 0)`;
-        }
-
-        // ── 8. works with: 24.8 → 27.2
-        markEls.forEach((el, i) => {
-          const at = 24.95 + i * 0.1;
-          const p = eOutBack(seg(t, at, at + 0.5));
-          el.style.opacity = eOutCubic(seg(t, at, at + 0.32)).toFixed(3);
-          el.style.transform = `translate3d(0, ${mix(40, 0, p).toFixed(1)}px, 0) scale(${mix(0.9, 1, p).toFixed(3)})`;
-        });
-
-        // ── 9. sign-off: 27.2 → 30
-        const endIn = eOutCubic(seg(t, 27.3, 28.2));
-        endWord.style.opacity = endIn.toFixed(3);
-        endWord.style.transform = `translate3d(0, ${mix(44, 0, eOutQuart(seg(t, 27.3, 28.4))).toFixed(1)}px, 0) scale(${mix(0.95, 1, eOutQuart(seg(t, 27.3, 28.6))).toFixed(4)})`;
-        endBy.style.opacity = eOutCubic(seg(t, 27.9, 28.6)).toFixed(3);
-        endUrl.style.opacity = eOutCubic(seg(t, 28.15, 28.85)).toFixed(3);
-        osRow.style.opacity = (0.9 * eOutCubic(seg(t, 28.4, 29.1))).toFixed(3);
-        rule.style.opacity = (0.9 * eOutCubic(seg(t, 0.6, 1.8))).toFixed(3);
-        rule.style.backgroundPosition = `${(seg(t, 0, 1) * 100).toFixed(1)}% 0`;
+        const press16 = Math.sin(Math.PI * seg(t, 29.32, 29.5));
+        const hover16 = eOutCubic(seg(t, 29.16, 29.3));
+        ctaBtn.style.transform =
+          "translate3d(0," + (-4 * hover16).toFixed(1) + "px,0) scale(" +
+          (1 - press16 * 0.03).toFixed(4) + ")";
+        ctaBtn.style.boxShadow =
+          "0 18px 44px rgba(34,211,238," + (0.25 + hover16 * 0.25).toFixed(3) + "), " +
+          "inset 0 1px 0 #ffffff66";
       }
 
-      // ── drive it（駆動） ──
-      window.seek = (t) => {
-        render(Math.max(0, Math.min(DUR, t)));
-        return true;
-      };
-      window.__DUR = DUR;
-
+      // ── loop / seek（再生とシーク） ──
       const params = new URLSearchParams(location.search);
       const frozen = params.get("t");
 
-      // render-reel.mjs drives the clock itself, so the live loop must stay
-      // off while capturing. （キャプチャ中は自走ループを止める）
-      const offline = params.has("render");
+      window.seek = (t) => {
+        render(Math.max(0, Math.min(DUR, t)));
+      };
+      window.__DUR = DUR;
 
       if (frozen !== null) {
-        window.seek(parseFloat(frozen));
-      } else if (!offline) {
+        render(parseFloat(frozen) || 0);
+      } else if (params.get("render") === "1") {
+        render(0);
+      } else {
         const start = performance.now();
-        const loop = (now) => {
-          window.seek(((now - start) / 1000) % DUR);
-          requestAnimationFrame(loop);
+        const tick = (now) => {
+          render(((now - start) / 1000) % DUR);
+          requestAnimationFrame(tick);
         };
-        requestAnimationFrame(loop);
+        requestAnimationFrame(tick);
       }
     </script>
   </body>
